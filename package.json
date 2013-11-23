@@ -1,0 +1,29 @@
+{
+  "name": "artsy-passport",
+  "version": "0.0.1",
+  "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
+  "keywords": [
+    "artsy",
+    "passport",
+    "auth",
+    "authentication"
+  ],
+  "author": {
+    "name": "Craig Spaeth",
+    "email": "craigspaeth@gmail.com",
+    "url": "http://craigspaeth.com"
+  },
+  "engines": {
+    "node": ">= 0.10.x"
+  },
+  "scripts": {
+  	"test": "make test"
+	},
+	"dependencies": {
+	},
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "sinon": "*"
+  }
+}
