@@ -30,6 +30,11 @@
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "sinon": "*"
+    "sinon": "*",
+    "express": "*",
+    "jade": "*",
+    "underscore": "*",
+    "backbone": "*",
+    "sharify": "*"
   }
 }

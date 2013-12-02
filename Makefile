@@ -6,4 +6,7 @@ test:
 cli:
 	node test/cli.js
 
-.PHONY: test
+example:
+	$(BIN)/coffee example/index.coffee
+
+.PHONY: test example
