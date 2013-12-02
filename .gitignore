@@ -12,3 +12,4 @@ pids
 logs
 results
 npm-debug.log
+/example/config.coffee
