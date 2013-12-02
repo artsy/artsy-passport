@@ -20,6 +20,12 @@
   	"test": "make test"
 	},
 	"dependencies": {
+    "passport": "*",
+    "passport-facebook": "*",
+    "passport-twitter": "*",
+    "passport-local": "*",
+    "superagent": "*",
+    "coffee-script": "*"
 	},
   "devDependencies": {
     "mocha": "*",
