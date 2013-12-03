@@ -1,4 +1,4 @@
-# artsy-passport
+# Artsy Passport
 
 Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
@@ -13,7 +13,9 @@ app.use express.cookieParser('foobar')
 app.use express.cookieSession()
 ````
 
-#### Then mount artsyPassport passing a big configuration hash like so below (the values indicate defaults).
+#### Then mount Artsy Passport passing a big configuration hash.
+
+_Values indicate defaults._
 
 ````coffeescript
 app.use artsyPassport
@@ -43,22 +45,23 @@ app.use artsyPassport _.extend config,
   sharifyData: sharify.data
 ````
 
-#### Conveniently access your artsyPassport paths through the `artsyPassport` view local and `ARTSY_PASSPORT` sharify data to populate your forms.
+#### Create login and signup forms pointing to your paths.
 
 ````jade
 h1 Login
-a( href=artsyPassport.facebookPath ) Login via Facebook
-a( href=artsyPassport.twitterPath ) Login via Twitter
-form( action=artsyPassport.loginPath, method='POST' )
+a( href='/users/auth/facebook' ) Login via Facebook
+a( href='/users/auth/twitter' ) Login via Twitter
+form( action='/users/sign_in', method='POST' )
   h3 Login via Email
+  input( name='name' )
   input( name='email' )
   input( name='password' )
-  button( type='submit' ) Login
+  button( type='submit' ) Signup
 
 h1 Signup
-a( href=artsyPassport.facebookPath + '?sign_up=true' ) Signup via Facebook
-a( href=artsyPassport.twitterPath + '?sign_up=true' ) Signup via Twitter
-form( action=artsyPassport.signupPath, method='POST' )
+a( href='/users/auth/facebook?sign_up=true' ) Signup via Facebook
+a( href='/users/auth/twitter?sign_up=true' ) Signup via Twitter
+form( action='/users/invitation/accept', method='POST' )
   h3 Signup via Email
   input( name='name' )
   input( name='email' )
@@ -104,8 +107,10 @@ In your routers
 
 ````coffeescript
 app.get '/', (req, res) ->
-  res.send req.user?.get('name')
+  res.send 'Hello ' + req.user.get('name')
 ````
+
+_These forms of user will be null if they're not logged in._
 
 ## Contributing
 

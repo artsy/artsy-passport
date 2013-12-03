@@ -12,7 +12,7 @@ TwitterStrategy = require('passport-twitter').Strategy
 LocalStrategy = require('passport-local').Strategy
 qs = require 'querystring'
 
-module.exports.app = app = express()
+# Default options
 opts =
   facebookPath: '/users/auth/facebook'
   twitterPath: '/users/auth/twitter'
@@ -21,15 +21,21 @@ opts =
   twitterCallbackPath: '/auth/twitter/callback'
   facebookCallbackPath: '/auth/facebook/callback'
 
+#
+# Main function that overrides/injects any options, sets up passport, sets up an app to
+# handle routing and injecting locals, and returns that app to be mounted as middleware.
+#
 module.exports = (options) =>
   module.exports.options = _.extend opts, options
   initPassport()
   initApp()
-  return app
+  app
 
 #
-# Setup the router
+# Setup the mounted app that routes signup/login and injects necessary locals.
 #
+module.exports.app = app = express()
+
 initApp = ->
   app.use passport.initialize()
   app.use passport.session()
@@ -37,15 +43,17 @@ initApp = ->
   app.post opts.signupPath, createUser, passport.authenticate('local')
   app.get opts.facebookPath, socialAuth('facebook')
   app.get opts.twitterPath, socialAuth('twitter')
-  app.get opts.twitterCallbackPath, socialAuth('twitter'), (req, res, next) -> next()
-  app.get opts.facebookCallbackPath, socialAuth('facebook'), (req, res, next) -> next()
+  app.get opts.twitterCallbackPath, socialSignup('twitter'), socialAuth('twitter'), passOn
+  app.get opts.facebookCallbackPath, socialSignup('facebook'), socialAuth('facebook'), passOn
   app.use addLocals
+
+passOn = (req, res, next) ->
+  next()
 
 addLocals = (req, res, next) ->
   if req.user
     res.locals.user = req.user
     res.locals.sd?.CURRENT_USER = req.user.toJSON()
-  res.locals.artsyPassport = res.locals.sd?.ARTSY_PASSPORT = opts
   next()
 
 socialAuth = (provider) ->
@@ -54,17 +62,34 @@ socialAuth = (provider) ->
       callbackURL: "#{opts.APP_URL}#{opts[provider + 'CallbackPath']}?#{qs.stringify req.query}"
     )(req, res, next)
 
+socialSignup = (provider) ->
+  (req, res, next) ->
+    return next() unless req.query.sign_up
+    request.post(opts.SECURE_URL + '/api/v1/user').send(
+      provider: provider
+      oauth_token: req.query.oauth_token
+      oauth_token_secret: req.query.oauth_verifier
+      xapp_token: opts.sharifyData.GRAVITY_XAPP_TOKEN
+    ).end onCreate(next)
+
 createUser = (req, res, next) ->
   request.post(opts.SECURE_URL + '/api/v1/user').send(
     name: req.body.name
     email: req.body.email
     password: req.body.password
     xapp_token: opts.sharifyData.GRAVITY_XAPP_TOKEN
-  ).end (err, res) ->
-    if err then next("Signup error: " + err?.text) else next()
+  ).end onCreate(next)
+
+onCreate = (next) ->
+  (err, res) ->
+    if res.status isnt 201
+      errMsg = res.body.message
+    else
+      errMsg = err?.text
+    if errMsg then next(errMsg) else next()
 
 #
-# Setup passport config
+# Setup passport.
 #
 initPassport = ->
   passport.serializeUser serializeUser
@@ -120,7 +145,7 @@ accessTokenCallback = (done) ->
     )
 
 #
-# Serialize & deserialize the user
+# Serialize user by fetching and caching user data in the session.
 #
 serializeUser = (user, done) ->
   user.fetch
