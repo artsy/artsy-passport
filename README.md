@@ -58,28 +58,29 @@ app.use artsyPassport _.extend config,
 ````jade
 h1 Login
 a( href=artsyPassport.facebookPath ) Login via Facebook
-br
 a( href=artsyPassport.twitterPath ) Login via Twitter
 form( action=artsyPassport.loginPath, method='POST' )
   h3 Login via Email
-  mixin email-password
+  input( name='email' )
+  input( name='password' )
   button( type='submit' ) Login
 
 h1 Signup
-a( href=artsyPassport.facebookPath + '?sign_up=true' ) Login via Facebook
-br
-a( href=artsyPassport.twitterPath + '?sign_up=true' ) Login via Twitter
+a( href=artsyPassport.facebookPath + '?sign_up=true' ) Signup via Facebook
+a( href=artsyPassport.twitterPath + '?sign_up=true' ) Signup via Twitter
 form( action=artsyPassport.signupPath, method='POST' )
   h3 Signup via Email
-  input( name='name', placeholder='Name...' )
-  mixin email-password
+  input( name='name' )
+  input( name='email' )
+  input( name='password' )
   button( type='submit' ) Signup
 ````
 
-#### Handle the log in and sign up callbacks.
+#### Handle login and signup callbacks.
 
 ````coffeescript
-{ loginPath, signupPath, twitterCallbackPath, facebookCallbackPath } = artsyPassport.options
+{ loginPath, signupPath, twitterCallbackPath,
+  facebookCallbackPath } = artsyPassport.options
 
 # Artsy passport route handlers
 app.post loginPath, (req, res) ->
@@ -97,10 +98,7 @@ app.get facebookCallbackPath, (req, res) ->
 In your server-side templates
 
 ````jade
-if user
-  h1 Hello #{user.get('name')}
-else
-  a( '/login' ) Log in
+h1 Hello #{user.get('name')}
 ````
 
 In your client-side code
@@ -109,17 +107,14 @@ In your client-side code
 CurrentUser = require '../models/current_user.coffee'
 sd = require('sharify').data
 
-new View user: if sd.CURRENT_USER then new CurrentUser(sd.CURRENT_USER) else null
+user = new CurrentUser(sd.CURRENT_USER)
 ````
 
 In your routers
 
 ````coffeescript
 app.get '/', (req, res) ->
-  if req.user?
-    res.render 'loggedin'
-  else
-    res.render 'login'
+  res.send req.user?.get('name')
 ````
 
 ## Contributing
