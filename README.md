@@ -119,7 +119,7 @@ app.get '/', (req, res) ->
 
 ## Contributing
 
-First install node modules `npm install`. Then run tests `make test`, or run the example. This is a basic implementation of artsyPassport, to use this you first need to write an example/config.coffee that looks something like this:
+First install node modules `npm install`. Then run tests `make test`, or run the example. The example is a basic implementation of Artsy Passport, to use this you first need to write an example/config.coffee that looks something like this:
 
 ````coffeescript
 module.exports =
