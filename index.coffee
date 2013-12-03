@@ -40,21 +40,12 @@ initApp = ->
   app.use passport.initialize()
   app.use passport.session()
   app.post opts.loginPath, passport.authenticate('local')
-  app.post opts.signupPath, createUser, passport.authenticate('local')
-  app.get opts.facebookPath, socialAuth('facebook')
+  app.post opts.signupPath, singnup, passport.authenticate('local')
   app.get opts.twitterPath, socialAuth('twitter')
-  app.get opts.twitterCallbackPath, socialSignup('twitter'), socialAuth('twitter'), passOn
-  app.get opts.facebookCallbackPath, socialSignup('facebook'), socialAuth('facebook'), passOn
+  app.get opts.facebookPath, socialAuth('facebook')
+  app.get opts.twitterCallbackPath, socialSignup('twitter'), socialAuth('twitter')
+  app.get opts.facebookCallbackPath, socialSignup('facebook'), socialAuth('facebook')
   app.use addLocals
-
-passOn = (req, res, next) ->
-  next()
-
-addLocals = (req, res, next) ->
-  if req.user
-    res.locals.user = req.user
-    res.locals.sd?.CURRENT_USER = req.user.toJSON()
-  next()
 
 socialAuth = (provider) ->
   (req, res, next) ->
@@ -65,28 +56,36 @@ socialAuth = (provider) ->
 socialSignup = (provider) ->
   (req, res, next) ->
     return next() unless req.query.sign_up
+    console.log req.query, req.body
     request.post(opts.SECURE_URL + '/api/v1/user').send(
       provider: provider
       oauth_token: req.query.oauth_token
       oauth_token_secret: req.query.oauth_verifier
-      xapp_token: opts.sharifyData.GRAVITY_XAPP_TOKEN
-    ).end onCreate(next)
+      xapp_token: res.locals.artsyXappToken
+    ).end onCreateUser(next)
 
-createUser = (req, res, next) ->
+singnup = (req, res, next) ->
   request.post(opts.SECURE_URL + '/api/v1/user').send(
     name: req.body.name
     email: req.body.email
     password: req.body.password
-    xapp_token: opts.sharifyData.GRAVITY_XAPP_TOKEN
-  ).end onCreate(next)
+    xapp_token: res.locals.artsyXappToken
+  ).end onCreateUser(next)
 
-onCreate = (next) ->
+onCreateUser = (next) ->
   (err, res) ->
+    console.log 'RES', err, res.body, res.status
     if res.status isnt 201
       errMsg = res.body.message
     else
       errMsg = err?.text
     if errMsg then next(errMsg) else next()
+
+addLocals = (req, res, next) ->
+  if req.user
+    res.locals.user = req.user
+    res.locals.sd?.CURRENT_USER = req.user.toJSON()
+  next()
 
 #
 # Setup passport.

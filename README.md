@@ -1,6 +1,6 @@
 # Artsy Passport
 
-Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
+Wires up the common auth handlers for Artsy's [ezel](http://ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
 ## Setup
 
@@ -75,7 +75,6 @@ form( action='/users/invitation/accept', method='POST' )
 { loginPath, signupPath, twitterCallbackPath,
   facebookCallbackPath } = artsyPassport.options
 
-# Artsy passport route handlers
 app.post loginPath, (req, res) ->
   res.redirect '/'
 app.post signupPath, (req, res) ->

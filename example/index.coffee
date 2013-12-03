@@ -10,12 +10,10 @@ backboneSuperSync = require 'backbone-super-sync'
 # CurrentUser class
 class CurrentUser extends Backbone.Model
   url: -> "#{config.SECURE_URL}/api/v1/me"
-  # Add the access token to fetches and saves
   sync: (method, model, options = {}) ->
     options.data ?= {}
     options.data.access_token = @get 'accessToken'
     super
-  beep: -> 'boop'
 
 # Generic setup
 Backbone.sync = backboneSuperSync
@@ -31,7 +29,6 @@ app.use require('artsy-xapp-middleware')
   artsyUrl: config.SECURE_URL
   clientId: config.ARTSY_ID
   clientSecret: config.ARTSY_SECRET
-  sharifyData: sharify.data
 
 # Setup Artsy Passport
 app.use artsyPassport _.extend config,
