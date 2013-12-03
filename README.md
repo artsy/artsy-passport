@@ -2,17 +2,7 @@
 
 Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
-## Features
-
-* Authenticates with Facebook and Twitter
-* Fetches the current user and caches their JSON data in the session
-* Serializes `req.user` into a backbone model populated by the cached user JSON
-* Provides endpoints to ajax POST for signup and login
-* Bootstraps the current user as `sd.CURRENT_USER` in [sharify](https://github.com/artsy/sharify) data
-* Signup routes that create the user and log them in to `req.user`
-* Redirects to / after Twitter/Facebook login
-
-## Example
+## Setup
 
 #### Make sure you're using session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
 
