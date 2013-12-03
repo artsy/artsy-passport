@@ -45,6 +45,7 @@ addLocals = (req, res, next) ->
   if req.user
     res.locals.user = req.user
     res.locals.sd?.CURRENT_USER = req.user.toJSON()
+  res.locals.artsyPassport = res.locals.sd?.ARTSY_PASSPORT = opts
   next()
 
 socialAuth = (provider) ->

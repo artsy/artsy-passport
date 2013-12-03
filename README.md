@@ -14,13 +14,18 @@ Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps usin
 
 ## Example
 
-Make sure you're using a session, body parser,and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware. Then mount artsyPassport passing a big configuration hash like so below (the values indicate defaults).
+### Make sure you're using session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
 
 ````coffeescript
 app.use require('artsy-xapp-middlware') { #... }
 app.use express.bodyParser()
 app.use express.cookieParser('foobar')
 app.use express.cookieSession()
+````
+
+### Then mount artsyPassport passing a big configuration hash like so below (the values indicate defaults).
+
+````coffeescript
 app.use artsyPassport
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
@@ -48,36 +53,32 @@ app.use artsyPassport _.extend config,
   sharifyData: sharify.data
 ````
 
-Point your view forms to the proper paths:
+### Conveniently access your artsyPassport paths through the `artsyPassport` view local and `ARTSY_PASSPORT` sharify data to populate your forms.
 
 ````jade
 h1 Login
-a( href='/users/auth/facebook' ) Login via Facebook
-a( href='/users/auth/twitter' ) Login via Twitter
-form( action='/users/sign_in', method='POST' )
-  h1 Login via Email
-  input( name='email' )
-  input( name='password' )
+a( href=artsyPassport.facebookPath ) Login via Facebook
+br
+a( href=artsyPassport.twitterPath ) Login via Twitter
+form( action=artsyPassport.loginPath, method='POST' )
+  h3 Login via Email
+  mixin email-password
   button( type='submit' ) Login
 
 h1 Signup
-a( href='/users/auth/facebook?sign_up=true' ) Login via Facebook
-a( href='/users/auth/twitter?sign_up=true' ) Login via Twitter
-form( action='/users/invitation/accept', method='POST' )
-  h1 Signup
-  input( name='name' )
-  input( name='email' )
-  input( name='password' )
-  button( type='submit' ) Login
+a( href=artsyPassport.facebookPath + '?sign_up=true' ) Login via Facebook
+br
+a( href=artsyPassport.twitterPath + '?sign_up=true' ) Login via Twitter
+form( action=artsyPassport.signupPath, method='POST' )
+  h3 Signup via Email
+  input( name='name', placeholder='Name...' )
+  mixin email-password
+  button( type='submit' ) Signup
 ````
 
-Handle the request after logging in or signing up.
+### Handle the log in and sign up callbacks.
 
 ````coffeescript
-# Setup Artsy Passport
-app.use artsyPassport _.extend config,
-  CurrentUser: CurrentUser
-  sharifyData: sharify.data
 { loginPath, signupPath, twitterCallbackPath, facebookCallbackPath } = artsyPassport.options
 
 # Artsy passport route handlers
@@ -91,7 +92,7 @@ app.get facebookCallbackPath, (req, res) ->
   if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
 ````
 
-Now access your Artsy user in a variety of ways...
+### Access a logged in Artsy user in a variety of ways...
 
 In your server-side templates
 
