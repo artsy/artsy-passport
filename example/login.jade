@@ -1,3 +1,7 @@
+mixin email-password
+  input( name='email', placeholder='Email...', type='email' )
+  input( name='password', placeholder='Password...', type='password' )
+
 doctype 5
 html(lang="en")
   head
@@ -9,8 +13,7 @@ html(lang="en")
     a( href='/users/auth/twitter' ) Login via Twitter
     form( action='/users/sign_in', method='POST' )
       h3 Login via Email
-      input( name='email' )
-      input( name='password' )
+      mixin email-password
       button( type='submit' ) Login
     hr
     h1 Signup
@@ -19,6 +22,6 @@ html(lang="en")
     a( href='/users/auth/twitter?sign_up=true' ) Login via Twitter
     form( action='/users/invitation/accept', method='POST' )
       h3 Signup via Email
-      input( name='email' )
-      input( name='password' )
+      input( name='name', placeholder='Name...' )
+      mixin email-password
       button( type='submit' ) Signup

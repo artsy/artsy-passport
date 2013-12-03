@@ -25,16 +25,20 @@
     "passport-twitter": "*",
     "passport-local": "*",
     "superagent": "*",
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "express": "*"
 	},
   "devDependencies": {
     "mocha": "*",
     "should": "*",
     "sinon": "*",
-    "express": "*",
     "jade": "*",
     "underscore": "*",
     "backbone": "*",
-    "sharify": "*"
+    "sharify": "*",
+    "backbone-super-sync": "*",
+    "browserify": "*",
+    "coffeeify": "*",
+    "artsy-xapp-middleware": "*"
   }
 }

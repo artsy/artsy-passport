@@ -14,9 +14,13 @@ Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps usin
 
 ## Example
 
-Mount middlware passing a big configuration hash like so below (the values indicate defaults).
+Make sure you're using a session, body parser,and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware. Then mount artsyPassport passing a big configuration hash like so below (the values indicate defaults).
 
 ````coffeescript
+app.use require('artsy-xapp-middlware') { #... }
+app.use express.bodyParser()
+app.use express.cookieParser('foobar')
+app.use express.cookieSession()
 app.use artsyPassport
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
@@ -30,21 +34,21 @@ app.use artsyPassport
   twitterPath: '/users/auth/twitter' # Url to point your twitter button to
   loginPath: '/users/sign_in' # POST `email` and `password` to this path to login
   signupPath: '/users/invitation/accept' # POST `email` and `password` to this path to signup
-  twitterCallback: '/auth/twitter/callback' # After twitter auth callback url
-  facebookCallback: '/auth/facebook/callback' # After facebook auth callback url
-  currentUserModel: # Backbone Model class to serialize the user into e.g. `CurrentUser`
+  twitterCallbackPath: '/auth/twitter/callback' # After twitter auth callback url
+  facebookCallbackPath: '/auth/facebook/callback' # After facebook auth callback url
+  CurrentUser: # Backbone Model class to serialize the user into e.g. `CurrentUser`
   sharifyData: # Pass in your app's sharify data e.g. `require('sharify').data`
 ````
 
 The keys are cased so it's convenient to pass in a configuration hash. A minimal setup could look like this:
 
 ````coffeescript
-app.use artsyAuth _.extend config,
-  currentUserModel: CurrentUser
+app.use artsyPassport _.extend config,
+  CurrentUser: CurrentUser
   sharifyData: sharify.data
 ````
 
-Point your view to the proper paths:
+Point your view forms to the proper paths:
 
 ````jade
 h1 Login
@@ -61,6 +65,7 @@ a( href='/users/auth/facebook?sign_up=true' ) Login via Facebook
 a( href='/users/auth/twitter?sign_up=true' ) Login via Twitter
 form( action='/users/invitation/accept', method='POST' )
   h1 Signup
+  input( name='name' )
   input( name='email' )
   input( name='password' )
   button( type='submit' ) Login
@@ -69,13 +74,67 @@ form( action='/users/invitation/accept', method='POST' )
 Handle the request after logging in or signing up.
 
 ````coffeescript
-app.use artsyPassport #...
-app.post '/users/sign_in', (req, res) ->
-  req.redirect '/'
-app.post '/users/invitation/accept', (req, res) ->
-  req.redirect '/personalize'
-app.get '/auth/twitter/callback', (req, res) ->
-  if req.params.sign_up then res.redirect('/personalize') else req.redirect '/'
-app.get '/auth/facebook/callback', (req, res) ->
-  if req.params.sign_up then res.redirect('/personalize') else req.redirect '/'
+# Setup Artsy Passport
+app.use artsyPassport _.extend config,
+  CurrentUser: CurrentUser
+  sharifyData: sharify.data
+{ loginPath, signupPath, twitterCallbackPath, facebookCallbackPath } = artsyPassport.options
+
+# Artsy passport route handlers
+app.post loginPath, (req, res) ->
+  res.redirect '/'
+app.post signupPath, (req, res) ->
+  res.redirect '/personalize'
+app.get twitterCallbackPath, (req, res) ->
+  if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
+app.get facebookCallbackPath, (req, res) ->
+  if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
 ````
+
+Now access your Artsy user in a variety of ways...
+
+In your server-side templates
+
+````jade
+if user
+  h1 Hello #{user.get('name')}
+else
+  a( '/login' ) Log in
+````
+
+In your client-side code
+
+````coffeescript
+CurrentUser = require '../models/current_user.coffee'
+sd = require('sharify').data
+
+new View user: if sd.CURRENT_USER then new CurrentUser(sd.CURRENT_USER) else null
+````
+
+In your routers
+
+````coffeescript
+app.get '/', (req, res) ->
+  if req.user?
+    res.render 'loggedin'
+  else
+    res.render 'login'
+````
+
+## Contributing
+
+First install node modules `npm install`. Then run tests `make test`, or run the example. This is a basic implementation of artsyPassport, to use this you first need to write an example/config.coffee that looks something like this:
+
+````coffeescript
+module.exports =
+  FACEBOOK_ID: ''
+  FACEBOOK_SECRET: ''
+  TWITTER_KEY: ''
+  TWITTER_SECRET: ''
+  ARTSY_ID: ''
+  ARTSY_SECRET: ''
+  SECURE_URL: 'https://staging.artsy.net'
+  APP_URL: 'http://localhost:4000'
+````
+
+Then you can check the example by running `make example` and opening [localhost:4000](http://localhost:4000).
