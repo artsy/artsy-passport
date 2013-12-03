@@ -14,7 +14,7 @@ Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps usin
 
 ## Example
 
-### Make sure you're using session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
+#### Make sure you're using session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
 
 ````coffeescript
 app.use require('artsy-xapp-middlware') { #... }
@@ -23,7 +23,7 @@ app.use express.cookieParser('foobar')
 app.use express.cookieSession()
 ````
 
-### Then mount artsyPassport passing a big configuration hash like so below (the values indicate defaults).
+#### Then mount artsyPassport passing a big configuration hash like so below (the values indicate defaults).
 
 ````coffeescript
 app.use artsyPassport
@@ -53,7 +53,7 @@ app.use artsyPassport _.extend config,
   sharifyData: sharify.data
 ````
 
-### Conveniently access your artsyPassport paths through the `artsyPassport` view local and `ARTSY_PASSPORT` sharify data to populate your forms.
+#### Conveniently access your artsyPassport paths through the `artsyPassport` view local and `ARTSY_PASSPORT` sharify data to populate your forms.
 
 ````jade
 h1 Login
@@ -76,7 +76,7 @@ form( action=artsyPassport.signupPath, method='POST' )
   button( type='submit' ) Signup
 ````
 
-### Handle the log in and sign up callbacks.
+#### Handle the log in and sign up callbacks.
 
 ````coffeescript
 { loginPath, signupPath, twitterCallbackPath, facebookCallbackPath } = artsyPassport.options
@@ -92,7 +92,7 @@ app.get facebookCallbackPath, (req, res) ->
   if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
 ````
 
-### Access a logged in Artsy user in a variety of ways...
+#### Access a logged in Artsy user in a variety of ways...
 
 In your server-side templates
 
