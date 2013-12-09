@@ -31,8 +31,8 @@ app.use artsyPassport
   twitterPath: '/users/auth/twitter' # Url to point your twitter button to
   loginPath: '/users/sign_in' # POST `email` and `password` to this path to login
   signupPath: '/users/invitation/accept' # POST `email` and `password` to this path to signup
-  twitterCallbackPath: '/auth/twitter/callback' # After twitter auth callback url
-  facebookCallbackPath: '/auth/facebook/callback' # After facebook auth callback url
+  twitterCallbackPath: '/users/auth/twitter/callback' # After twitter auth callback url
+  facebookCallbackPath: '/users/auth/facebook/callback' # After facebook auth callback url
   CurrentUser: # Backbone Model class to serialize the user into e.g. `CurrentUser`
   sharifyData: # Pass in your app's sharify data e.g. `require('sharify').data`
 ````
@@ -113,7 +113,7 @@ _These forms of user will be null if they're not logged in._
 
 ## Contributing
 
-First install node modules `npm install`. Then run tests `make test`, or run the example. The example is a basic implementation of Artsy Passport, to use this you first need to write an example/config.coffee that looks something like this:
+First install node modules `npm install` then write a ./config.coffee that looks something like this:
 
 ````coffeescript
 module.exports =
@@ -124,7 +124,14 @@ module.exports =
   ARTSY_ID: ''
   ARTSY_SECRET: ''
   SECURE_URL: 'https://staging.artsy.net'
-  APP_URL: 'http://localhost:4000'
+  APP_URL: 'http://local.artsy.net:3000'
+  # An Artsy user that's linked to facebook and twitter
+  ARTSY_EMAIL: 'craig@artsy.net'
+  ARTSY_PASSWORD: '***'
+  TWITTER_EMAIL: 'craig@artsy.net'
+  TWITTER_PASSWORD: '***'
+  FACEBOOK_EMAIL: 'craig@artsy.net'
+  FACEBOOK_PASSWORD: '***'
 ````
 
-Then you can check the example by running `make example` and opening [localhost:4000](http://localhost:4000).
+Then you can check the example by running `make example` and opening [localhost:4000](http://localhost:4000). The tests are integration tests that use the example, so once you set this up run `make test` to run tests.

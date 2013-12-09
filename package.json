@@ -39,6 +39,7 @@
     "backbone-super-sync": "*",
     "browserify": "*",
     "coffeeify": "*",
-    "artsy-xapp-middleware": "*"
+    "artsy-xapp-middleware": "*",
+    "zombie": "*"
   }
 }

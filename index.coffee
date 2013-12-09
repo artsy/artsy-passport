@@ -18,8 +18,8 @@ opts =
   twitterPath: '/users/auth/twitter'
   loginPath: '/users/sign_in'
   signupPath: '/users/invitation/accept'
-  twitterCallbackPath: '/auth/twitter/callback'
-  facebookCallbackPath: '/auth/facebook/callback'
+  twitterCallbackPath: '/users/auth/twitter/callback'
+  facebookCallbackPath: '/users/auth/facebook/callback'
 
 #
 # Main function that overrides/injects any options, sets up passport, sets up an app to
@@ -40,7 +40,7 @@ initApp = ->
   app.use passport.initialize()
   app.use passport.session()
   app.post opts.loginPath, passport.authenticate('local')
-  app.post opts.signupPath, singnup, passport.authenticate('local')
+  app.post opts.signupPath, signup, passport.authenticate('local')
   app.get opts.twitterPath, socialAuth('twitter')
   app.get opts.facebookPath, socialAuth('facebook')
   app.get opts.twitterCallbackPath, socialSignup('twitter'), socialAuth('twitter')
@@ -53,10 +53,10 @@ socialAuth = (provider) ->
       callbackURL: "#{opts.APP_URL}#{opts[provider + 'CallbackPath']}?#{qs.stringify req.query}"
     )(req, res, next)
 
+# TODO: https://www.pivotaltracker.com/story/show/62170902
 socialSignup = (provider) ->
   (req, res, next) ->
     return next() unless req.query.sign_up
-    console.log req.query, req.body
     request.post(opts.SECURE_URL + '/api/v1/user').send(
       provider: provider
       oauth_token: req.query.oauth_token
@@ -64,7 +64,7 @@ socialSignup = (provider) ->
       xapp_token: res.locals.artsyXappToken
     ).end onCreateUser(next)
 
-singnup = (req, res, next) ->
+signup = (req, res, next) ->
   request.post(opts.SECURE_URL + '/api/v1/user').send(
     name: req.body.name
     email: req.body.email
@@ -74,7 +74,6 @@ singnup = (req, res, next) ->
 
 onCreateUser = (next) ->
   (err, res) ->
-    console.log 'RES', err, res.body, res.status
     if res.status isnt 201
       errMsg = res.body.message
     else

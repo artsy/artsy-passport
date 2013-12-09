@@ -1,13 +1,15 @@
 BIN = node_modules/.bin
 
-test:
-	$(BIN)/mocha test/test.js -r should
+test: compile
+	$(BIN)/mocha
 
 cli:
 	node test/cli.js
 
-example:
+compile:
 	$(BIN)/browserify -t coffeeify example/client.coffee > example/public/client.js
+
+example: compile
 	$(BIN)/coffee example/index.coffee
 
 .PHONY: test example

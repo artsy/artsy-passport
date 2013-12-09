@@ -3,7 +3,7 @@ artsyPassport = require '../'
 Backbone = require 'backbone'
 sharify = require 'sharify'
 fs = require 'fs'
-config = require './config.coffee'
+config = require '../config.coffee'
 _ = require 'underscore'
 backboneSuperSync = require 'backbone-super-sync'
 
@@ -15,9 +15,10 @@ class CurrentUser extends Backbone.Model
     options.data.access_token = @get 'accessToken'
     super
 
+app = module.exports = express()
+
 # Generic setup
 Backbone.sync = backboneSuperSync
-app = module.exports = express()
 app.set 'views', __dirname
 app.set 'view engine', 'jade'
 app.use express.bodyParser()
@@ -56,4 +57,5 @@ app.get '/logout', (req, res) ->
   req.logout()
   res.redirect '/'
 
+return unless module is require.main
 app.listen 3000, -> console.log "Example listening on 3000"
