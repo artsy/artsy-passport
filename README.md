@@ -4,7 +4,7 @@ Wires up the common auth handlers for Artsy's [ezel](http://ezeljs.com)-based ap
 
 ## Setup
 
-#### Make sure you're using session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
+#### Make sure you first mount session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
 
 ````coffeescript
 app.use require('artsy-xapp-middlware') { #... }
@@ -34,7 +34,6 @@ app.use artsyPassport
   twitterCallbackPath: '/users/auth/twitter/callback' # After twitter auth callback url
   facebookCallbackPath: '/users/auth/facebook/callback' # After facebook auth callback url
   CurrentUser: # Backbone Model class to serialize the user into e.g. `CurrentUser`
-  sharifyData: # Pass in your app's sharify data e.g. `require('sharify').data`
 ````
 
 The keys are cased so it's convenient to pass in a configuration hash. A minimal setup could look like this:
@@ -42,7 +41,6 @@ The keys are cased so it's convenient to pass in a configuration hash. A minimal
 ````coffeescript
 app.use artsyPassport _.extend config,
   CurrentUser: CurrentUser
-  sharifyData: sharify.data
 ````
 
 #### Create login and signup forms pointing to your paths.
