@@ -68,7 +68,7 @@ socialAuth = (provider) ->
 
 # We have to hack around passport by capturing a custom error message that indicates we've
 # created a user in one of passport's social callbacks. If we catch that error then we'll
-# attempt to redirect back to log in and strip out the invalid Facebook/Twitter credentials.
+# attempt to redirect back to login and strip out the expired Facebook/Twitter credentials.
 socialSignup = (provider) ->
   (err, req, res, next) ->
     return next(err) unless err is 'artsy-passport: created user from social'
@@ -167,8 +167,8 @@ accessTokenCallback = (done, params) ->
 
     # Create a user from the response, or throw any internal errors or error sent
     # from the API.
-    err = (err or res?.body.error_description or res?.body.error)
-    unless err?.match('no account linked')
+    err = (err?.toString() or res?.body.error_description or res?.body.error)
+    unless err?.match?('no account linked')
       done(err, new opts.CurrentUser(accessToken: res?.body.access_token))
       return
 
