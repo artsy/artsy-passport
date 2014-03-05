@@ -177,7 +177,7 @@ accessTokenCallback = (done, params) ->
     err = (err?.toString() or res?.body.error_description or res?.body.error)
 
     # Error if we do not have an access token
-    unless err or res?.body.access_token
+    if not err or not res?.body.access_token
       err = "Unable to authenticate you"
 
     # Success
