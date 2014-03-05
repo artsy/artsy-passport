@@ -1,46 +1,46 @@
 {
-  "name": "artsy-passport",
-  "version": "0.1.3",
-  "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
-  "keywords": [
-    "artsy",
-    "passport",
-    "auth",
-    "authentication"
-  ],
-  "author": {
-    "name": "Craig Spaeth",
-    "email": "craigspaeth@gmail.com",
-    "url": "http://craigspaeth.com"
-  },
-  "engines": {
-    "node": ">= 0.10.x"
-  },
-  "scripts": {
-  	"test": "make test"
-	},
-	"dependencies": {
-    "passport": "*",
-    "passport-facebook": "*",
-    "passport-twitter": "*",
-    "passport-local": "*",
-    "superagent": "*",
-    "coffee-script": "*",
-    "express": "*"
-	},
-  "devDependencies": {
-    "mocha": "*",
-    "should": "*",
-    "sinon": "*",
-    "jade": "*",
-    "underscore": "*",
-    "backbone": "*",
-    "sharify": "*",
-    "backbone-super-sync": "*",
-    "browserify": "*",
-    "coffeeify": "*",
-    "artsy-xapp-middleware": "*",
-    "zombie": "*",
-    "rewire": "*"
-  }
+    "name": "artsy-passport",
+    "version": "0.1.3",
+    "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
+    "keywords": [
+        "artsy",
+        "passport",
+        "auth",
+        "authentication"
+    ],
+    "author": {
+        "name": "Craig Spaeth",
+        "email": "craigspaeth@gmail.com",
+        "url": "http://craigspaeth.com"
+    },
+    "engines": {
+        "node": ">= 0.10.x"
+    },
+    "scripts": {
+        "test": "make test"
+    },
+    "dependencies": {
+        "passport": "*",
+        "passport-facebook": "*",
+        "passport-twitter": "*",
+        "passport-local": "*",
+        "superagent": "*",
+        "coffee-script": "*",
+        "express": "3.4.7"
+    },
+    "devDependencies": {
+        "mocha": "*",
+        "should": "*",
+        "sinon": "*",
+        "jade": "*",
+        "underscore": "*",
+        "backbone": "*",
+        "sharify": "*",
+        "backbone-super-sync": "*",
+        "browserify": "*",
+        "coffeeify": "*",
+        "artsy-xapp-middleware": "*",
+        "zombie": "*",
+        "rewire": "*"
+    }
 }
