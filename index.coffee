@@ -67,7 +67,7 @@ localAuth = (req, res, next) ->
 
 socialAuth = (provider) ->
   (req, res, next) ->
-    return next(new Error "#{provider} denied") if req.query.denied
+    return next("#{provider} denied") if req.query.denied
     artsyXappToken = res.locals.artsyXappToken if res.locals.artsyXappToken
     passport.authenticate(provider,
       callbackURL: "#{opts.APP_URL}#{opts[provider + 'CallbackPath']}?#{qs.stringify req.query}"
