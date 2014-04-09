@@ -64,7 +64,7 @@ form( action='/users/sign_in', method='POST' )
   input( name='email' )
   input( name='password' )
   button( type='submit' ) Signup
-
+````
 
 #### And maybe a signup form...
 
