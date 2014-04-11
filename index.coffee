@@ -59,6 +59,8 @@ initApp = ->
   app.get opts.facebookCallbackPath, socialAuth('facebook'), socialSignup('facebook')
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
   app.post opts.twitterLastStepPath, submitTwitterLastStep
+  app.get opts.twitterLinkPath, linkSocialAccount('twitter')
+  app.get opts.facebookLinkPath, linkSocialAccount('twitter')
   app.use addLocals
 
 localAuth = (req, res, next) ->
@@ -122,7 +124,7 @@ loginBeforeTwitterLastStep = (req, res, next) ->
 
 submitTwitterLastStep = (req, res, next) ->
   return next "No user" unless req.user
-  return next() unless req.param('email')?
+  return next "No email provided" unless req.param('email')?
   request.put("#{opts.SECURE_ARTSY_URL}/api/v1/me").send(
     email: req.param('email')
     email_confirmation: req.param('email')
@@ -131,7 +133,14 @@ submitTwitterLastStep = (req, res, next) ->
     err = r.error or r.body?.error_description or r.body?.error
     err = null if r.text.match 'Error from MailChimp API'
     return next err if err
-    res.redirect req.param('redirect-to')
+    # To work around an API caching bug we send another empty PUT
+    request.put("#{opts.SECURE_ARTSY_URL}/api/v1/me").send(
+      access_token: req.user.get('accessToken')
+    ).end ->
+      err = r.error or r.body?.error_description or r.body?.error
+      err = null if r.text.match 'Error from MailChimp API'
+      return next err if err
+      res.redirect req.param('redirect-to')
 
 #
 # Setup passport.
