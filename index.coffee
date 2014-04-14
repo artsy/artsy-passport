@@ -59,8 +59,6 @@ initApp = ->
   app.get opts.facebookCallbackPath, socialAuth('facebook'), socialSignup('facebook')
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
   app.post opts.twitterLastStepPath, submitTwitterLastStep
-  app.get opts.twitterLinkPath, linkSocialAccount('twitter')
-  app.get opts.facebookLinkPath, linkSocialAccount('twitter')
   app.use addLocals
 
 localAuth = (req, res, next) ->
@@ -153,11 +151,13 @@ initPassport = ->
     clientID: opts.FACEBOOK_ID
     clientSecret: opts.FACEBOOK_SECRET
     callbackURL: "#{opts.APP_URL}#{opts.facebookCallbackPath}"
+    passReqToCallback: true
   , facebookCallback
   passport.use new TwitterStrategy
     consumerKey: opts.TWITTER_KEY
     consumerSecret: opts.TWITTER_SECRET
     callbackURL: "#{opts.APP_URL}#{opts.twitterCallbackPath}"
+    passReqToCallback: true
   , twitterCallback
 
 #
@@ -172,34 +172,49 @@ artsyCallback = (username, password, done) ->
     password: password
   ).end accessTokenCallback(done)
 
-facebookCallback = (accessToken, refreshToken, profile, done) ->
-  request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
-    client_id: opts.ARTSY_ID
-    client_secret: opts.ARTSY_SECRET
-    grant_type: 'oauth_token'
-    oauth_token: accessToken
-    oauth_provider: 'facebook'
-  ).end accessTokenCallback(done,
-    oauth_token: accessToken
-    provider: 'facebook'
-    name: profile?.displayName
-  )
+facebookCallback = (req, accessToken, refreshToken, profile, done) ->
+  if req.user
+    request.post("#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/facebook").query(
+      oauth_token: accessToken
+      access_token: req.user.get 'accessToken'
+    ).end (res) ->
+      done res.error, req.user
+  else
+    request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
+      client_id: opts.ARTSY_ID
+      client_secret: opts.ARTSY_SECRET
+      grant_type: 'oauth_token'
+      oauth_token: accessToken
+      oauth_provider: 'facebook'
+    ).end accessTokenCallback(done,
+      oauth_token: accessToken
+      provider: 'facebook'
+      name: profile?.displayName
+    )
 
-twitterCallback = (token, tokenSecret, profile, done) ->
-  request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
-    client_id: opts.ARTSY_ID
-    client_secret: opts.ARTSY_SECRET
-    grant_type: 'oauth_token'
-    oauth_token: token
-    oauth_token_secret: tokenSecret
-    oauth_provider: 'twitter'
-  ).end accessTokenCallback(done,
-    oauth_token: token
-    oauth_token_secret: tokenSecret
-    provider: 'twitter'
-    email: opts.twitterSignupTempEmail(token, tokenSecret, profile)
-    name: profile?.displayName
-  )
+twitterCallback = (req, token, tokenSecret, profile, done) ->
+  if req.user
+    request.post("#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/twitter").query(
+      oauth_token: token
+      oauth_token_secret: tokenSecret
+      access_token: req.user.get 'accessToken'
+    ).end (res) ->
+      done res.error, req.user
+  else
+    request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
+      client_id: opts.ARTSY_ID
+      client_secret: opts.ARTSY_SECRET
+      grant_type: 'oauth_token'
+      oauth_token: token
+      oauth_token_secret: tokenSecret
+      oauth_provider: 'twitter'
+    ).end accessTokenCallback(done,
+      oauth_token: token
+      oauth_token_secret: tokenSecret
+      provider: 'twitter'
+      email: opts.twitterSignupTempEmail(token, tokenSecret, profile)
+      name: profile?.displayName
+    )
 
 accessTokenCallback = (done, params) ->
   return (e, res) ->
