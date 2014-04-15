@@ -51,7 +51,7 @@ module.exports.app = app = express()
 initApp = ->
   app.use passport.initialize()
   app.use passport.session()
-  app.post opts.loginPath, localAuth
+  app.post opts.loginPath, localAuth, afterLocalAuth
   app.post opts.signupPath, signup, passport.authenticate('local')
   app.get opts.twitterPath, socialAuth('twitter')
   app.get opts.facebookPath, socialAuth('facebook')
@@ -67,6 +67,16 @@ localAuth = (req, res, next) ->
 
     res.authError = info; next()
   )(req, res, next)
+
+afterLocalAuth = (req, res ,next) ->
+  if res.authError
+    res.send 403, { success: false, error: res.authError }
+  else if req.accepts('application/json') and req.user?
+    res.send { success: true, user: req.user.toJSON() }
+  else if req.accepts('application/json') and not req.user?
+    res.send { success: false, error: "Missing user." }
+  else
+    next()
 
 socialAuth = (provider) ->
   (req, res, next) ->
