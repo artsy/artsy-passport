@@ -25,10 +25,10 @@
         "passport-twitter": "*",
         "passport-local": "*",
         "superagent": "*",
+        "express": "*",
         "coffee-script": "*"
     },
     "devDependencies": {
-        "express": "*",
         "body-parser": "*",
         "cookie-parser": "*",
         "cookie-session": "*",

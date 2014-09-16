@@ -106,7 +106,7 @@ describe 'Artsy Passport methods', ->
 
       it 'passes a custom error for our socialSignup callback to redirect to login', ->
         @end null, body: { name: 'Craig' }
-        @done.args[0][0].should.equal 'artsy-passport: created user from social'
+        @done.args[0][0].message.should.equal 'artsy-passport: created user from social'
 
   describe '#socialSignup', ->
 
@@ -127,13 +127,13 @@ describe 'Artsy Passport methods', ->
       @req.query.code = 'foo'
       @req.query.oauth_token = 'bar'
       @req.query.oauth_verifier = 'baz'
-      @socialSignup('twitter')('artsy-passport: created user from social', @req, @res, @next)
+      @socialSignup('twitter')({message: 'artsy-passport: created user from social'}, @req, @res, @next)
       @res.redirect.args[0][0].should.not.containEql 'foo'
       @res.redirect.args[0][0].should.not.containEql 'bar'
       @res.redirect.args[0][0].should.not.containEql 'baz'
 
     it 'redirects to log in', ->
-      @socialSignup('twitter')('artsy-passport: created user from social', @req, @res, @next)
+      @socialSignup('twitter')({message: 'artsy-passport: created user from social'}, @req, @res, @next)
       @res.redirect.args[0][0].should.containEql '/users/auth/twitter'
 
   describe '#submitTwitterLastStep', ->
@@ -164,7 +164,7 @@ describe 'Artsy Passport methods', ->
     beforeEach ->
       opts = @artsyPassport.__get__ 'opts'
       @afterLocalAuth = @artsyPassport.__get__ 'afterLocalAuth'
-      @req = { query: {}, user: { get: -> 'access-foo-token' } }
+      @req = { query: {}, user: { get: -> 'access-foo-token' }, xhr: {} }
       @res = { send: sinon.stub() }
       @next = sinon.stub()
 
