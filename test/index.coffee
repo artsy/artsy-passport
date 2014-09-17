@@ -207,6 +207,7 @@ describe 'Artsy Passport methods', ->
       @logoutSpy.called.should.be.true
       @del.args[0][0].should.containEql '/api/v1/access_token'
       @send.args[0][0].should.eql access_token: 'secret'
+      (@req.user?).should.not.be.ok
       @next.called.should.be.true
 
     it 'still works if there is no access token', ->
