@@ -156,4 +156,4 @@ module.exports =
   FACEBOOK_PASSWORD: '***'
 ````
 
-Then you can check the example by running `make example` and opening [localhost:4000](http://localhost:3000). The tests are integration tests that use the example, so once you set this up run `make test` to run tests.
+Then you can check the example by running `make example` and opening [localhost:3000](http://localhost:3000). The tests are integration tests that use the example, so once you set this up run `make test` to run tests.
