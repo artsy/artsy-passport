@@ -197,6 +197,11 @@ describe 'Artsy Passport methods', ->
       @headerLogin @req, @res, @next
       @req.login.args[0][0].get('accessToken').should.equal 'access-foo-token'
 
+    it 'does not log in a user on sign out', ->
+      @req.path = '/users/sign_out'
+      @headerLogin @req, @res, @next
+      @next.called.should.equal true
+
   describe '#logout', ->
     beforeEach ->
       @send = sinon.stub().returns(end: (cb) -> cb())
