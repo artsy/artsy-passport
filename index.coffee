@@ -63,7 +63,7 @@ initApp = ->
   app.get opts.twitterCallbackPath, socialAuth('twitter'), socialSignup('twitter')
   app.get opts.facebookCallbackPath, socialAuth('facebook'), socialSignup('facebook')
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
-  app.get opts.logoutPath, logout
+  app.delete opts.logoutPath, logout
   app.post opts.twitterLastStepPath, submitTwitterLastStep
   app.use headerLogin
   app.use addLocals

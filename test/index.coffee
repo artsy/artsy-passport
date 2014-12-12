@@ -11,7 +11,7 @@ describe 'Artsy Passport integration', ->
   before (done) ->
     app.listen 5000, done
 
-  it 'can log in with email and password', (done) ->
+  it 'can log in and log out with email and password', (done) ->
     Browser.visit 'http://localhost:5000', (e, browser) ->
       browser
         .fill('email', ARTSY_EMAIL)
@@ -19,7 +19,11 @@ describe 'Artsy Passport integration', ->
         .pressButton "Login", ->
           browser.html().should.containEql '<h1>Hello'
           browser.html().should.containEql ARTSY_EMAIL
-          done()
+          browser
+            .clickLink "Logout", ->
+              browser.reload ->
+                browser.html().should.containEql '<h1>Login'
+                done()
 
   it 'can log in with facebook', (done) ->
     Browser.visit 'http://localhost:5000', (e, browser) ->
