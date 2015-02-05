@@ -67,10 +67,10 @@ initApp = ->
   app.post opts.twitterLastStepPath, submitTwitterLastStep
   app.use headerLogin
   app.use addLocals
-  app.get '*', ensureEmailFromTwitterSignup
+  app.get '/', ensureEmailFromTwitterSignup
 
 ensureEmailFromTwitterSignup = (req, res, next) ->
-  return next() if not req.user? or req.url is opts.twitterLastStepPath
+  return next() unless req.user?
   tmpSuffix = _.last(opts.twitterSignupTempEmail('').split('@'))
   if req.user.get('email').match tmpSuffix
     res.redirect opts.twitterLastStepPath
