@@ -1,6 +1,6 @@
 {
   "name": "artsy-passport",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "dependencies": {
     "coffee-script": {
       "version": "1.8.0",
@@ -9,7 +9,8 @@
       "dependencies": {
         "mkdirp": {
           "version": "0.3.5",
-          "from": "mkdirp@0.3.5"
+          "from": "mkdirp@0.3.5",
+          "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.5.tgz"
         }
       }
     },
@@ -213,14 +214,19 @@
         }
       }
     },
+    "node-uuid": {
+      "version": "1.4.3",
+      "from": "node-uuid@^1.4.3",
+      "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.3.tgz"
+    },
     "passport": {
       "version": "0.2.1",
-      "from": "passport@0.2.1",
+      "from": "https://registry.npmjs.org/passport/-/passport-0.2.1.tgz",
       "resolved": "https://registry.npmjs.org/passport/-/passport-0.2.1.tgz",
       "dependencies": {
         "passport-strategy": {
           "version": "1.0.0",
-          "from": "passport-strategy@1.0.0",
+          "from": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz",
           "resolved": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
         },
         "pause": {
@@ -232,27 +238,27 @@
     },
     "passport-facebook": {
       "version": "1.0.3",
-      "from": "passport-facebook@1.0.3",
+      "from": "https://registry.npmjs.org/passport-facebook/-/passport-facebook-1.0.3.tgz",
       "resolved": "https://registry.npmjs.org/passport-facebook/-/passport-facebook-1.0.3.tgz",
       "dependencies": {
         "passport-oauth2": {
           "version": "1.1.2",
-          "from": "passport-oauth2@1.1.2",
+          "from": "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.1.2.tgz",
           "resolved": "https://registry.npmjs.org/passport-oauth2/-/passport-oauth2-1.1.2.tgz",
           "dependencies": {
             "passport-strategy": {
               "version": "1.0.0",
-              "from": "passport-strategy@1.0.0",
+              "from": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz",
               "resolved": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
             },
             "oauth": {
               "version": "0.9.12",
-              "from": "oauth@0.9.12",
+              "from": "https://registry.npmjs.org/oauth/-/oauth-0.9.12.tgz",
               "resolved": "https://registry.npmjs.org/oauth/-/oauth-0.9.12.tgz"
             },
             "uid2": {
               "version": "0.0.3",
-              "from": "uid2@0.0.3",
+              "from": "https://registry.npmjs.org/uid2/-/uid2-0.0.3.tgz",
               "resolved": "https://registry.npmjs.org/uid2/-/uid2-0.0.3.tgz"
             }
           }
@@ -261,34 +267,34 @@
     },
     "passport-local": {
       "version": "1.0.0",
-      "from": "passport-local@1.0.0",
+      "from": "https://registry.npmjs.org/passport-local/-/passport-local-1.0.0.tgz",
       "resolved": "https://registry.npmjs.org/passport-local/-/passport-local-1.0.0.tgz",
       "dependencies": {
         "passport-strategy": {
           "version": "1.0.0",
-          "from": "passport-strategy@1.0.0",
+          "from": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz",
           "resolved": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
         }
       }
     },
     "passport-twitter": {
       "version": "1.0.2",
-      "from": "passport-twitter@1.0.2",
+      "from": "https://registry.npmjs.org/passport-twitter/-/passport-twitter-1.0.2.tgz",
       "resolved": "https://registry.npmjs.org/passport-twitter/-/passport-twitter-1.0.2.tgz",
       "dependencies": {
         "passport-oauth1": {
           "version": "1.0.1",
-          "from": "passport-oauth1@1.0.1",
+          "from": "https://registry.npmjs.org/passport-oauth1/-/passport-oauth1-1.0.1.tgz",
           "resolved": "https://registry.npmjs.org/passport-oauth1/-/passport-oauth1-1.0.1.tgz",
           "dependencies": {
             "passport-strategy": {
               "version": "1.0.0",
-              "from": "passport-strategy@1.0.0",
+              "from": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz",
               "resolved": "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
             },
             "oauth": {
               "version": "0.9.12",
-              "from": "oauth@0.9.12",
+              "from": "https://registry.npmjs.org/oauth/-/oauth-0.9.12.tgz",
               "resolved": "https://registry.npmjs.org/oauth/-/oauth-0.9.12.tgz"
             },
             "utils-merge": {
@@ -300,12 +306,12 @@
         },
         "xtraverse": {
           "version": "0.1.0",
-          "from": "xtraverse@0.1.0",
+          "from": "https://registry.npmjs.org/xtraverse/-/xtraverse-0.1.0.tgz",
           "resolved": "https://registry.npmjs.org/xtraverse/-/xtraverse-0.1.0.tgz",
           "dependencies": {
             "xmldom": {
               "version": "0.1.19",
-              "from": "xmldom@0.1.19",
+              "from": "https://registry.npmjs.org/xmldom/-/xmldom-0.1.19.tgz",
               "resolved": "https://registry.npmjs.org/xmldom/-/xmldom-0.1.19.tgz"
             }
           }
