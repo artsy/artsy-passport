@@ -12,7 +12,6 @@ TwitterStrategy = require('passport-twitter').Strategy
 LocalStrategy = require('passport-local').Strategy
 qs = require 'querystring'
 crypto = require 'crypto'
-uuid = require 'node-uuid'
 { parse } = require 'url'
 
 # Hoist the XAPP token out of a request and store it at the module level for
@@ -72,6 +71,7 @@ initPassport = ->
     clientSecret: opts.FACEBOOK_SECRET
     callbackURL: "#{opts.APP_URL}#{opts.facebookCallbackPath}"
     passReqToCallback: true
+    state: true
   , facebookCallback
   passport.use new TwitterStrategy
     consumerKey: opts.TWITTER_KEY
@@ -214,12 +214,7 @@ socialAuth = (provider) ->
   (req, res, next) ->
     return next("#{provider} denied") if req.query.denied
     artsyXappToken = res.locals.artsyXappToken if res.locals.artsyXappToken
-    hash = req.session.artsyPassportStateHash = uuid.v1()
-    passport.authenticate(provider,
-      callbackURL: "#{opts.APP_URL}#{opts[provider + 'CallbackPath']}?#{qs.stringify req.query}"
-      scope: 'email'
-      state: hash
-    )(req, res, next)
+    passport.authenticate(provider, scope: 'email')(req, res, next)
 
 # We have to hack around passport by capturing a custom error message that indicates we've
 # created a user in one of passport's social callbacks. If we catch that error then we'll

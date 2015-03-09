@@ -29,7 +29,6 @@
   "dependencies": {
     "coffee-script": "*",
     "express": "*",
-    "node-uuid": "^1.4.3",
     "passport": "*",
     "passport-facebook": "*",
     "passport-local": "*",
