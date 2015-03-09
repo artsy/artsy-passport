@@ -1,55 +1,57 @@
 {
-    "name": "artsy-passport",
-    "version": "0.1.9",
-    "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
-    "keywords": [
-        "artsy",
-        "passport",
-        "auth",
-        "authentication"
-    ],
-    "author": {
-        "name": "Craig Spaeth",
-        "email": "craigspaeth@gmail.com",
-        "url": "http://craigspaeth.com"
-    },
-    "contributors": [{
-        "name": "Brennan Moore",
-        "email": "brennanmoore@gmail.com",
-        "url": "http://brennanmoore.com"
-    }],
-    "engines": {
-        "node": ">= 0.10.x"
-    },
-    "scripts": {
-        "test": "make test"
-    },
-    "dependencies": {
-        "passport": "*",
-        "passport-facebook": "*",
-        "passport-twitter": "*",
-        "passport-local": "*",
-        "superagent": "*",
-        "express": "*",
-        "coffee-script": "*"
-    },
-    "devDependencies": {
-        "body-parser": "*",
-        "cookie-parser": "*",
-        "cookie-session": "*",
-        "morgan": "*",
-        "mocha": "*",
-        "should": "*",
-        "sinon": "*",
-        "jade": "*",
-        "underscore": "*",
-        "backbone": "*",
-        "sharify": "*",
-        "backbone-super-sync": "*",
-        "browserify": "*",
-        "coffeeify": "*",
-        "artsy-xapp-middleware": "*",
-        "zombie": "*",
-        "rewire": "*"
+  "name": "artsy-passport",
+  "version": "0.1.9",
+  "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
+  "keywords": [
+    "artsy",
+    "passport",
+    "auth",
+    "authentication"
+  ],
+  "author": {
+    "name": "Craig Spaeth",
+    "email": "craigspaeth@gmail.com",
+    "url": "http://craigspaeth.com"
+  },
+  "contributors": [
+    {
+      "name": "Brennan Moore",
+      "email": "brennanmoore@gmail.com",
+      "url": "http://brennanmoore.com"
     }
+  ],
+  "engines": {
+    "node": ">= 0.10.x"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "dependencies": {
+    "coffee-script": "*",
+    "express": "*",
+    "passport": "*",
+    "passport-facebook": "*",
+    "passport-local": "*",
+    "passport-twitter": "*",
+    "superagent": "*"
+  },
+  "devDependencies": {
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "cookie-session": "*",
+    "morgan": "*",
+    "mocha": "*",
+    "should": "*",
+    "sinon": "*",
+    "jade": "*",
+    "underscore": "*",
+    "backbone": "*",
+    "sharify": "*",
+    "backbone-super-sync": "*",
+    "browserify": "*",
+    "coffeeify": "*",
+    "artsy-xapp-middleware": "*",
+    "zombie": "*",
+    "rewire": "*"
+  }
 }
