@@ -19,7 +19,7 @@ crypto = require 'crypto'
 # request-level data in the passport callbacks.)
 artsyXappToken = null
 
-# Alias sha1 hasing
+# Alias sha1 hashing
 hash = (str) ->
   crypto.createHash('sha1').update(str).digest('hex').substr(0, 12)
 
@@ -189,7 +189,7 @@ serializeUser = (user, done) ->
     error: (m, e) -> done e.text
 
 deserializeUser = (userData, done) ->
-  done null, new opts.CurrentUser _.extend(userData)
+  done null, new opts.CurrentUser(userData)
 
 #
 # Middleware helpers to control the auth flow specific to Artsy and outside
