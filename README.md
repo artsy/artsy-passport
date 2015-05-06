@@ -26,6 +26,7 @@ app.use artsyPassport
   ARTSY_ID: # Artsy client id
   ARTSY_SECRET: # Artsy client secret
   SECURE_ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
+  XAPP_TOKEN: # Artsy X-APP Token
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
   facebookPath: '/users/auth/facebook' # Url to point your facebook button to
   twitterPath: '/users/auth/twitter' # Url to point your twitter button to
