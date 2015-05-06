@@ -14,11 +14,6 @@ qs = require 'querystring'
 crypto = require 'crypto'
 { parse } = require 'url'
 
-# Hoist the XAPP token out of a request and store it at the module level for
-# the passport callbacks to access. (Seems like there should be a better way to access
-# request-level data in the passport callbacks.)
-artsyXappToken = null
-
 # Alias sha1 hashing
 hash = (str) ->
   crypto.createHash('sha1').update(str).digest('hex')
@@ -160,7 +155,7 @@ accessTokenCallback = (done, params) ->
     # If there's no user linked to this account, create the user via the POST /user API.
     # Then pass a custom error so our signup middleware can catch it, login, and move on.
     if err?.match?('no account linked')
-      params.xapp_token = artsyXappToken
+      params.xapp_token = opts.XAPP_TOKEN
       request
         .post(opts.SECURE_ARTSY_URL + '/api/v1/user')
         .send(params)
@@ -215,7 +210,6 @@ afterLocalAuth = (req, res ,next) ->
 socialAuth = (provider) ->
   (req, res, next) ->
     return next("#{provider} denied") if req.query.denied
-    artsyXappToken = res.locals.artsyXappToken if res.locals.artsyXappToken
     if req.path is opts.facebookPath and req.user and
        req.query.state isnt hash(req.user.get 'accessToken')
       err = new Error("Must pass a `state` query param equal to a sha1 hash" +
@@ -243,7 +237,7 @@ signup = (req, res, next) ->
     name: req.body.name
     email: req.body.email
     password: req.body.password
-    xapp_token: res.locals.artsyXappToken
+    xapp_token: opts.XAPP_TOKEN
   ).end onCreateUser(next)
 
 onCreateUser = (next) ->
