@@ -28,6 +28,7 @@ opts =
   facebookCallbackPath: '/users/auth/facebook/callback'
   twitterLastStepPath: '/users/auth/twitter/email'
   logoutPath: '/users/sign_out'
+  signupRedirect: '/'
   userKeys: ['id', 'type', 'name', 'email', 'phone', 'lab_features',
              'default_profile_id', 'has_partner_access', 'collector_level']
   twitterSignupTempEmail: (token) -> "#{hash(token).substr 0, 12}@artsy.tmp"
@@ -62,7 +63,7 @@ initApp = ->
 initPassport = ->
   passport.serializeUser serializeUser
   passport.deserializeUser deserializeUser
-  passport.use new LocalStrategy { usernameField: 'email' }, artsyCallback
+  passport.use new LocalStrategy { usernameField: 'email', passReqToCallback: true }, artsyCallback
   passport.use new FacebookStrategy
     clientID: opts.FACEBOOK_ID
     clientSecret: opts.FACEBOOK_SECRET
@@ -80,14 +81,14 @@ initPassport = ->
 #
 # Passport callbacks
 #
-artsyCallback = (username, password, done) ->
+artsyCallback = (req, username, password, done) ->
   request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
     client_id: opts.ARTSY_ID
     client_secret: opts.ARTSY_SECRET
     grant_type: 'credentials'
     email: username
     password: password
-  ).end accessTokenCallback(done)
+  ).end accessTokenCallback(req, done)
 
 facebookCallback = (req, token, refreshToken, profile, done) ->
   if req.user
@@ -104,7 +105,7 @@ facebookCallback = (req, token, refreshToken, profile, done) ->
       grant_type: 'oauth_token'
       oauth_token: token
       oauth_provider: 'facebook'
-    ).end accessTokenCallback(done,
+    ).end accessTokenCallback(req, done,
       oauth_token: token
       provider: 'facebook'
       name: profile?.displayName
@@ -127,7 +128,7 @@ twitterCallback = (req, token, tokenSecret, profile, done) ->
       oauth_token: token
       oauth_token_secret: tokenSecret
       oauth_provider: 'twitter'
-    ).end accessTokenCallback(done,
+    ).end accessTokenCallback(req, done,
       oauth_token: token
       oauth_token_secret: tokenSecret
       provider: 'twitter'
@@ -135,7 +136,7 @@ twitterCallback = (req, token, tokenSecret, profile, done) ->
       name: profile?.displayName
     )
 
-accessTokenCallback = (done, params) ->
+accessTokenCallback = (req, done, params) ->
   return (e, res) ->
 
     # Catch the various forms of error Artsy could encounter
@@ -160,6 +161,7 @@ accessTokenCallback = (done, params) ->
         .post(opts.SECURE_ARTSY_URL + '/api/v1/user')
         .send(params)
         .end (err, res) ->
+          req.session.redirectTo = opts.signupRedirect
           err = (err or res?.body.error_description or res?.body.error)
           done err or { message: 'artsy-passport: created user from social', user: res.body }
 
