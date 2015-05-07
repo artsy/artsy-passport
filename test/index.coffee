@@ -98,7 +98,6 @@ describe 'Artsy Passport methods', ->
         end = sinon.stub()
         @done = sinon.stub()
         @request.post.returns send: => end: end
-        console.log 'req', @req
         @accessTokenCallback(@req, @done, { xapp_token: 'foobar' })(
           null,
           { body: error_description: 'no account linked' }
