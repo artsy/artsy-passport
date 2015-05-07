@@ -79,12 +79,13 @@ describe 'Artsy Passport methods', ->
       opts.CurrentUser = ->
       @accessTokenCallback = @artsyPassport.__get__ 'accessTokenCallback'
       @request = @artsyPassport.__get__ 'request'
+      @req = session: {}
 
     it 'is okay if there is no response object', ->
-      @accessTokenCallback(->)({ bad: 'news' }, null)
+      @accessTokenCallback(@req, ->)({ bad: 'news' }, null)
 
     it 'sends error messages in an error object', (done) ->
-      @accessTokenCallback((err) ->
+      @accessTokenCallback(@req, (err) ->
         err.should.containEql 'Epic Fail'
         done()
       )(null, { body: error_description: 'Epic Fail' })
@@ -97,7 +98,7 @@ describe 'Artsy Passport methods', ->
         end = sinon.stub()
         @done = sinon.stub()
         @request.post.returns send: => end: end
-        @accessTokenCallback(@done, { xapp_token: 'foobar' })(
+        @accessTokenCallback(@req, @done, { xapp_token: 'foobar' })(
           null,
           { body: error_description: 'no account linked' }
         )

@@ -161,6 +161,7 @@ accessTokenCallback = (req, done, params) ->
         .post(opts.SECURE_ARTSY_URL + '/api/v1/user')
         .send(params)
         .end (err, res) ->
+          req.session.redirectTo = opts.signupRedirect
           err = (err or res?.body.error_description or res?.body.error)
           done err or { message: 'artsy-passport: created user from social', user: res.body }
 
