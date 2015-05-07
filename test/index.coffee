@@ -75,8 +75,8 @@ describe 'Artsy Passport methods', ->
   describe '#accessTokenCallback', ->
 
     before ->
-      opts = @artsyPassport.__get__ 'opts'
-      opts.CurrentUser = ->
+      @opts = @artsyPassport.__get__ 'opts'
+      @opts.CurrentUser = ->
       @accessTokenCallback = @artsyPassport.__get__ 'accessTokenCallback'
       @request = @artsyPassport.__get__ 'request'
       @req = session: {}
@@ -98,6 +98,7 @@ describe 'Artsy Passport methods', ->
         end = sinon.stub()
         @done = sinon.stub()
         @request.post.returns send: => end: end
+        console.log 'req', @req
         @accessTokenCallback(@req, @done, { xapp_token: 'foobar' })(
           null,
           { body: error_description: 'no account linked' }
@@ -113,6 +114,11 @@ describe 'Artsy Passport methods', ->
       it 'passes a custom error for our socialSignup callback to redirect to login', ->
         @end null, body: { name: 'Craig' }
         @done.args[0][0].message.should.equal 'artsy-passport: created user from social'
+
+      it 'sets the redirectTo session var if a user is created', ->
+        @end null, body: { name: 'Cab' }
+        @req.session.redirectTo.should.equal @opts.signupRedirect
+
 
   describe '#socialSignup', ->
 
