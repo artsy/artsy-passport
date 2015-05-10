@@ -1,6 +1,7 @@
 #
-# Uses [passport.js](http://passportjs.org/) to setup authentication with various
-# providers like direct login with Artsy, or oauth signin with Facebook or Twitter.
+# Uses [passport.js](http://passportjs.org/) to setup authentication with
+# various providers like direct login with Artsy, or oauth signin with Facebook
+# or Twitter.
 #
 
 _ = require 'underscore'
@@ -30,7 +31,7 @@ opts =
   logoutPath: '/users/sign_out'
   signupRedirect: '/'
   userKeys: ['id', 'type', 'name', 'email', 'phone', 'lab_features',
-             'default_profile_id', 'has_partner_access', 'collector_level']
+    'default_profile_id', 'has_partner_access', 'collector_level']
   twitterSignupTempEmail: (token) -> "#{hash(token).substr 0, 12}@artsy.tmp"
 
 #
@@ -48,11 +49,14 @@ initApp = ->
   app.use passport.initialize()
   app.use passport.session()
   app.post opts.loginPath, localAuth, afterLocalAuth
-  app.post opts.signupPath, signup, passport.authenticate('local'), afterLocalAuth
+  app.post opts.signupPath, signup, passport.authenticate('local'),
+    afterLocalAuth
   app.get opts.twitterPath, socialAuth('twitter')
   app.get opts.facebookPath, socialAuth('facebook')
-  app.get opts.twitterCallbackPath, socialAuth('twitter'), socialSignup('twitter')
-  app.get opts.facebookCallbackPath, socialAuth('facebook'), socialSignup('facebook')
+  app.get opts.twitterCallbackPath, socialAuth('twitter'),
+    socialSignup('twitter')
+  app.get opts.facebookCallbackPath, socialAuth('facebook'),
+    socialSignup('facebook')
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
   app.delete opts.logoutPath, logout
   app.post opts.twitterLastStepPath, submitTwitterLastStep
@@ -63,7 +67,10 @@ initApp = ->
 initPassport = ->
   passport.serializeUser serializeUser
   passport.deserializeUser deserializeUser
-  passport.use new LocalStrategy { usernameField: 'email', passReqToCallback: true }, artsyCallback
+  passport.use new LocalStrategy(
+    { usernameField: 'email', passReqToCallback: true }
+    artsyCallback
+  )
   passport.use new FacebookStrategy
     clientID: opts.FACEBOOK_ID
     clientSecret: opts.FACEBOOK_SECRET
@@ -91,8 +98,11 @@ artsyCallback = (req, username, password, done) ->
   ).end accessTokenCallback(req, done)
 
 facebookCallback = (req, token, refreshToken, profile, done) ->
+  console.log 'CALLBACK', token, refreshToken, req.url
   if req.user
-    request.post("#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/facebook").query(
+    request.post(
+      "#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/facebook"
+    ).query(
       oauth_token: token
       access_token: req.user.get 'accessToken'
     ).end (res) ->
@@ -113,7 +123,9 @@ facebookCallback = (req, token, refreshToken, profile, done) ->
 
 twitterCallback = (req, token, tokenSecret, profile, done) ->
   if req.user
-    request.post("#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/twitter").query(
+    request.post(
+      "#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/twitter"
+    ).query(
       oauth_token: token
       oauth_token_secret: tokenSecret
       access_token: req.user.get 'accessToken'
@@ -146,15 +158,17 @@ accessTokenCallback = (req, done, params) ->
       err ?= JSON.parse(res.text).error
     err ?= res.body.error_description if res?.body.error_description?
     err ?= "Artsy returned a generic #{res.status}" if res?.status > 400
-    err ?= "Artsy returned no access token and no error" unless res?.body.access_token?
+    unless res?.body.access_token?
+      err ?= "Artsy returned no access token and no error"
     err ?= e
 
     # If there are no errors create the user from the access token
     unless err
       return done(null, new opts.CurrentUser(accessToken: res.body.access_token))
 
-    # If there's no user linked to this account, create the user via the POST /user API.
-    # Then pass a custom error so our signup middleware can catch it, login, and move on.
+    # If there's no user linked to this account, create the user via the POST
+    # /user API. Then pass a custom error so our signup middleware can catch it,
+    # login, and move on.
     if err?.match?('no account linked')
       params.xapp_token = opts.XAPP_TOKEN
       request
@@ -163,7 +177,10 @@ accessTokenCallback = (req, done, params) ->
         .end (err, res) ->
           req.session.redirectTo = opts.signupRedirect
           err = (err or res?.body.error_description or res?.body.error)
-          done err or { message: 'artsy-passport: created user from social', user: res.body }
+          done err or {
+            message: 'artsy-passport: created user from social'
+            user: res.body
+          }
 
     # Invalid email or password
     else if err.match?('invalid email or password')
@@ -171,7 +188,8 @@ accessTokenCallback = (req, done, params) ->
 
     # Other errors
     else
-      console.warn "Error requesting an access token from Artsy: \n\n" + res?.text
+      console.warn "Error requesting an access token from Artsy: \n\n" +
+        res?.text
       done err
 
 #
@@ -219,19 +237,24 @@ socialAuth = (provider) ->
       return next err
     passport.authenticate(provider, scope: 'email')(req, res, next)
 
-# We have to hack around passport by capturing a custom error message that indicates we've
-# created a user in one of passport's social callbacks. If we catch that error then we'll
-# attempt to redirect back to login and strip out the expired Facebook/Twitter credentials.
+# We have to hack around passport by capturing a custom error message that
+# indicates we've created a user in one of passport's social callbacks. If we
+# catch that error then we'll attempt to redirect back to login and strip out
+# the expired Facebook/Twitter credentials.
 socialSignup = (provider) ->
   (err, req, res, next) ->
-    return next(err) unless err.message is 'artsy-passport: created user from social'
-    # Redirect to a social login url stripping out the Facebook/Twitter credentials
-    # (code, oauth_token, etc). This will be seemless for Facebook, but since Twitter has a
-    # ask for permision UI it will mean asking permission twice. It's not apparent yet why
-    # we can't re-use the credentials... without stripping them we get errors from FB & Twitter.
-    querystring = qs.stringify _.omit(req.query, 'code', 'oauth_token', 'oauth_verifier')
-    url = (if provider is 'twitter' then opts.twitterLastStepPath else opts.facebookPath) +
-          '?' + querystring
+    unless err.message is 'artsy-passport: created user from social'
+      return next(err)
+    # Redirect to a social login url stripping out the Facebook/Twitter
+    # credentials (code, oauth_token, etc). This will be seemless for Facebook,
+    # but since Twitter has a ask for permision UI it will mean asking
+    # permission twice. It's not apparent yet why we can't re-use the
+    # credentials... without stripping them we get errors from FB & Twitter.
+    querystring = qs.stringify(
+      _.omit(req.query, 'code', 'oauth_token', 'oauth_verifier')
+    )
+    url = (if provider is 'twitter' then \
+      opts.twitterLastStepPath else opts.facebookPath) + '?' + querystring
     res.redirect url
 
 signup = (req, res, next) ->
