@@ -98,7 +98,6 @@ artsyCallback = (req, username, password, done) ->
   ).end accessTokenCallback(req, done)
 
 facebookCallback = (req, token, refreshToken, profile, done) ->
-  console.log 'CALLBACK', token, refreshToken, req.url
   if req.user
     request.post(
       "#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/facebook"
