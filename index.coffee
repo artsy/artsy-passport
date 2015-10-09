@@ -283,7 +283,7 @@ addLocals = (req, res, next) ->
 #
 headerLogin = (req, res, next) ->
   return next() if req.path is opts.logoutPath
-  if token = req.get('X-Access-Token')
+  if token = req.get('X-Access-Token') or req.query.access_token
     req.login new opts.CurrentUser(accessToken: token), next
   else
     next()
