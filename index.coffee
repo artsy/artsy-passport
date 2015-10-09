@@ -217,7 +217,7 @@ afterLocalAuth = (req, res ,next) ->
   else if req.xhr and req.user?
     res.send { success: true, user: req.user.toJSON() }
   else if req.xhr and not req.user?
-    res.send { success: false, error: "Missing user." }
+    res.send 500, { success: false, error: "Missing user." }
   else
     next()
 
@@ -283,7 +283,7 @@ addLocals = (req, res, next) ->
 #
 headerLogin = (req, res, next) ->
   return next() if req.path is opts.logoutPath
-  if token = req.get('X-Access-Token') or req.query.access_token
+  if token = req.get('X-Access-Token')
     req.login new opts.CurrentUser(accessToken: token), next
   else
     next()
