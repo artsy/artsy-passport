@@ -25,7 +25,7 @@ app.use artsyPassport
   TWITTER_SECRET: # Twitter consumer secret
   ARTSY_ID: # Artsy client id
   ARTSY_SECRET: # Artsy client secret
-  SECURE_ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
+  ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
   XAPP_TOKEN: # Artsy X-APP Token
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
   signupRedirect: '/personalize' # sets a session variable `redirectTo` that can be handled on your app after signup
@@ -65,6 +65,7 @@ form( action='/users/sign_in', method='POST' )
   input( name='name' )
   input( name='email' )
   input( name='password' )
+  input( type="hidden" name="_csrf" value=csrfToken )
   button( type='submit' ) Signup
 ````
 
@@ -155,7 +156,7 @@ module.exports =
   TWITTER_SECRET: ''
   ARTSY_ID: ''
   ARTSY_SECRET: ''
-  SECURE_ARTSY_URL: 'https://api.artsy.net'
+  ARTSY_URL: 'https://api.artsy.net'
   APP_URL: 'http://local.artsy.net:3000'
   # An Artsy user that's linked to Facebook and Twitter
   ARTSY_EMAIL: 'craig@artsy.net'

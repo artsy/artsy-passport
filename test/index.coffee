@@ -26,6 +26,15 @@ describe 'Artsy Passport integration', ->
                 browser.html().should.containEql '<h1>Login'
                 done()
 
+  it 'cant log in without a csrf', (done) ->
+    Browser.visit 'http://localhost:5000/nocsrf', (e, browser) ->
+      browser
+        .fill('#login [name=email]', ARTSY_EMAIL)
+        .fill('#login [name=password]', ARTSY_PASSWORD)
+        .pressButton "#login [type=submit]", ->
+          browser.html().should.containEql 'ForbiddenError: invalid csrf token'
+          done()
+
   it 'can log in with facebook', (done) ->
     Browser.visit 'http://localhost:5000', (e, browser) ->
       browser.clickLink "Login via Facebook", ->
@@ -138,13 +147,15 @@ describe 'Artsy Passport methods', ->
       @req.query.code = 'foo'
       @req.query.oauth_token = 'bar'
       @req.query.oauth_verifier = 'baz'
-      @socialSignup('twitter')({message: 'artsy-passport: created user from social'}, @req, @res, @next)
+      @socialSignup('twitter')({
+        message: 'artsy-passport: created user from social'}, @req, @res, @next)
       @res.redirect.args[0][0].should.not.containEql 'foo'
       @res.redirect.args[0][0].should.not.containEql 'bar'
       @res.redirect.args[0][0].should.not.containEql 'baz'
 
     it 'redirects to log in', ->
-      @socialSignup('twitter')({message: 'artsy-passport: created user from social'}, @req, @res, @next)
+      @socialSignup('twitter')({
+        message: 'artsy-passport: created user from social'}, @req, @res, @next)
       @res.redirect.args[0][0].should.containEql '/users/auth/twitter'
 
 
@@ -250,7 +261,12 @@ describe 'Artsy Passport methods', ->
       @send = sinon.stub().returns(end: (cb) -> cb())
       @del = sinon.stub().returns(send: @send)
       @logout = @artsyPassport.__get__ 'logout'
-      @req = { query: {}, get: (-> 'access-foo-token'), logout: (=> @req.user = null), user: { get: -> 'secret' } }
+      @req = {
+        query: {}
+        get: (-> 'access-foo-token')
+        logout: (=> @req.user = null)
+        user: { get: -> 'secret' }
+      }
       @res = { send: sinon.stub() }
       @logoutSpy = sinon.spy(@req, 'logout');
       @next = sinon.stub()
@@ -265,7 +281,8 @@ describe 'Artsy Passport methods', ->
       @next.called.should.be.true
 
     it 'logs out, deletes the auth token, and redirects home', ->
-      @artsyPassport.__set__ 'request', del: -> send: -> end: (cb) -> cb({ error: true }, { code: 500, error: 'Fake error', ok: false })
+      @artsyPassport.__set__ 'request', del: -> send: -> end: (cb) ->
+        cb({ error: true }, { code: 500, error: 'Fake error', ok: false })
       @logout @req, @res, @next
       @next.called.should.be.true
 
@@ -294,3 +311,65 @@ describe 'Artsy Passport methods', ->
         TWITTER_SECRET: 'baz'
       @artsyPassport.__get__('initPassport')()
       args[0].state.should.equal true
+
+
+  describe 'trustTokenLogin', ->
+    beforeEach ->
+      opts = @artsyPassport.__get__ 'opts'
+      opts.CurrentUser = Backbone.Model
+      @trustTokenLogin = @artsyPassport.__get__ 'trustTokenLogin'
+      @__request__ = @artsyPassport.__get__ 'request'
+      @request = {}
+      @request.post = sinon.stub().returns @request
+      @request.send = sinon.stub().returns @request
+      @request.end = sinon.stub().returns @request
+      @artsyPassport.__set__ 'request', @request
+
+    afterEach ->
+      @artsyPassport.__set__ 'request', @__request__
+
+    it 'immediately nexts if there is no trust_token query param', ->
+      req = query: {}, url: '/target-path'
+      res = redirect: sinon.stub()
+      next = sinon.stub()
+      @trustTokenLogin req, res, next
+      @request.post.called.should.be.false()
+      next.called.should.be.true()
+      res.redirect.called.should.be.false()
+
+    it 'logs the user in when there is a trust_token present, redirecting to \
+        a url sans trust_token param', ->
+      req =
+        login: sinon.stub().yields null
+        query: trust_token: 'xxxx'
+        url: '/target-path?trust_token=xxxx'
+      res = redirect: sinon.stub()
+      next = sinon.stub()
+      @request.end.yields null, ok: true, body: access_token: 'yyy'
+      @trustTokenLogin req, res, next
+      @request.post.called.should.be.true()
+      @request.send.args[0][0].code.should.equal 'xxxx'
+      res.redirect.called.should.be.true()
+      res.redirect.args[0][0].should.equal '/target-path'
+
+    it 'preserves any other query string params', ->
+      req =
+        login: sinon.stub().yields null
+        query: trust_token: 'xxxx', foo: 'bar', bar: 'baz'
+        url: '/target-path?foo=bar&trust_token=xxxx&bar=baz'
+      res = redirect: sinon.stub()
+      next = sinon.stub()
+      @request.end.yields null, ok: true, body: access_token: 'yyy'
+      @trustTokenLogin req, res, next
+      res.redirect.args[0][0].should.equal '/target-path?foo=bar&bar=baz'
+
+    it 'nexts on failed code response', ->
+      req =
+        query: trust_token: 'xxxx'
+        url: '/target-path?trust_token=xxxx'
+      res = redirect: sinon.stub()
+      next = sinon.stub()
+      @request.end.yields 'err', null
+      @trustTokenLogin req, res, next
+      next.called.should.be.true()
+      res.redirect.called.should.be.false()

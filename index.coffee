@@ -13,6 +13,7 @@ TwitterStrategy = require('passport-twitter').Strategy
 LocalStrategy = require('passport-local').Strategy
 qs = require 'querystring'
 crypto = require 'crypto'
+csrf = require 'csurf'
 { parse } = require 'url'
 
 # Alias sha1 hashing
@@ -46,9 +47,9 @@ module.exports = (options) =>
 module.exports.app = app = express()
 
 initApp = ->
-  app.use passport.initialize()
-  app.use passport.session()
-  app.post opts.loginPath, localAuth, afterLocalAuth
+  app.use passport.initialize(), passport.session()
+  app.get '*', csrf(cookie: true)
+  app.post opts.loginPath, csrf(cookie: true), localAuth, afterLocalAuth
   app.post opts.signupPath, signup, passport.authenticate('local'),
     afterLocalAuth
   app.get opts.twitterPath, socialAuth('twitter')
@@ -60,8 +61,7 @@ initApp = ->
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
   app.delete opts.logoutPath, logout
   app.post opts.twitterLastStepPath, submitTwitterLastStep
-  app.use headerLogin
-  app.use addLocals
+  app.use headerLogin, trustTokenLogin, addLocals
   app.get '/', ensureEmailFromTwitterSignup
 
 initPassport = ->
@@ -89,7 +89,7 @@ initPassport = ->
 # Passport callbacks
 #
 artsyCallback = (req, username, password, done) ->
-  request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
+  request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
     client_id: opts.ARTSY_ID
     client_secret: opts.ARTSY_SECRET
     grant_type: 'credentials'
@@ -100,7 +100,7 @@ artsyCallback = (req, username, password, done) ->
 facebookCallback = (req, token, refreshToken, profile, done) ->
   if req.user
     request.post(
-      "#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/facebook"
+      "#{opts.ARTSY_URL}/api/v1/me/authentications/facebook"
     ).query(
       oauth_token: token
       access_token: req.user.get 'accessToken'
@@ -108,7 +108,7 @@ facebookCallback = (req, token, refreshToken, profile, done) ->
       err = res.body.error or res.body.message + ': Facebook' if res.error
       done err, req.user
   else
-    request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
+    request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
       client_secret: opts.ARTSY_SECRET
       grant_type: 'oauth_token'
@@ -123,7 +123,7 @@ facebookCallback = (req, token, refreshToken, profile, done) ->
 twitterCallback = (req, token, tokenSecret, profile, done) ->
   if req.user
     request.post(
-      "#{opts.SECURE_ARTSY_URL}/api/v1/me/authentications/twitter"
+      "#{opts.ARTSY_URL}/api/v1/me/authentications/twitter"
     ).query(
       oauth_token: token
       oauth_token_secret: tokenSecret
@@ -132,7 +132,7 @@ twitterCallback = (req, token, tokenSecret, profile, done) ->
       err = res.body.error or res.body.message + ': Twitter' if res.error
       done err, req.user
   else
-    request.get("#{opts.SECURE_ARTSY_URL}/oauth2/access_token").query(
+    request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
       client_secret: opts.ARTSY_SECRET
       grant_type: 'oauth_token'
@@ -149,7 +149,6 @@ twitterCallback = (req, token, tokenSecret, profile, done) ->
 
 accessTokenCallback = (req, done, params) ->
   return (e, res) ->
-
     # Catch the various forms of error Artsy could encounter
     err = null
     try
@@ -160,18 +159,16 @@ accessTokenCallback = (req, done, params) ->
     unless res?.body.access_token?
       err ?= "Artsy returned no access token and no error"
     err ?= e
-
     # If there are no errors create the user from the access token
     unless err
       return done(null, new opts.CurrentUser(accessToken: res.body.access_token))
-
     # If there's no user linked to this account, create the user via the POST
     # /user API. Then pass a custom error so our signup middleware can catch it,
     # login, and move on.
     if err?.match?('no account linked')
       params.xapp_token = opts.XAPP_TOKEN
       request
-        .post(opts.SECURE_ARTSY_URL + '/api/v1/user')
+        .post(opts.ARTSY_URL + '/api/v1/user')
         .send(params)
         .end (err, res) ->
           req.session.redirectTo = opts.signupRedirect
@@ -180,11 +177,9 @@ accessTokenCallback = (req, done, params) ->
             message: 'artsy-passport: created user from social'
             user: res.body
           }
-
     # Invalid email or password
     else if err.match?('invalid email or password')
       done null, false, err
-
     # Other errors
     else
       console.warn "Error requesting an access token from Artsy: \n\n" +
@@ -257,7 +252,7 @@ socialSignup = (provider) ->
     res.redirect url
 
 signup = (req, res, next) ->
-  request.post(opts.SECURE_ARTSY_URL + '/api/v1/user').send(
+  request.post(opts.ARTSY_URL + '/api/v1/user').send(
     name: req.body.name
     email: req.body.email
     password: req.body.password
@@ -279,10 +274,12 @@ addLocals = (req, res, next) ->
   if req.user
     res.locals.user = req.user
     res.locals.sd?.CURRENT_USER = req.user.toJSON()
+  res.locals.sd?.CSRF_TOKEN = res.locals.csrfToken = req.csrfToken?()
   next()
 
 #
-# Middleware to allow log in by passing an access token in the headers.
+# Middleware to allow log in by passing x-access-token in the headers or
+# trust_token in the query params.
 #
 headerLogin = (req, res, next) ->
   return next() if req.path is opts.logoutPath
@@ -290,6 +287,26 @@ headerLogin = (req, res, next) ->
     req.login new opts.CurrentUser(accessToken: token), next
   else
     next()
+
+trustTokenLogin = (req, res, next) ->
+  return next() unless (token = req.query.trust_token)?
+  settings =
+    grant_type: 'trust_token'
+    client_id: opts.ARTSY_ID
+    client_secret: opts.ARTSY_SECRET
+    code: token
+  request
+    .post "#{opts.ARTSY_URL}/oauth2/access_token"
+    .send settings
+    .end (err, response) ->
+      return next() if err? or not response.ok
+      user = new opts.CurrentUser accessToken: response.body.access_token
+      req.login user, (err) ->
+        return next() if err?
+        path = req.url.split('?')[0]
+        params = _.omit req.query, 'trust_token'
+        path += "?#{qs.stringify params}" unless _.isEmpty params
+        res.redirect path
 
 #
 # Twitter last step logic. Used to ensure we have an email from users that
@@ -312,7 +329,7 @@ loginBeforeTwitterLastStep = (req, res, next) ->
 submitTwitterLastStep = (req, res, next) ->
   return next "No user" unless req.user
   return next "No email provided" unless req.body.email?
-  request.put("#{opts.SECURE_ARTSY_URL}/api/v1/me").send(
+  request.put("#{opts.ARTSY_URL}/api/v1/me").send(
     email: req.body.email
     email_confirmation: req.body.email
     access_token: req.user.get('accessToken')
@@ -322,7 +339,7 @@ submitTwitterLastStep = (req, res, next) ->
     return next err if err
     # To work around an API caching bug we send another empty PUT and
     # update the current user.
-    request.put("#{opts.SECURE_ARTSY_URL}/api/v1/me").send(
+    request.put("#{opts.ARTSY_URL}/api/v1/me").send(
       access_token: req.user.get('accessToken')
     ).end (r2) ->
       err = r.error or r.body?.error_description or r.body?.error
@@ -338,7 +355,7 @@ submitTwitterLastStep = (req, res, next) ->
 destroyAccessToken = (next, accessToken) ->
   if accessToken
     request
-      .del("#{opts.SECURE_ARTSY_URL}/api/v1/access_token")
+      .del("#{opts.ARTSY_URL}/api/v1/access_token")
       .send(access_token: accessToken)
       .end (error, response) ->
         next()
