@@ -9,14 +9,13 @@ cookieParser = require 'cookie-parser'
 session = require 'cookie-session'
 path = require "path"
 logger = require 'morgan'
-artsyXappMiddlware = require('artsy-xapp-middleware')
-
+artsyXapp = require 'artsy-xapp'
 artsyPassport = require '../'
 config = require '../config.coffee'
 
 # CurrentUser class
 class CurrentUser extends Backbone.Model
-  url: -> "#{config.SECURE_ARTSY_URL}/api/v1/me"
+  url: -> "#{config.ARTSY_URL}/api/v1/me"
   sync: (method, model, options = {}) ->
     options.data ?= {}
     options.data.access_token = @get 'accessToken'
@@ -32,12 +31,6 @@ setup = (app) ->
 
   app.set 'views', __dirname
   app.set 'view engine', 'jade'
-
-  app.use artsyXappMiddlware(
-    artsyUrl: config.SECURE_ARTSY_URL
-    clientId: config.ARTSY_ID
-    clientSecret: config.ARTSY_SECRET
-  )
 
   app.use bodyParser.json()
   app.use bodyParser.urlencoded(extended: true)
@@ -69,6 +62,8 @@ setup = (app) ->
   # App specific routes that render a login/signup form and logged in view
   app.get '/', (req, res) ->
     if req.user? then res.render 'loggedin' else res.render 'login'
+  app.get '/nocsrf', (req, res) ->
+    res.render 'nocsrf'
   app.get '/personalize', (req, res) ->
     res.redirect '/' unless req.user?
     res.send 'Personalize Flow for ' + req.user.get('name')
@@ -76,7 +71,12 @@ setup = (app) ->
     res.send JSON.stringify(status: 'ok')
 
   return unless module is require.main
-  app.listen 3000, -> console.log "Example listening on 3000"
+  artsyXapp.on('error', (e) -> console.warn(e); process.exit(1)).init
+    url: config.ARTSY_URL
+    id: config.ARTSY_ID
+    secret: config.ARTSY_SECRET
+  , ->
+    app.listen 3000, -> console.log "Example listening on 3000"
 
 app = module.exports = express()
 setup app

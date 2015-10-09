@@ -4,21 +4,41 @@ var sd;
 sd = require('sharify').data;
 
 $(function() {
-  $('body').append("<br><br>your email from the client-side!<br> " + sd.CURRENT_USER.email);
-  return $('a.logout').click(function() {
-    return $.ajax({
-      url: '/users/sign_out',
-      type: 'DELETE',
-      success: function() {
-        return window.location = '/';
-      },
-      error: function(xhr, status, error) {
-        return alert(error);
-      }
+  if (sd.CURRENT_USER) {
+    $('body').append("<br><br>your email from the client-side!<br> " + sd.CURRENT_USER.email);
+    return $('a.logout').click(function() {
+      return $.ajax({
+        url: '/users/sign_out',
+        type: 'DELETE',
+        success: function() {
+          return window.location = '/';
+        },
+        error: function(xhr, status, error) {
+          return alert(error);
+        }
+      });
     });
-  });
+  } else {
+    return $('#trust button').click(function() {
+      return $.ajax({
+        type: 'POST',
+        url: sd.ARTSY_URL + "/api/v1/me/trust_token",
+        headers: {
+          'x-access-token': $('#trust input').val().trim()
+        },
+        error: function(e) {
+          alert('Error!');
+          return console.warn(e);
+        },
+        success: function(arg) {
+          var trust_token;
+          trust_token = arg.trust_token;
+          return window.location = "http://" + location.host + "?trust_token=" + trust_token;
+        }
+      });
+    });
+  }
 });
-
 
 
 },{"sharify":2}],2:[function(require,module,exports){

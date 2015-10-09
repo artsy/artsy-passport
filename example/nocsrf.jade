@@ -15,7 +15,6 @@ html(lang="en")
       form( action='/users/sign_in', method='POST' )
         h3 Login via Email
         mixin email-password
-        input( type="hidden" name="_csrf" value=csrfToken )
         button( type='submit' ) Login
     hr
     #signup
@@ -28,13 +27,3 @@ html(lang="en")
         input( name='name', placeholder='Name...' )
         mixin email-password
         button( type='submit' ) Signup
-    hr
-    #trust
-      h1 Trust token login
-      label Access token&nbsp;
-        input
-        | &nbsp;
-      button.trust-login Login
-    != sharify.script()
-    script( src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js' )
-    script( src='/client.js' )

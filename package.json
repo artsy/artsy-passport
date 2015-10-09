@@ -1,6 +1,6 @@
 {
   "name": "artsy-passport",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "coffee-script": "^1.9.2",
+    "csurf": "^1.8.3",
     "express": "^4.12.3",
     "passport": "^0.2.1",
     "passport-facebook": "^2.0.0",
@@ -50,8 +51,8 @@
     "backbone-super-sync": "*",
     "browserify": "*",
     "coffeeify": "*",
-    "artsy-xapp-middleware": "*",
-    "zombie": "*",
+    "artsy-xapp": "*",
+    "zombie": "2.x",
     "rewire": "*"
   }
 }
