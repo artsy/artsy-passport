@@ -217,7 +217,7 @@ afterLocalAuth = (req, res ,next) ->
   else if req.xhr and req.user?
     res.send { success: true, user: req.user.toJSON() }
   else if req.xhr and not req.user?
-    res.send { success: false, error: "Missing user." }
+    res.send 500, { success: false, error: "Missing user." }
   else
     next()
 
