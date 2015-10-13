@@ -80,6 +80,7 @@ form( action='/users/invitation/accept', method='POST' )
   input( name='name' )
   input( name='email' )
   input( name='password' )
+  input( type="hidden" name="_csrf" value=csrfToken )
   button( type='submit' ) Signup
 ````
 
