@@ -60,7 +60,7 @@ initApp = ->
     socialSignup('facebook')
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
   app.delete opts.logoutPath, logout
-  app.post opts.twitterLastStepPath, submitTwitterLastStep
+  app.post opts.twitterLastStepPath, submitTwitterLastStep, twitterLastStepError
   app.use headerLogin, trustTokenLogin, addLocals
   app.get '/', ensureEmailFromTwitterSignup
 
@@ -345,21 +345,22 @@ submitTwitterLastStep = (req, res, next) ->
     email: req.body.email
     email_confirmation: req.body.email
     access_token: req.user.get('accessToken')
-  ).end (r) ->
-    err = r.error or r.body?.error_description or r.body?.error
-    err = null if r.text.match 'Error from MailChimp API'
+  ).end (err, r) ->
     return next err if err
     # To work around an API caching bug we send another empty PUT and
     # update the current user.
     request.put("#{opts.ARTSY_URL}/api/v1/me").send(
       access_token: req.user.get('accessToken')
-    ).end (r2) ->
-      err = r.error or r.body?.error_description or r.body?.error
-      err = null if r.text.match 'Error from MailChimp API'
+    ).end (err, r) ->
       return next err if err
-      req.login req.user.set(r2.body), (err) ->
+      req.login req.user.set(r.body), (err) ->
         return next err if err
         res.redirect req.query['redirect-to'] or req.body['redirect-to'] or '/'
+
+twitterLastStepError = (err, req, res, next) ->
+  return next() if err.text?.match 'Error from MailChimp API'
+  msg = err.response.body?.error or err.message or err.toString()
+  res.redirect opts.twitterLastStepPath + '?error=' + msg
 
 #
 # Logout helpers.
