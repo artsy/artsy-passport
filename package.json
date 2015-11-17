@@ -52,7 +52,7 @@
     "browserify": "*",
     "coffeeify": "*",
     "artsy-xapp": "*",
-    "zombie": "2.x",
+    "zombie": "*",
     "rewire": "*"
   }
 }

@@ -181,6 +181,13 @@ describe 'Artsy Passport methods', ->
       @socialAuth('facebook')(@req, @res, @next)
       @passport.authenticate.args[0][0].should.equal 'facebook'
 
+    it 'requires a state param thats the same as generated on session', ->
+      @req.session = twitterState: 'foobarbaz'
+      @req.path = '/users/auth/twitter/callback'
+      @req.query.state = 'moo'
+      @socialAuth('twitter')(@req, @res, @next)
+      @next.args[0][0].toString().should.containEql 'Must pass a valid `state`'
+
     it 'requires a state param equal to the sha1 of the access token', ->
       @req.user = new Backbone.Model accessToken: 'foobarbaz'
       @req.path = '/users/auth/facebook'

@@ -234,10 +234,8 @@ socialAuth = (provider) ->
     # So we implement it ourselves ( -__- )
     # https://twittercommunity.com/t/is-the-state-parameter-supported/1889
     if provider is 'twitter' and not req.query.state
-      console.log 'set state', req.path
       req.session.twitterState = hash Math.random().toString()
     if req.path is opts.twitterCallbackPath and req.query.state isnt req.session.twitterState
-      console.log 'check state', req.path
       err = new Error("Must pass a valid `state` param.")
       return next err
     passport.authenticate(provider,
