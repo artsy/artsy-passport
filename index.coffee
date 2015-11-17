@@ -224,12 +224,24 @@ afterLocalAuth = (req, res ,next) ->
 socialAuth = (provider) ->
   (req, res, next) ->
     return next("#{provider} denied") if req.query.denied
+    # CSRF protection for Facebook account linking
     if req.path is opts.facebookPath and req.user and
        req.query.state isnt hash(req.user.get 'accessToken')
       err = new Error("Must pass a `state` query param equal to a sha1 hash" +
         "of the user's access token to link their account.")
       return next err
-    passport.authenticate(provider, scope: 'email')(req, res, next)
+    # Twitter OAuth 1 doesn't support `state` param csrf out of the box.
+    # So we implement it ourselves ( -__- )
+    # https://twittercommunity.com/t/is-the-state-parameter-supported/1889
+    if provider is 'twitter' and not req.query.state
+      req.session.twitterState = hash Math.random().toString()
+    if req.path is opts.twitterCallbackPath and req.query.state isnt req.session.twitterState
+      err = new Error("Must pass a valid `state` param.")
+      return next err
+    passport.authenticate(provider,
+      scope: 'email'
+      callbackURL: "#{opts.APP_URL}#{opts.twitterCallbackPath}?state=#{req.session.twitterState}" if provider is 'twitter'
+    )(req, res, next)
 
 # We have to hack around passport by capturing a custom error message that
 # indicates we've created a user in one of passport's social callbacks. If we
