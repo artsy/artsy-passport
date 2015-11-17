@@ -70,6 +70,10 @@ setup = (app) ->
   app.delete '/users/sign_out', (req, res) ->
     res.send JSON.stringify(status: 'ok')
 
+  # Error handler
+  app.use (err, req, res, next) ->
+    console.log 'end'
+    res.send err.stack
   return unless module is require.main
   artsyXapp.on('error', (e) -> console.warn(e); process.exit(1)).init
     url: config.ARTSY_URL
