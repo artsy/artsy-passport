@@ -24,6 +24,9 @@ hash = (str) ->
 opts =
   facebookPath: '/users/auth/facebook'
   twitterPath: '/users/auth/twitter'
+  settingsPagePath: '/user/edit'
+  loginPagePath: '/log_in'
+  signupPagePath: '/sign_up'
   loginPath: '/users/sign_in'
   signupPath: '/users/invitation/accept'
   twitterCallbackPath: '/users/auth/twitter/callback'
@@ -52,13 +55,14 @@ initApp = ->
   app.post opts.loginPath, csrf(cookie: true), localAuth, afterLocalAuth
   app.post opts.signupPath, signup, passport.authenticate('local'),
     afterLocalAuth
-  app.get opts.twitterPath, socialAuth('twitter')
-  app.get opts.facebookPath, socialAuth('facebook')
-  app.get opts.twitterCallbackPath, socialAuth('twitter'),
+  app.get opts.twitterPath, beforeSocialAuth('twitter')
+  app.get opts.facebookPath, beforeSocialAuth('facebook')
+  app.get opts.twitterCallbackPath, afterSocialAuth('twitter'),
     socialSignup('twitter')
-  app.get opts.facebookCallbackPath, socialAuth('facebook'),
+  app.get opts.facebookCallbackPath, afterSocialAuth('facebook'),
     socialSignup('facebook')
   app.get opts.twitterLastStepPath, loginBeforeTwitterLastStep
+  app.get opts.logoutPath, denyBadLogoutLinks, logout
   app.delete opts.logoutPath, logout
   app.post opts.twitterLastStepPath, submitTwitterLastStep, twitterLastStepError
   app.use headerLogin, trustTokenLogin, addLocals
@@ -74,14 +78,11 @@ initPassport = ->
   passport.use new FacebookStrategy
     clientID: opts.FACEBOOK_ID
     clientSecret: opts.FACEBOOK_SECRET
-    callbackURL: "#{opts.APP_URL}#{opts.facebookCallbackPath}"
     passReqToCallback: true
-    state: true
   , facebookCallback
   passport.use new TwitterStrategy
     consumerKey: opts.TWITTER_KEY
     consumerSecret: opts.TWITTER_SECRET
-    callbackURL: "#{opts.APP_URL}#{opts.twitterCallbackPath}"
     passReqToCallback: true
   , twitterCallback
 
@@ -98,15 +99,15 @@ artsyCallback = (req, username, password, done) ->
   ).end accessTokenCallback(req, done)
 
 facebookCallback = (req, token, refreshToken, profile, done) ->
+  # Link account
   if req.user
     request.post(
       "#{opts.ARTSY_URL}/api/v1/me/authentications/facebook"
-    ).query(
+    ).send(
       oauth_token: token
       access_token: req.user.get 'accessToken'
-    ).end (res) ->
-      err = res.body.error or res.body.message + ': Facebook' if res.error
-      done err, req.user
+    ).end (err, res) -> done err, req.user
+  # Login or signup
   else
     request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
@@ -121,16 +122,16 @@ facebookCallback = (req, token, refreshToken, profile, done) ->
     )
 
 twitterCallback = (req, token, tokenSecret, profile, done) ->
+  # Link account
   if req.user
     request.post(
       "#{opts.ARTSY_URL}/api/v1/me/authentications/twitter"
-    ).query(
+    ).send(
       oauth_token: token
       oauth_token_secret: tokenSecret
       access_token: req.user.get 'accessToken'
-    ).end (res) ->
-      err = res.body.error or res.body.message + ': Twitter' if res.error
-      done err, req.user
+    ).end (err, res) -> done err, req.user
+  # Login or signup
   else
     request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
@@ -147,44 +148,37 @@ twitterCallback = (req, token, tokenSecret, profile, done) ->
       name: profile?.displayName
     )
 
-accessTokenCallback = (req, done, params) ->
-  return (e, res) ->
-    # Catch the various forms of error Artsy could encounter
-    err = null
-    try
-      err = JSON.parse(res.text).error_description
-      err ?= JSON.parse(res.text).error
-    err ?= res.body.error_description if res?.body.error_description?
-    err ?= "Artsy returned a generic #{res.status}" if res?.status > 400
-    unless res?.body.access_token?
-      err ?= "Artsy returned no access token and no error"
-    err ?= e
-    # If there are no errors create the user from the access token
-    unless err
-      return done(null, new opts.CurrentUser(accessToken: res.body.access_token))
-    # If there's no user linked to this account, create the user via the POST
-    # /user API. Then pass a custom error so our signup middleware can catch it,
-    # login, and move on.
-    if err?.match?('no account linked')
-      params.xapp_token = opts.XAPP_TOKEN
-      request
-        .post(opts.ARTSY_URL + '/api/v1/user')
-        .send(params)
-        .end (err, res) ->
-          req.session.redirectTo = opts.signupRedirect
-          err = (err or res?.body.error_description or res?.body.error)
-          done err or {
-            message: 'artsy-passport: created user from social'
-            user: res.body
-          }
-    # Invalid email or password
-    else if err.match?('invalid email or password')
-      done null, false, err
-    # Other errors
-    else
-      console.warn "Error requesting an access token from Artsy: \n\n" +
-        res?.text
-      done err
+accessTokenCallback = (req, done, params) -> (err, res) ->
+  # Treat bad responses from Gravity as errors and get the most relavent
+  # error message.
+  if err and not res?.body or not err and res?.status > 400
+    err = new Error "Gravity returned a generic #{res.status} html page"
+  if not err and not res?.body.access_token?
+    err = new Error "Gravity returned no access token and no error"
+  msg = res?.body?.error_description or res?.body?.error or
+        res?.text or err.stack or err.toString()
+  # No errors—create the user from the access token.
+  if not err
+    done null, new opts.CurrentUser accessToken: res.body.access_token
+  # If there's no user linked to this account, create the user via the POST
+  # /user API. Then pass a custom error so our signup middleware can catch it,
+  # login, and move on.
+  else if msg.match 'no account linked'
+    request
+      .post(opts.ARTSY_URL + '/api/v1/user')
+      .send(_.extend params, xapp_token: opts.XAPP_TOKEN)
+      .end (err, res) ->
+        done err or {
+          message: 'artsy-passport: created user from social'
+          user: res.body
+        }
+  # Invalid email or password.
+  else if msg.match 'invalid email or password'
+    done null, false, err
+  # Unknown Exception.
+  else
+    console.warn "Error requesting an access token from Artsy", err
+    done err
 
 #
 # Passport's serialize callbacks.
@@ -221,47 +215,55 @@ afterLocalAuth = (req, res ,next) ->
   else
     next()
 
-socialAuth = (provider) ->
-  (req, res, next) ->
-    return next("#{provider} denied") if req.query.denied
-    # CSRF protection for Facebook account linking
-    if req.path is opts.facebookPath and req.user and
-       req.query.state isnt hash(req.user.get 'accessToken')
-      err = new Error("Must pass a `state` query param equal to a sha1 hash" +
-        "of the user's access token to link their account.")
-      return next err
-    # Twitter OAuth 1 doesn't support `state` param csrf out of the box.
-    # So we implement it ourselves ( -__- )
-    # https://twittercommunity.com/t/is-the-state-parameter-supported/1889
-    if provider is 'twitter' and not req.query.state
-      req.session.twitterState = hash Math.random().toString()
-    if req.path is opts.twitterCallbackPath and req.query.state isnt req.session.twitterState
-      err = new Error("Must pass a valid `state` param.")
-      return next err
-    passport.authenticate(provider,
-      scope: 'email'
-      callbackURL: "#{opts.APP_URL}#{opts.twitterCallbackPath}?state=#{req.session.twitterState}" if provider is 'twitter'
-    )(req, res, next)
+beforeSocialAuth = (provider) -> (req, res, next) ->
+  passport.authenticate(provider,
+    scope: 'email'
+    callbackURL: "#{opts.APP_URL}#{opts[provider + 'CallbackPath']}" +
+                 "?#{qs.stringify req.query}"
+  )(req, res, next)
+
+afterSocialAuth = (provider) -> (req, res, next) ->
+  return next(new Error "#{provider} denied") if req.query.denied
+  linkingAccount = req.user?
+  passport.authenticate(provider,
+    scope: 'email'
+  ) req, res, (err) ->
+    if err?.response?.body?.error is 'User Already Exists'
+      msg = "Facebook account previously linked to Artsy. " +
+            "Log in to your Artsy account and re-link " +
+            "Facebook in your settings instead."
+      res.redirect opts.loginPagePath + '?error=' + msg
+    else if err?.response?.body?.error is 'Another Account Already Linked'
+      msg = "Twitter account linked to another Artsy account. " +
+            "Try logging out and back in with Twitter. Then consider " +
+            "deleting that user account and re-linking Twitter. "
+      res.redirect opts.settingsPagePath + '?error=' + msg
+    else if err?
+      next err
+    else if linkingAccount
+      res.redirect opts.settingsPagePath
+    else
+      next()
 
 # We have to hack around passport by capturing a custom error message that
 # indicates we've created a user in one of passport's social callbacks. If we
 # catch that error then we'll attempt to redirect back to login and strip out
 # the expired Facebook/Twitter credentials.
-socialSignup = (provider) ->
-  (err, req, res, next) ->
-    unless err.message is 'artsy-passport: created user from social'
-      return next(err)
-    # Redirect to a social login url stripping out the Facebook/Twitter
-    # credentials (code, oauth_token, etc). This will be seemless for Facebook,
-    # but since Twitter has a ask for permision UI it will mean asking
-    # permission twice. It's not apparent yet why we can't re-use the
-    # credentials... without stripping them we get errors from FB & Twitter.
-    querystring = qs.stringify(
-      _.omit(req.query, 'code', 'oauth_token', 'oauth_verifier')
-    )
-    url = (if provider is 'twitter' then \
-      opts.twitterLastStepPath else opts.facebookPath) + '?' + querystring
-    res.redirect url
+socialSignup = (provider) -> (err, req, res, next) ->
+  unless err.message is 'artsy-passport: created user from social'
+    return next(err)
+  # Redirect to a social login url stripping out the Facebook/Twitter
+  # credentials (code, oauth_token, etc). This will be seemless for Facebook,
+  # but since Twitter has a ask for permision UI it will mean asking
+  # permission twice. It's not apparent yet why we can't re-use the
+  # credentials... without stripping them we get errors from FB & Twitter from
+  # the Gravity API.
+  querystring = qs.stringify(
+    _.omit(req.query, 'code', 'oauth_token', 'oauth_verifier')
+  )
+  url = (if provider is 'twitter' then \
+    opts.twitterLastStepPath else opts.facebookPath) + '?' + querystring
+  res.redirect url
 
 signup = (req, res, next) ->
   request.post(opts.ARTSY_URL + '/api/v1/user').send(
@@ -286,6 +288,7 @@ addLocals = (req, res, next) ->
   if req.user
     res.locals.user = req.user
     res.locals.sd?.CURRENT_USER = req.user.toJSON()
+  res.locals.sd?.APOPTS = res.locals.apopts = opts
   res.locals.sd?.CSRF_TOKEN = res.locals.csrfToken = req.csrfToken?()
   next()
 
@@ -360,22 +363,30 @@ submitTwitterLastStep = (req, res, next) ->
 twitterLastStepError = (err, req, res, next) ->
   return next() if err.text?.match 'Error from MailChimp API'
   msg = err.response.body?.error or err.message or err.toString()
+  if msg is 'User Already Exists'
+    href = "#{opts.logoutPath}?redirect-to=#{opts.loginPagePath}"
+    msg = "Artsy account already exists. If this is your Artsy email, please " +
+          "<a href=#{opts.settingsPagePath}>delete this account</a>, then log" +
+          " in to Artsy and link Twitter in your settings."
   res.redirect opts.twitterLastStepPath + '?error=' + msg
 
 #
 # Logout helpers.
 #
-destroyAccessToken = (next, accessToken) ->
-  if accessToken
-    request
-      .del("#{opts.ARTSY_URL}/api/v1/access_token")
-      .send(access_token: accessToken)
-      .end (error, response) ->
-        next()
-  else
+denyBadLogoutLinks = (req, res, next) ->
+  if parse(req.get 'Referrer').hostname.match 'artsy.net'
     next()
+  else
+    next new Error "Malicious logout link."
 
 logout = (req, res, next) ->
   accessToken = req.user?.get('accessToken')
   req.logout()
-  destroyAccessToken(next, accessToken)
+  request
+    .del("#{opts.ARTSY_URL}/api/v1/access_token")
+    .send(access_token: accessToken)
+    .end (error, response) ->
+      if req.xhr
+        res.status(200).send msg: 'success'
+      else
+        res.redirect req.query['redirect-to'] or '/'

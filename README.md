@@ -87,6 +87,7 @@ form( action='/users/invitation/accept', method='POST' )
 
 ````jade
 h1 Just one more step
+= error
 form( method='post', action='/users/auth/twitter/email' )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
@@ -105,7 +106,7 @@ app.post signupPath, (req, res) ->
 app.get twitterCallbackPath, (req, res) ->
   if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
 app.get twitterLastStepPath, (req, res) ->
-  res.render 'twitter_last_step'
+  res.render 'twitter_last_step', error: req.query.error
 app.get facebookCallbackPath, (req, res) ->
   if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
 ````
