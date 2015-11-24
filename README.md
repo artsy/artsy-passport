@@ -31,10 +31,12 @@ app.use artsyPassport
   signupRedirect: '/personalize' # sets a session variable `redirectTo` that can be handled on your app after signup
   facebookPath: '/users/auth/facebook' # Url to point your facebook button to
   twitterPath: '/users/auth/twitter' # Url to point your twitter button to
+  linkedinPath: '/users/auth/linkedin' # Url to point your linkedin button to
   loginPath: '/users/sign_in' # POST `email` and `password` to this path to login
   signupPath: '/users/invitation/accept' # POST `email` and `password` to this path to signup
   twitterCallbackPath: '/users/auth/twitter/callback' # After twitter auth callback url
   facebookCallbackPath: '/users/auth/facebook/callback' # After facebook auth callback url
+  linkedinCallbackPath: '/users/auth/linkedin/callback' # After linkedin auth callback url
   # The user data to cache in the session
   userKeys: ['id', 'type', 'name', 'email', 'phone', 'lab_features', 'default_profile_id', 'collector_level']
   CurrentUser: # Backbone Model class to serialize the user into e.g. `CurrentUser`

@@ -28,8 +28,10 @@ module.exports = ->
   # Twitter/Facebook OAuth
   app.get opts.twitterPath, beforeSocialAuth('twitter')
   app.get opts.facebookPath, beforeSocialAuth('facebook')
+  app.get opts.linkedinPath, beforeSocialAuth('linkedin')
   app.get opts.twitterCallbackPath, afterSocialAuth('twitter'), socialSignup('twitter')
   app.get opts.facebookCallbackPath, afterSocialAuth('facebook'), socialSignup('facebook')
+  app.get opts.linkedinCallbackPath, afterSocialAuth('linkedin'), socialSignup('linkedin')
   # Twitter "one last step" UI
   app.get '/', twitterLastStep.ensureEmail
   app.get opts.twitterLastStepPath, twitterLastStep.login

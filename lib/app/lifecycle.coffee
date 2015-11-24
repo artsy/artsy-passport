@@ -21,14 +21,20 @@ qs = require 'querystring'
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
   passport.authenticate(provider,
-    scope: 'email'
+    if provider is 'linkedin'
+      scope: ['r_basicprofile', 'r_emailaddress']
+    else
+      scope: 'email'
   )(req, res, next)
 
 @afterSocialAuth = (provider) -> (req, res, next) ->
   return next(new Error "#{provider} denied") if req.query.denied
   linkingAccount = req.user?
   passport.authenticate(provider,
-    scope: 'email'
+    if provider is 'linkedin'
+      scope: ['r_basicprofile', 'r_emailaddress']
+    else
+      scope: 'email'
   ) req, res, (err) ->
     if err?.response?.body?.error is 'User Already Exists'
       msg = "Facebook account previously linked to Artsy. " +
@@ -67,6 +73,7 @@ qs = require 'querystring'
     opts.twitterLastStepPath else opts.facebookPath) + '?' + querystring
   res.redirect url
 
+# Might be able to move this into `onAccessToken` in callbacks
 @signup = (req, res, next) ->
   request.post(opts.ARTSY_URL + '/api/v1/user').send(
     name: req.body.name
