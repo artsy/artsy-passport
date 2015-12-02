@@ -8,6 +8,7 @@ _ = require 'underscore'
 opts = require './options'
 setupApp = require './app'
 setupPassport = require './passport'
+artsyXapp = require 'artsy-xapp'
 
 module.exports = (options) =>
   _.extend opts, options

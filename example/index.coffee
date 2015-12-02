@@ -45,7 +45,8 @@ setup = (app) ->
   # Setup Artsy Passport
   app.use artsyPassport _.extend config,
     CurrentUser: CurrentUser
-  { loginPath, signupPath, twitterCallbackPath, facebookCallbackPath, twitterLastStepPath } = artsyPassport.options
+  { loginPath, signupPath, twitterCallbackPath, facebookCallbackPath,
+    twitterLastStepPath } = artsyPassport.options
 
   # Artsy passport route handlers
   app.post loginPath, (req, res) ->

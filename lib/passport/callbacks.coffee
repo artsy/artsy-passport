@@ -7,6 +7,7 @@
 _ = require 'underscore'
 request = require 'superagent'
 opts = require '../options'
+artsyXapp = require 'artsy-xapp'
 
 @local = (req, username, password, done) ->
   request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
@@ -18,7 +19,6 @@ opts = require '../options'
   ).end onAccessToken(req, done)
 
 @linkedin = (req, token, tokenSecret, profile, done) ->
-  console.log 'passport callback', token, tokenSecret, profile
   # Link Linkedin account
   if req.user
     request.post(
@@ -39,7 +39,7 @@ opts = require '../options'
       oauth_token: token
       oauth_token_secret: tokenSecret
       oauth_provider: 'linkedin'
-    ).end accessTokenCallback(req, done,
+    ).end onAccessToken(req, done,
       oauth_token: token
       oauth_token_secret: tokenSecret
       provider: 'linkedin'
@@ -111,10 +111,11 @@ onAccessToken = (req, done, params) -> (err, res) ->
   # If there's no user linked to this account, create the user via the POST
   # /user API. Then pass a custom error so our signup middleware can catch it,
   # login, and move on.
-  else if msg.match 'no account linked'
+  else if msg.match('no account linked')?
     request
       .post(opts.ARTSY_URL + '/api/v1/user')
-      .send(_.extend params, xapp_token: opts.XAPP_TOKEN)
+      .send(_.extend params)
+      .set('X-Xapp-Token': artsyXapp.token)
       .end (err, res) ->
         done err or {
           message: 'artsy-passport: created user from social'

@@ -4,13 +4,13 @@ Wires up the common auth handlers for Artsy's [Ezel](http://ezeljs.com)-based ap
 
 ## Setup
 
-#### Make sure you first mount session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
+#### Make sure you first mount session, body parser, and start [artsy-xapp](https://github.com/artsy/artsy-xapp).
 
 ````coffeescript
-app.use require('artsy-xapp-middleware') { #... }
 app.use express.bodyParser()
 app.use express.cookieParser('foobar')
 app.use express.cookieSession()
+artsyXapp.init -> app.listen()
 ````
 
 #### Then mount Artsy Passport passing a big configuration hash.
@@ -23,10 +23,13 @@ app.use artsyPassport
   FACEBOOK_SECRET: # Facebook app secret
   TWITTER_KEY: # Twitter consumer key
   TWITTER_SECRET: # Twitter consumer secret
+  TWITTER_KEY: # Twitter consumer key
+  TWITTER_SECRET: # Twitter consumer secret
+  LINKEDIN_KEY: # Linkedin app key
+  LINKEDIN_SECRET: # Linkedin app secret
   ARTSY_ID: # Artsy client id
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
-  XAPP_TOKEN: # Artsy X-APP Token
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
   signupRedirect: '/personalize' # sets a session variable `redirectTo` that can be handled on your app after signup
   facebookPath: '/users/auth/facebook' # Url to point your facebook button to

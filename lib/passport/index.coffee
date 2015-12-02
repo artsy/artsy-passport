@@ -14,10 +14,10 @@ opts = require '../options'
 module.exports = ->
   passport.serializeUser serialize
   passport.deserializeUser deserialize
-  passport.use new LocalStrategy(
-    { usernameField: 'email', passReqToCallback: true }
-    callbacks.local
-  )
+  passport.use new LocalStrategy
+    usernameField: 'email'
+    passReqToCallback: true
+  , callbacks.local
   passport.use new FacebookStrategy
     clientID: opts.FACEBOOK_ID
     clientSecret: opts.FACEBOOK_SECRET
@@ -36,9 +36,8 @@ module.exports = ->
     passReqToCallback: true
     callbackURL: "#{opts.APP_URL}#{opts.linkedinCallbackPath}"
     profileFields: [
-      'id', 'first-name', 'last-name', 'email-address',
-      'headline', 'location', 'industry', 'summary', 'specialties',
-      'positions', 'public-profile-url'
+      'id', 'first-name', 'last-name', 'email-address', 'headline', 'location',
+      'industry', 'summary', 'specialties', 'positions', 'public-profile-url'
     ]
   , callbacks.linkedin
 
