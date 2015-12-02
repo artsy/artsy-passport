@@ -4,9 +4,11 @@
 #
 
 _ = require 'underscore'
+_s = require 'underscore.string'
 opts = require '../options'
 passport = require 'passport'
 qs = require 'querystring'
+redirectBack = require './redirectback'
 
 @onLocalLogin = (req, res, next) ->
   passport.authenticate('local') req, res, (err) ->
@@ -29,6 +31,7 @@ qs = require 'querystring'
 
 @afterSocialAuth = (provider) -> (req, res, next) ->
   return next(new Error "#{provider} denied") if req.query.denied
+  providerName = _s.capitalize provider
   linkingAccount = req.user?
   passport.authenticate(provider,
     if provider is 'linkedin'
@@ -37,43 +40,26 @@ qs = require 'querystring'
       scope: 'email'
   ) req, res, (err) ->
     if err?.response?.body?.error is 'User Already Exists'
-      msg = "Facebook account previously linked to Artsy. " +
+      msg = "#{providerName} account previously linked to Artsy. " +
             "Log in to your Artsy account and re-link " +
-            "Facebook in your settings instead."
+            "#{providerName} in your settings instead."
       res.redirect opts.loginPagePath + '?error=' + msg
     else if err?.response?.body?.error is 'Another Account Already Linked'
-      msg = "Twitter account linked to another Artsy account. " +
-            "Try logging out and back in with Twitter. Then consider " +
-            "deleting that user account and re-linking Twitter. "
+      msg = "#{providerName} account linked to another Artsy account. " +
+            "Try logging out and back in with #{providerName}. Then consider " +
+            "deleting that user account and re-linking #{providerName}. "
       res.redirect opts.settingsPagePath + '?error=' + msg
     else if err?
       next err
     else if linkingAccount
       res.redirect opts.settingsPagePath
+    else if req.artsyPassportSignedUp and provider is 'twitter'
+      res.redirect opts.twitterLastStepPath
+    else if req.artsyPassportSignedUp
+      res.redirect opts.signupRedirect
     else
-      next()
+      redirectBack req, res
 
-# We have to hack around passport by capturing a custom error message that
-# indicates we've created a user in one of passport's social callbacks. If we
-# catch that error then we'll attempt to redirect back to login and strip out
-# the expired Facebook/Twitter credentials.
-@socialSignup = (provider) -> (err, req, res, next) ->
-  unless err.message is 'artsy-passport: created user from social'
-    return next(err)
-  # Redirect to a social login url stripping out the Facebook/Twitter
-  # credentials (code, oauth_token, etc). This will be seemless for Facebook,
-  # but since Twitter has a ask for permision UI it will mean asking
-  # permission twice. It's not apparent yet why we can't re-use the
-  # credentials... without stripping them we get errors from FB & Twitter from
-  # the Gravity API.
-  querystring = qs.stringify(
-    _.omit(req.query, 'code', 'oauth_token', 'oauth_verifier')
-  )
-  url = (if provider is 'twitter' then \
-    opts.twitterLastStepPath else opts.facebookPath) + '?' + querystring
-  res.redirect url
-
-# Might be able to move this into `onAccessToken` in callbacks
 @signup = (req, res, next) ->
   request.post(opts.ARTSY_URL + '/api/v1/user').send(
     name: req.body.name

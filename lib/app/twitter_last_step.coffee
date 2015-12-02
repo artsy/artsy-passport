@@ -39,7 +39,7 @@ opts = require '../options'
       return next err if err
       req.login req.user.set(r.body), (err) ->
         return next err if err
-        res.redirect req.query['redirect-to'] or req.body['redirect-to'] or '/'
+        res.redirect opts.signupRedirect
 
 @error = (err, req, res, next) ->
   return next() if err.text?.match 'Error from MailChimp API'

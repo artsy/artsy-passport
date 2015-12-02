@@ -29,9 +29,9 @@ module.exports = ->
   app.get opts.twitterPath, beforeSocialAuth('twitter')
   app.get opts.facebookPath, beforeSocialAuth('facebook')
   app.get opts.linkedinPath, beforeSocialAuth('linkedin')
-  app.get opts.twitterCallbackPath, afterSocialAuth('twitter'), socialSignup('twitter')
-  app.get opts.facebookCallbackPath, afterSocialAuth('facebook'), socialSignup('facebook')
-  app.get opts.linkedinCallbackPath, afterSocialAuth('linkedin'), socialSignup('linkedin')
+  app.get opts.twitterCallbackPath, afterSocialAuth('twitter')
+  app.get opts.facebookCallbackPath, afterSocialAuth('facebook')
+  app.get opts.linkedinCallbackPath, afterSocialAuth('linkedin')
   # Twitter "one last step" UI
   app.get '/', twitterLastStep.ensureEmail
   app.get opts.twitterLastStepPath, twitterLastStep.login
@@ -41,4 +41,5 @@ module.exports = ->
   app.delete opts.logoutPath, logout
   # Convenience middleware for token login and locals like sd.CURRENT_USER
   app.use headerLogin, trustTokenLogin, addLocals
+  # Return the app
   app

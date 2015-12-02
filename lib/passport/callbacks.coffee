@@ -109,18 +109,24 @@ onAccessToken = (req, done, params) -> (err, res) ->
   if not err
     done null, new opts.CurrentUser accessToken: res.body.access_token
   # If there's no user linked to this account, create the user via the POST
-  # /user API. Then pass a custom error so our signup middleware can catch it,
-  # login, and move on.
+  # /user API. Then attempt to fetch the access token again from Gravity and
+  # recur back into this onAcccessToken callback.
   else if msg.match('no account linked')?
+    req.artsyPassportSignedUp = true
     request
       .post(opts.ARTSY_URL + '/api/v1/user')
       .send(_.extend params)
       .set('X-Xapp-Token': artsyXapp.token)
       .end (err, res) ->
-        done err or {
-          message: 'artsy-passport: created user from social'
-          user: res.body
-        }
+        return done err if err
+        request
+          .get("#{opts.ARTSY_URL}/oauth2/access_token")
+          .query(_.extend params,
+            client_id: opts.ARTSY_ID
+            client_secret: opts.ARTSY_SECRET
+            grant_type: 'oauth_token'
+            oauth_provider: params.provider
+          ).end onAccessToken(req, done, params)
   # Invalid email or password.
   else if msg.match 'invalid email or password'
     done null, false, err

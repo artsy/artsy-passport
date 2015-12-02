@@ -14,7 +14,7 @@ module.exports =
   facebookCallbackPath: '/users/auth/facebook/callback'
   twitterLastStepPath: '/users/auth/twitter/email'
   logoutPath: '/users/sign_out'
-  signupRedirect: '/'
+  signupRedirect: '/personalize'
   userKeys: ['id', 'type', 'name', 'email', 'phone', 'lab_features',
     'default_profile_id', 'has_partner_access', 'collector_level']
   twitterSignupTempEmail: (token) ->

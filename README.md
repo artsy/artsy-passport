@@ -31,7 +31,7 @@ app.use artsyPassport
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
-  signupRedirect: '/personalize' # sets a session variable `redirectTo` that can be handled on your app after signup
+  signupRedirect: '/personalize' # Route to redirect to after signing up
   facebookPath: '/users/auth/facebook' # Url to point your facebook button to
   twitterPath: '/users/auth/twitter' # Url to point your twitter button to
   linkedinPath: '/users/auth/linkedin' # Url to point your linkedin button to

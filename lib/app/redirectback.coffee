@@ -1,6 +1,6 @@
 #
 # Redirects back based on query params, session, or w/e else.
-# Code stolen from Force, thanks @dzucconi
+# Code stolen from Force, thanks @dzucconi!
 #
 
 _ = require 'underscore'
@@ -36,7 +36,7 @@ safeAddress = (address) ->
 sanitizeRedirect = (address) ->
   if safeAddress(address) then address else redirectFallback
 
-module.exports = (req, res, next) ->
+module.exports = (req, res) ->
   url = req.body['redirect-to'] or
         req.query['redirect-to'] or
         req.params.redirect_uri or
