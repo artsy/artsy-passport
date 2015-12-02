@@ -3,14 +3,26 @@
 # into a session.
 #
 
+_ = require 'underscore'
 opts = require '../options'
+request = require 'superagent'
+async = require 'async'
 
 @serialize = (user, done) ->
-  user.fetch
-    success: ->
-      keys = ['accessToken'].concat opts.userKeys
-      done null, user.pick(keys)
-    error: (m, e) -> done e.text
+  async.parallel [
+    (cb) ->
+      request
+        .get("#{opts.ARTSY_URL}/api/v1/me")
+        .set('X-Access-Token': user.get 'accessToken').end(cb)
+    (cb) ->
+      request
+        .get("#{opts.ARTSY_URL}/api/v1/me/authentications")
+        .set('X-Access-Token': user.get 'accessToken').end(cb)
+  ], (err, [{ body: userData },{ body: authsData }]) ->
+    return done err if err
+    user.set(userData).set(authentications: authsData)
+    keys = ['accessToken', 'authentications'].concat opts.userKeys
+    done null, user.pick(keys)
 
 @deserialize = (userData, done) ->
   done null, new opts.CurrentUser(userData)

@@ -23,13 +23,11 @@ artsyXapp = require 'artsy-xapp'
   if req.user
     request.post(
       "#{opts.ARTSY_URL}/api/v1/me/authentications/linkedin"
-    ).query(
+    ).send(
       oauth_token: token
       oauth_token_secret: tokenSecret
       access_token: req.user.get 'accessToken'
-    ).end (res) ->
-      err = res.body.error or res.body.message + ': LinkedIn' if res.error
-      done err, req.user
+    ).end (err, res) -> done err, req.user
   # Login with Linkedin account
   else
     request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
@@ -43,7 +41,6 @@ artsyXapp = require 'artsy-xapp'
       oauth_token: token
       oauth_token_secret: tokenSecret
       provider: 'linkedin'
-      name: profile?.displayName
     )
 
 @facebook = (req, token, refreshToken, profile, done) ->
@@ -132,5 +129,5 @@ onAccessToken = (req, done, params) -> (err, res) ->
     done null, false, err
   # Unknown Exception.
   else
-    console.warn "Error requesting an access token from Artsy", err
+    console.warn "Error requesting an access token from Artsy '#{msg}'"
     done err

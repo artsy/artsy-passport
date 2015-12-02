@@ -56,7 +56,7 @@ redirectBack = require './redirectback'
     else if req.artsyPassportSignedUp and provider is 'twitter'
       res.redirect opts.twitterLastStepPath
     else if req.artsyPassportSignedUp
-      res.redirect opts.signupRedirect
+      res.redirect opts.afterSignupPagePath
     else
       redirectBack req, res
 

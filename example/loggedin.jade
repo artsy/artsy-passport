@@ -8,3 +8,19 @@ html(lang="en")
     != sharify.script()
     script( src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js' )
     script( src='/client.js' )
+    h2 Linked Accounts
+    - providers = user.get('authentications').map(function(a) { return a.provider })
+    if providers.indexOf('facebook') > -1
+      | Connected Facebook
+    else
+      a( href='/users/auth/facebook' ) Connect Facebook
+    br
+    if providers.indexOf('twitter') > -1
+      | Connected Twitter
+    else
+      a( href='/users/auth/twitter' ) Connect Twitter
+    br
+    if providers.indexOf('linkedin') > -1
+      | Connected LinkedIn
+    else
+      a( href='/users/auth/linkedin' ) Connect LinkedIn

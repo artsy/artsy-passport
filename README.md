@@ -19,6 +19,9 @@ _Values indicate defaults._
 
 ````coffeescript
 app.use artsyPassport
+
+  # Pass in env vars
+  # ----------------
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
   TWITTER_KEY: # Twitter consumer key
@@ -31,23 +34,38 @@ app.use artsyPassport
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
-  signupRedirect: '/personalize' # Route to redirect to after signing up
-  facebookPath: '/users/auth/facebook' # Url to point your facebook button to
-  twitterPath: '/users/auth/twitter' # Url to point your twitter button to
-  linkedinPath: '/users/auth/linkedin' # Url to point your linkedin button to
-  loginPath: '/users/sign_in' # POST `email` and `password` to this path to login
-  signupPath: '/users/invitation/accept' # POST `email` and `password` to this path to signup
-  twitterCallbackPath: '/users/auth/twitter/callback' # After twitter auth callback url
-  facebookCallbackPath: '/users/auth/facebook/callback' # After facebook auth callback url
-  linkedinCallbackPath: '/users/auth/linkedin/callback' # After linkedin auth callback url
-  # The user data to cache in the session
-  userKeys: ['id', 'type', 'name', 'email', 'phone', 'lab_features', 'default_profile_id', 'collector_level']
-  CurrentUser: # Backbone Model class to serialize the user into e.g. `CurrentUser`
-  # Temporary generated email for twitter signup.
-  twitterSignupTempEmail: (token, secret, profile) -> 'md5hash@artsy.tmp'
-  # Path for a "One last step" UI that lets Artsy store the user's email after
-  # twitter signup.
+  
+  # Defaults you probably don't need to touch
+  # -----------------------------------------
+  # Local auth
+  loginPath: '/users/sign_in'
+  signupPath: '/users/invitation/accept'
+  linkedinPath: '/users/auth/linkedin'
+
+  # Social auth
+  linkedinPath: '/users/auth/linkedin'
+  linkedinCallbackPath: '/users/auth/linkedin/callback'
+  facebookPath: '/users/auth/facebook'
+  facebookCallbackPath: '/users/auth/facebook/callback'
+  twitterPath: '/users/auth/twitter'
+  twitterCallbackPath: '/users/auth/twitter/callback'
   twitterLastStepPath: '/users/auth/twitter/email'
+  twitterSignupTempEmail: (token) ->
+    hash = crypto.createHash('sha1').update(token).digest('hex')
+    "#{hash.substr 0, 12}@artsy.tmp"
+
+  # Landing page paths
+  loginPagePath: '/log_in'
+  signupPagePath: '/sign_up'
+  settingsPagePath: '/user/edit'
+  afterSignupPagePath: '/personalize'
+
+  # Misc
+  logoutPath: '/users/sign_out'
+  userKeys: [
+    'id', 'type', 'name', 'email', 'phone', 'lab_features',
+    'default_profile_id', 'has_partner_access', 'collector_level'
+  ]
 ````
 
 The keys are cased so it's convenient to pass in a configuration hash. A minimal setup could look like this:
@@ -86,6 +104,25 @@ form( action='/users/invitation/accept', method='POST' )
   input( name='email' )
   input( name='password' )
   button( type='submit' ) Signup
+````
+
+#### And maybe a settings page for linking accounts...
+
+````jade
+h1 Linked Accounts
+- providers = user.get('authentications').map(function(a) { return a.provider })
+if providers.indexOf('facebook') > 0
+  a( href='/users/auth/facebook' ) Connect Facebook
+else
+  | Connected Facebook
+if providers.indexOf('twitter') > 0
+  a( href='/users/auth/twitter' ) Connect Twitter
+else
+  | Connected Twitter
+if providers.indexOf('linkedin') > 0
+  a( href='/users/auth/linkedin' ) Connect LinkedIn
+else
+  | Connected LinkedIn
 ````
 
 #### Finally there's this weird "one last step" UI for twitter to store emails after signup.
@@ -160,6 +197,8 @@ module.exports =
   FACEBOOK_SECRET: ''
   TWITTER_KEY: ''
   TWITTER_SECRET: ''
+  LINKEDIN_KEY: ''
+  LINKEDIN_SECRET: ''
   ARTSY_ID: ''
   ARTSY_SECRET: ''
   ARTSY_URL: 'https://api.artsy.net'

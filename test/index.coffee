@@ -125,7 +125,7 @@ describe 'Artsy Passport methods', ->
 
       it 'sets the redirectTo session var if a user is created', ->
         @end null, body: { name: 'Cab' }
-        @req.session.redirectTo.should.equal @opts.signupRedirect
+        @req.session.redirectTo.should.equal @opts.afterSignupPagePath
 
 
   describe '#socialSignup', ->
