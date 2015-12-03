@@ -17,9 +17,17 @@ config = require '../config.coffee'
 class CurrentUser extends Backbone.Model
   url: -> "#{config.ARTSY_URL}/api/v1/me"
   sync: (method, model, options = {}) ->
-    options.data ?= {}
-    options.data.access_token = @get 'accessToken'
+    options.headers ?= {}
+    options.headers['X-Access-Token'] = @get 'accessToken'
     super
+  unlink: (options) ->
+    auth = new Backbone.Model id: 'foo'
+    auth.url = "#{config.ARTSY_URL}/api/v1/me/authentications/#{options.provider}"
+    console.log auth.url
+    auth.destroy
+      headers: 'X-Access-Token': @get 'accessToken'
+      error: options.error
+      success: => @fetch options
 
 sharify.data = config
 
@@ -45,26 +53,35 @@ setup = (app) ->
   # Setup Artsy Passport
   app.use artsyPassport _.extend config,
     CurrentUser: CurrentUser
-    loginPagePath: '/'
-    signupPagePath: '/'
-    settingsPagePath: '/'
   { loginPagePath, signupPagePath, settingsPagePath,
-    afterSignupPagePath, twitterLastStepPath } = artsyPassport.options
+    afterSignupPagePath, twitterLastStepPath, logoutPath } = artsyPassport.options
 
   # App specific routes that render a login/signup form and logged in view
-  app.get '/', (req, res) ->
+  app.get '(/|/log_in|/sign_up|/user/edit)', (req, res) ->
     if req.user? then res.render 'loggedin' else res.render 'login'
   app.get afterSignupPagePath, (req, res) ->
-    res.send 'Personalize Flow for ' + req.user.get('name')
+    res.render 'personalize'
   app.get twitterLastStepPath, (req, res) ->
     res.render 'onelaststep'
+
+  # Potential candidates to be first class in AP. Delete and unlink account
+  # handlers
+  app.get '/deleteaccount', (req, res, next) ->
+    return next() unless req.user?
+    req.user.destroy
+      error: (m, e) -> next e
+      success: -> res.redirect logoutPath
+  app.get '/unlink/:provider', (req, res, next) ->
+    req.user.unlink
+      provider: req.params.provider
+      error: (m, e) -> next e
+      success: (m, r) -> res.redirect settingsPagePath
   app.get '/nocsrf', (req, res) ->
     res.render 'nocsrf'
-  app.delete '/users/sign_out', (req, res) ->
-    res.send JSON.stringify(status: 'ok')
 
   # Error handler
   app.use (err, req, res, next) ->
+    console.warn err
     res.render 'error', err: err.stack
 
   # Start server

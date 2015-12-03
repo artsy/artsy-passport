@@ -6,32 +6,39 @@ doctype html
 html(lang="en")
   head
     title Login
+    style.
+      label, a {
+        display: block;
+      }
   body
     #login
       h1 Login
       pre!= error
-      a( href='/users/auth/facebook' ) Login via Facebook
-      br
-      a( href='/users/auth/twitter' ) Login via Twitter
-      br
-      a( href='/users/auth/linkedin' ) Login via LinkedIn
-      br
-      form( action='/users/sign_in', method='POST' )
+      a( href=ap.facebookPath ) Login via Facebook
+      a( href=ap.twitterPath ) Login via Twitter
+      form( action=ap.loginPagePath, method='POST' )
         h3 Login via Email
-        mixin email-password
+        label Email
+          input( name='email' )
+        label Password
+          input( name='password' type='password' )
         input( type="hidden" name="_csrf" value=csrfToken )
         button( type='submit' ) Login
     hr
     #signup
       h1 Signup
       pre!= error
-      a( href='/users/auth/facebook?sign_up=true' ) Signup via Facebook
-      br
-      a( href='/users/auth/twitter?sign_up=true' ) Signup via Twitter
-      form.signup( action='/users/invitation/accept', method='POST' )
+      a( href=ap.facebookPath ) Signup via Facebook
+      a( href=ap.twitterPath ) Signup via Twitter
+      form( action=ap.signupPagePath, method='POST' )
         h3 Signup via Email
-        input( name='name', placeholder='Name...' )
-        mixin email-password
+        label Name
+          input( name='name' )
+        label Email
+          input( name='email' )
+        label Password
+          input( name='password' type='password' )
+        input( type="hidden" name="_csrf" value=csrfToken )
         button( type='submit' ) Signup
     hr
     #trust

@@ -3,7 +3,8 @@ sd = require('sharify').data
 $ ->
   if sd.CURRENT_USER
     $('body').append "<br><br>your email from the client-side!<br> " + sd.CURRENT_USER.email
-    $('a.logout').click ->
+    $('[href*=sign_out]').click (e) ->
+      e.preventDefault()
       $.ajax
         url: '/users/sign_out'
         type: 'DELETE'
@@ -11,6 +12,8 @@ $ ->
           window.location = '/'
         error: (xhr, status, error) ->
           alert(error)
+    $('[href*=delete]').click (e) ->
+      e.preventDefault() unless confirm "Are you sure?"
   else
     $('#trust button').click ->
       $.ajax

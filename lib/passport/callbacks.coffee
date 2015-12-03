@@ -101,7 +101,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
   if not err and not res?.body.access_token?
     err = new Error "Gravity returned no access token and no error"
   err?.message = msg = res?.body?.error_description or res?.body?.error or
-        res?.text or err.stack or err.toString()
+    res?.text or err.stack or err.toString()
   # No errors—create the user from the access token.
   if not err
     done null, new opts.CurrentUser accessToken: res.body.access_token
@@ -124,10 +124,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
             grant_type: 'oauth_token'
             oauth_provider: params.provider
           ).end onAccessToken(req, done, params)
-  # Invalid email or password.
-  else if msg.match 'invalid email or password'
-    done null, false, err
-  # Unknown Exception.
+  # Uncaught Exception.
   else
     console.warn "Error requesting an access token from Artsy '#{msg}'"
     done err

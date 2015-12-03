@@ -18,26 +18,29 @@ module.exports = ->
     usernameField: 'email'
     passReqToCallback: true
   , callbacks.local
-  passport.use new FacebookStrategy
-    clientID: opts.FACEBOOK_ID
-    clientSecret: opts.FACEBOOK_SECRET
-    passReqToCallback: true
-    callbackURL: "#{opts.APP_URL}#{opts.facebookCallbackPath}"
-  , callbacks.facebook
-  passport.use new TwitterStrategy
-    consumerKey: opts.TWITTER_KEY
-    consumerSecret: opts.TWITTER_SECRET
-    passReqToCallback: true
-    callbackURL: "#{opts.APP_URL}#{opts.twitterCallbackPath}"
-  , callbacks.twitter
-  passport.use new LinkedInStrategy
-    consumerKey: opts.LINKEDIN_KEY
-    consumerSecret: opts.LINKEDIN_SECRET
-    passReqToCallback: true
-    callbackURL: "#{opts.APP_URL}#{opts.linkedinCallbackPath}"
-    profileFields: [
-      'id', 'first-name', 'last-name', 'email-address', 'headline', 'location',
-      'industry', 'summary', 'specialties', 'positions', 'public-profile-url'
-    ]
-  , callbacks.linkedin
+  if opts.FACEBOOK_ID and opts.FACEBOOK_SECRET
+    passport.use new FacebookStrategy
+      clientID: opts.FACEBOOK_ID
+      clientSecret: opts.FACEBOOK_SECRET
+      passReqToCallback: true
+      callbackURL: "#{opts.APP_URL}#{opts.facebookCallbackPath}"
+    , callbacks.facebook
+  if opts.TWITTER_KEY and opts.TWITTER_SECRET
+    passport.use new TwitterStrategy
+      consumerKey: opts.TWITTER_KEY
+      consumerSecret: opts.TWITTER_SECRET
+      passReqToCallback: true
+      callbackURL: "#{opts.APP_URL}#{opts.twitterCallbackPath}"
+    , callbacks.twitter
+  if opts.LINKEDIN_KEY and opts.LINKEDIN_SECRET
+    passport.use new LinkedInStrategy
+      consumerKey: opts.LINKEDIN_KEY
+      consumerSecret: opts.LINKEDIN_SECRET
+      passReqToCallback: true
+      callbackURL: "#{opts.APP_URL}#{opts.linkedinCallbackPath}"
+      profileFields: [
+        'id', 'first-name', 'last-name', 'email-address', 'headline', 'location',
+        'industry', 'summary', 'specialties', 'positions', 'public-profile-url'
+      ]
+    , callbacks.linkedin
 

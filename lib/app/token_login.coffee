@@ -5,6 +5,8 @@
 
 opts = require '../options'
 qs = require 'querystring'
+request = require 'superagent'
+_  = require 'underscore'
 
 @headerLogin = (req, res, next) ->
   return next() if req.path is opts.logoutPath

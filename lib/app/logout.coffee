@@ -5,6 +5,7 @@
 request = require 'superagent'
 opts = require '../options'
 { parse } = require 'url'
+redirectBack = require './redirectback'
 
 @denyBadLogoutLinks = (req, res, next) ->
   if parse(req.get 'Referrer').hostname.match 'artsy.net'
@@ -22,4 +23,4 @@ opts = require '../options'
       if req.xhr
         res.status(200).send msg: 'success'
       else
-        res.redirect req.query['redirect-to'] or '/'
+        redirectBack req, res

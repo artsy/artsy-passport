@@ -3,25 +3,29 @@ html(lang="en")
   head
     title Login
   body
-    h1 Hello #{user.get('name')}
-    a.logout( href='#' ) Logout
-    != sharify.script()
-    script( src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js' )
-    script( src='/client.js' )
-    h2 Linked Accounts
-    pre!= error
-    - providers = user.get('authentications').map(function(a) { return a.provider })
-    if providers.indexOf('facebook') > -1
-      | Connected Facebook
-    else
-      a( href='/users/auth/facebook' ) Connect Facebook
-    br
-    if providers.indexOf('twitter') > -1
-      | Connected Twitter
-    else
-      a( href='/users/auth/twitter' ) Connect Twitter
-    br
-    if providers.indexOf('linkedin') > -1
-      | Connected LinkedIn
-    else
-      a( href='/users/auth/linkedin' ) Connect LinkedIn
+    #intro
+      h1 Hello #{user.get('name')}
+      a( href=ap.logoutPath ) Logout
+      br
+      a( href='/deleteaccount' ) Delete Account
+      != sharify.script()
+      script( src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js' )
+      script( src='/client.js' )
+    #settings
+      h2 Linked Accounts
+      pre!= error
+      - providers = user.get('authentications').map(function(a) { return a.provider })
+      if providers.indexOf('facebook') > -1
+        a( href='/unlink/facebook' ) Disconnect Facebook
+      else
+        a( href=ap.facebookPath ) Connect Facebook
+      br
+      if providers.indexOf('twitter') > -1
+        a( href='/unlink/twitter' ) Disconnect Twitter
+      else
+        a( href=ap.twitterPath ) Connect Twitter
+      br
+      if providers.indexOf('linkedin') > -1
+        a( href='/unlink/linkedin' ) Disconnect Linkedin
+      else
+        a( href=ap.linkedinPath ) Connect LinkedIn

@@ -11,19 +11,24 @@ qs = require 'querystring'
 redirectBack = require './redirectback'
 request = require 'superagent'
 artsyXapp = require 'artsy-xapp'
+Mailcheck = require 'mailcheck'
 
 @onLocalLogin = (req, res, next) ->
   passport.authenticate('local') req, res, (err) ->
-    if req.xhr and err
-      res.send 403, { success: false, error: err }
-    else if req.xhr and req.user?
-      res.send { success: true, user: req.user.toJSON() }
-    else if req.xhr and not req.user?
-      res.send 500, { success: false, error: "Missing user." }
-    else if err
-      next err
+    if req.xhr
+      if err
+        res.send 500, { success: false, error: errMsg(err) }
+      else if not req.user?
+        res.send 403, { success: false, error: "Invalid email or password." }
+      else if req.user?
+        res.send { success: true, user: req.user.toJSON() }
     else
-      redirectBack req, res
+      if err?.response?.body?.error_description is 'invalid email or password'
+        res.redirect opts.loginPagePath + '?error=Invalid email or password.'
+      else if err
+        next err
+      else
+        redirectBack req, res
 
 @onLocalSignup = (req, res, next) ->
   request
@@ -33,9 +38,21 @@ artsyXapp = require 'artsy-xapp'
       name: req.body.name
       email: req.body.email
       password: req.body.password
-    ).end (err, res) ->
-    errMsg = if res.status isnt 201 then res.body.message else err?.text
-    if errMsg then next(new Error errMsg) else next()
+    ).end (err, sres) ->
+      if err and errMsg(err) is 'Email is invalid.'
+        suggestion = Mailcheck.run(email: req.body.email)?.full
+        msg = "Email is invalid."
+        msg += " Did you mean #{suggestion}?" if suggestion
+        if req.xhr
+          res.send 403, { success: false, error: msg }
+        else
+          res.redirect opts.signupPagePath + "?error=#{msg}"
+      else if err and req.xhr
+        res.send 500, { success: false, error: errMsg(err) }
+      else if err
+        next new Error err
+      else
+        next()
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
   passport.authenticate(provider,
@@ -79,3 +96,12 @@ artsyXapp = require 'artsy-xapp'
 @ensureLoggedInOnAfterSignupPage = (req, res, next) ->
   res.redirect opts.loginPagePath unless req.user?
   next()
+
+
+errMsg = (err) ->
+  err.message = (
+    err.response?.body?.message or
+    err.response?.body?.error or
+    err.response?.body?.error_description or
+    err.message
+  )

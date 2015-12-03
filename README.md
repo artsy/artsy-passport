@@ -77,11 +77,27 @@ app.use artsyPassport _.extend config,
 
 ````jade
 h1 Login
-.error!= error
-a( href='/users/auth/facebook' ) Login via Facebook
-a( href='/users/auth/twitter' ) Login via Twitter
-form( action='/users/sign_in', method='POST' )
+pre!= error
+a( href=ap.facebookPath ) Login via Facebook
+a( href=ap.twitterPath ) Login via Twitter
+form( action=ap.loginPagePath, method='POST' )
   h3 Login via Email
+  input( name='name' )
+  input( name='email' )
+  input( name='password' )
+  input( type="hidden" name="_csrf" value=csrfToken )
+  button( type='submit' ) Login
+````
+
+#### And maybe a signup form...
+
+````jade
+h1 Signup
+pre!= error
+a( href=ap.facebookPath ) Signup via Facebook
+a( href=ap.twitterPath ) Signup via Twitter
+form( action=ap.signupPagePath, method='POST' )
+  h3 Signup via Email
   input( name='name' )
   input( name='email' )
   input( name='password' )
@@ -89,47 +105,34 @@ form( action='/users/sign_in', method='POST' )
   button( type='submit' ) Signup
 ````
 
-#### And maybe a signup form...
-
-````jade
-h1 Signup
-.error!= error
-a( href='/users/auth/facebook?sign_up=true' ) Signup via Facebook
-a( href='/users/auth/twitter?sign_up=true' ) Signup via Twitter
-form( action='/users/invitation/accept', method='POST' )
-  h3 Signup via Email
-  input( name='name' )
-  input( name='email' )
-  input( name='password' )
-  button( type='submit' ) Signup
-````
-
 #### And maybe a settings page for linking accounts...
 
 ````jade
-h1 Linked Accounts
-.error!= error
+h2 Linked Accounts
+pre!= error
 - providers = user.get('authentications').map(function(a) { return a.provider })
-if providers.indexOf('facebook') > 0
-  a( href='/users/auth/facebook' ) Connect Facebook
-else
+if providers.indexOf('facebook') > -1
   | Connected Facebook
-if providers.indexOf('twitter') > 0
-  a( href='/users/auth/twitter' ) Connect Twitter
 else
+  a( href=ap.facebookPath ) Connect Facebook
+br
+if providers.indexOf('twitter') > -1
   | Connected Twitter
-if providers.indexOf('linkedin') > 0
-  a( href='/users/auth/linkedin' ) Connect LinkedIn
 else
+  a( href=ap.twitterPath ) Connect Twitter
+br
+if providers.indexOf('linkedin') > -1
   | Connected LinkedIn
+else
+  a( href=ap.linkedinPath ) Connect LinkedIn
 ````
 
 #### Finally there's this weird "one last step" UI for twitter to store emails after signup.
 
 ````jade
 h1 Just one more step
-.error!= error
-form( method='post', action='/users/auth/twitter/email' )
+pre!= error
+form( method='post', action=ap.twitterLastStepPath )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
 ````

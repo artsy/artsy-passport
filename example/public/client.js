@@ -6,7 +6,8 @@ sd = require('sharify').data;
 $(function() {
   if (sd.CURRENT_USER) {
     $('body').append("<br><br>your email from the client-side!<br> " + sd.CURRENT_USER.email);
-    return $('a.logout').click(function() {
+    $('[href*=sign_out]').click(function(e) {
+      e.preventDefault();
       return $.ajax({
         url: '/users/sign_out',
         type: 'DELETE',
@@ -17,6 +18,11 @@ $(function() {
           return alert(error);
         }
       });
+    });
+    return $('[href*=delete]').click(function(e) {
+      if (!confirm("Are you sure?")) {
+        return e.preventDefault();
+      }
     });
   } else {
     return $('#trust button').click(function() {
