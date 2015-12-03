@@ -37,10 +37,6 @@ app.use artsyPassport
   
   # Defaults you probably don't need to touch
   # -----------------------------------------
-  # Local auth
-  loginPath: '/users/sign_in'
-  signupPath: '/users/invitation/accept'
-  linkedinPath: '/users/auth/linkedin'
 
   # Social auth
   linkedinPath: '/users/auth/linkedin'
@@ -54,7 +50,7 @@ app.use artsyPassport
     hash = crypto.createHash('sha1').update(token).digest('hex')
     "#{hash.substr 0, 12}@artsy.tmp"
 
-  # Landing page paths
+  # Landing pages
   loginPagePath: '/log_in'
   signupPagePath: '/sign_up'
   settingsPagePath: '/user/edit'
@@ -81,6 +77,7 @@ app.use artsyPassport _.extend config,
 
 ````jade
 h1 Login
+.error!= error
 a( href='/users/auth/facebook' ) Login via Facebook
 a( href='/users/auth/twitter' ) Login via Twitter
 form( action='/users/sign_in', method='POST' )
@@ -96,6 +93,7 @@ form( action='/users/sign_in', method='POST' )
 
 ````jade
 h1 Signup
+.error!= error
 a( href='/users/auth/facebook?sign_up=true' ) Signup via Facebook
 a( href='/users/auth/twitter?sign_up=true' ) Signup via Twitter
 form( action='/users/invitation/accept', method='POST' )
@@ -110,6 +108,7 @@ form( action='/users/invitation/accept', method='POST' )
 
 ````jade
 h1 Linked Accounts
+.error!= error
 - providers = user.get('authentications').map(function(a) { return a.provider })
 if providers.indexOf('facebook') > 0
   a( href='/users/auth/facebook' ) Connect Facebook
@@ -129,28 +128,23 @@ else
 
 ````jade
 h1 Just one more step
-= error
+.error!= error
 form( method='post', action='/users/auth/twitter/email' )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
 ````
 
-#### Handle login and signup callbacks.
+#### Render the pages
 
 ````coffeescript
-{ loginPath, signupPath, twitterCallbackPath,
-  twitterLastStepPath, facebookCallbackPath } = artsyPassport.options
+{ loginPagePath, signupPagePath, settingsPagePath,
+  afterSignupPagePath, twitterLastStepPath } = artsyPassport.options
 
-app.post loginPath, (req, res) ->
-  res.redirect '/'
-app.post signupPath, (req, res) ->
-  res.redirect '/personalize'
-app.get twitterCallbackPath, (req, res) ->
-  if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
-app.get twitterLastStepPath, (req, res) ->
-  res.render 'twitter_last_step', error: req.query.error
-app.get facebookCallbackPath, (req, res) ->
-  if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
+app.get loginPagePath, (req, res) -> res.render 'login'
+app.get signupPagePath, (req, res) -> res.render 'signup'
+app.get settingsPagePath, (req, res) -> res.render 'settings'
+app.get afterSignupPagePath, (req, res) -> res.render 'personalize'
+app.get twitterLastStepPath, (req, res) -> res.render 'twitter_last_step'
 ````
 
 #### Access a logged in Artsy user in a variety of ways...

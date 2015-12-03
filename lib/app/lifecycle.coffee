@@ -9,6 +9,8 @@ opts = require '../options'
 passport = require 'passport'
 qs = require 'querystring'
 redirectBack = require './redirectback'
+request = require 'superagent'
+artsyXapp = require 'artsy-xapp'
 
 @onLocalLogin = (req, res, next) ->
   passport.authenticate('local') req, res, (err) ->
@@ -18,8 +20,22 @@ redirectBack = require './redirectback'
       res.send { success: true, user: req.user.toJSON() }
     else if req.xhr and not req.user?
       res.send 500, { success: false, error: "Missing user." }
-    else
+    else if err
       next err
+    else
+      redirectBack req, res
+
+@onLocalSignup = (req, res, next) ->
+  request
+    .post(opts.ARTSY_URL + '/api/v1/user')
+    .set('X-Xapp-Token': artsyXapp.token)
+    .send(
+      name: req.body.name
+      email: req.body.email
+      password: req.body.password
+    ).end (err, res) ->
+    errMsg = if res.status isnt 201 then res.body.message else err?.text
+    if errMsg then next(new Error errMsg) else next()
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
   passport.authenticate(provider,
@@ -60,17 +76,6 @@ redirectBack = require './redirectback'
     else
       redirectBack req, res
 
-@signup = (req, res, next) ->
-  request.post(opts.ARTSY_URL + '/api/v1/user').send(
-    name: req.body.name
-    email: req.body.email
-    password: req.body.password
-    xapp_token: opts.XAPP_TOKEN
-  ).end onCreateUser(next)
-
-onCreateUser = (next) -> (err, res) ->
-  if res.status isnt 201
-    errMsg = res.body.message
-  else
-    errMsg = err?.text
-  if errMsg then next(errMsg) else next()
+@ensureLoggedInOnAfterSignupPage = (req, res, next) ->
+  res.redirect opts.loginPagePath unless req.user?
+  next()

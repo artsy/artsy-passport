@@ -2,11 +2,6 @@ crypto = require 'crypto'
 
 module.exports =
 
-  # Local auth
-  loginPath: '/users/sign_in'
-  signupPath: '/users/invitation/accept'
-  linkedinPath: '/users/auth/linkedin'
-
   # Social auth
   linkedinPath: '/users/auth/linkedin'
   linkedinCallbackPath: '/users/auth/linkedin/callback'
@@ -19,7 +14,7 @@ module.exports =
     hash = crypto.createHash('sha1').update(token).digest('hex')
     "#{hash.substr 0, 12}@artsy.tmp"
 
-  # Landing page paths
+  # Landing pages
   loginPagePath: '/log_in'
   signupPagePath: '/sign_up'
   settingsPagePath: '/user/edit'

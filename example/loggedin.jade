@@ -9,6 +9,7 @@ html(lang="en")
     script( src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js' )
     script( src='/client.js' )
     h2 Linked Accounts
+    pre!= error
     - providers = user.get('authentications').map(function(a) { return a.provider })
     if providers.indexOf('facebook') > -1
       | Connected Facebook

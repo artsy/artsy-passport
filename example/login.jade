@@ -9,6 +9,7 @@ html(lang="en")
   body
     #login
       h1 Login
+      pre!= error
       a( href='/users/auth/facebook' ) Login via Facebook
       br
       a( href='/users/auth/twitter' ) Login via Twitter
@@ -23,6 +24,7 @@ html(lang="en")
     hr
     #signup
       h1 Signup
+      pre!= error
       a( href='/users/auth/facebook?sign_up=true' ) Signup via Facebook
       br
       a( href='/users/auth/twitter?sign_up=true' ) Signup via Twitter

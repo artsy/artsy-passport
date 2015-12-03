@@ -45,35 +45,29 @@ setup = (app) ->
   # Setup Artsy Passport
   app.use artsyPassport _.extend config,
     CurrentUser: CurrentUser
-  { loginPath, signupPath, twitterCallbackPath, facebookCallbackPath,
-    twitterLastStepPath } = artsyPassport.options
-
-  # Artsy passport route handlers
-  app.post loginPath, (req, res) ->
-    res.redirect '/'
-  app.post signupPath, (req, res) ->
-    res.redirect '/personalize'
-  app.get twitterCallbackPath, (req, res) ->
-    if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
-  app.get twitterLastStepPath, (req, res) ->
-    res.render 'onelaststep'
-  app.get facebookCallbackPath, (req, res) ->
-    if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
+    loginPagePath: '/'
+    signupPagePath: '/'
+    settingsPagePath: '/'
+  { loginPagePath, signupPagePath, settingsPagePath,
+    afterSignupPagePath, twitterLastStepPath } = artsyPassport.options
 
   # App specific routes that render a login/signup form and logged in view
   app.get '/', (req, res) ->
     if req.user? then res.render 'loggedin' else res.render 'login'
+  app.get afterSignupPagePath, (req, res) ->
+    res.send 'Personalize Flow for ' + req.user.get('name')
+  app.get twitterLastStepPath, (req, res) ->
+    res.render 'onelaststep'
   app.get '/nocsrf', (req, res) ->
     res.render 'nocsrf'
-  app.get '/personalize', (req, res) ->
-    res.redirect '/' unless req.user?
-    res.send 'Personalize Flow for ' + req.user.get('name')
   app.delete '/users/sign_out', (req, res) ->
     res.send JSON.stringify(status: 'ok')
 
   # Error handler
   app.use (err, req, res, next) ->
-    res.send err.stack
+    res.render 'error', err: err.stack
+
+  # Start server
   return unless module is require.main
   artsyXapp.on('error', (e) -> console.warn(e); process.exit(1)).init
     url: config.ARTSY_URL

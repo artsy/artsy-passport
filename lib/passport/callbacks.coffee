@@ -100,7 +100,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
     err = new Error "Gravity returned a generic #{res.status} html page"
   if not err and not res?.body.access_token?
     err = new Error "Gravity returned no access token and no error"
-  msg = res?.body?.error_description or res?.body?.error or
+  err?.message = msg = res?.body?.error_description or res?.body?.error or
         res?.text or err.stack or err.toString()
   # No errors—create the user from the access token.
   if not err
