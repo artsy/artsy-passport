@@ -23,7 +23,6 @@ class CurrentUser extends Backbone.Model
   unlink: (options) ->
     auth = new Backbone.Model id: 'foo'
     auth.url = "#{config.ARTSY_URL}/api/v1/me/authentications/#{options.provider}"
-    console.log auth.url
     auth.destroy
       headers: 'X-Access-Token': @get 'accessToken'
       error: options.error
@@ -81,8 +80,8 @@ setup = (app) ->
 
   # Error handler
   app.use (err, req, res, next) ->
-    console.warn err
-    res.render 'error', err: err.stack
+    console.warn err.stack
+    res.render 'error', err: err?.response?.body?.error or err.stack
 
   # Start server
   return unless module is require.main

@@ -57,6 +57,6 @@
     "coffeeify": "*",
     "artsy-xapp": "*",
     "zombie": "*",
-    "rewire": "*"
+    "rewire": "2.2.0"
   }
 }

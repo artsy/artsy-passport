@@ -27,10 +27,13 @@ Mailcheck = require 'mailcheck'
         res.redirect opts.loginPagePath + '?error=Invalid email or password.'
       else if err
         next err
+      else if req.artsyPassportSignedUp
+        res.redirect opts.afterSignupPagePath
       else
         redirectBack req, res
 
 @onLocalSignup = (req, res, next) ->
+  req.artsyPassportSignedUp = true
   request
     .post(opts.ARTSY_URL + '/api/v1/user')
     .set('X-Xapp-Token': artsyXapp.token)

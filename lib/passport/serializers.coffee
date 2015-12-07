@@ -8,7 +8,7 @@ opts = require '../options'
 request = require 'superagent'
 async = require 'async'
 
-@serialize = (user, done) ->
+module.exports.serialize = (user, done) ->
   async.parallel [
     (cb) ->
       request
@@ -24,5 +24,5 @@ async = require 'async'
     keys = ['accessToken', 'authentications'].concat opts.userKeys
     done null, user.pick(keys)
 
-@deserialize = (userData, done) ->
+module.exports.deserialize = (userData, done) ->
   done null, new opts.CurrentUser(userData)
