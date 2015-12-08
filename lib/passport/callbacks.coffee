@@ -114,7 +114,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
       .post(opts.ARTSY_URL + '/api/v1/user')
       .send(_.extend params)
       .set('X-Xapp-Token': artsyXapp.token)
-      .end (err, res) ->
+      .end (err) ->
         return done err if err
         request
           .get("#{opts.ARTSY_URL}/oauth2/access_token")
