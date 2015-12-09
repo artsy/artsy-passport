@@ -100,7 +100,6 @@ Mailcheck = require 'mailcheck'
   res.redirect opts.loginPagePath unless req.user?
   next()
 
-
 errMsg = (err) ->
   err.message = (
     err.response?.body?.message or
