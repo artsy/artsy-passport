@@ -24,7 +24,7 @@
     "node": ">= 0.10.x"
   },
   "scripts": {
-    "test": "mocha test/**/*.coffee",
+    "test": "mocha --recursive",
     "compile": "browserify -t coffeeify example/client.coffee > example/public/client.js",
     "example": "sleep 3 && open http://local.artsy.net:3000 & npm run compile && coffee example/index.coffee"
   },
