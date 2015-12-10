@@ -112,7 +112,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
     req.artsyPassportSignedUp = true
     request
       .post(opts.ARTSY_URL + '/api/v1/user')
-      .send(_.extend params)
+      .send(params)
       .set('X-Xapp-Token': artsyXapp.token)
       .end (err) ->
         return done err if err

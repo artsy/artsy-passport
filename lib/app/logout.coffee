@@ -18,7 +18,7 @@ redirectBack = require './redirectback'
   req.logout()
   request
     .del("#{opts.ARTSY_URL}/api/v1/access_token")
-    .send(access_token: accessToken)
+    .set('X-Access-Token': accessToken)
     .end (error, response) ->
       if req.xhr
         res.status(200).send msg: 'success'
