@@ -4,13 +4,13 @@ Wires up the common auth handlers for Artsy's [Ezel](http://ezeljs.com)-based ap
 
 ## Setup
 
-#### Make sure you first mount session, body parser, and [xapp](https://github.com/artsy/artsy-xapp-middleware) middlware.
+#### Make sure you first mount session, body parser, and start [artsy-xapp](https://github.com/artsy/artsy-xapp).
 
 ````coffeescript
-app.use require('artsy-xapp-middleware') { #... }
 app.use express.bodyParser()
 app.use express.cookieParser('foobar')
 app.use express.cookieSession()
+artsyXapp.init -> app.listen()
 ````
 
 #### Then mount Artsy Passport passing a big configuration hash.
@@ -19,30 +19,49 @@ _Values indicate defaults._
 
 ````coffeescript
 app.use artsyPassport
+
+  # Pass in env vars
+  # ----------------
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
   TWITTER_KEY: # Twitter consumer key
   TWITTER_SECRET: # Twitter consumer secret
+  TWITTER_KEY: # Twitter consumer key
+  TWITTER_SECRET: # Twitter consumer secret
+  LINKEDIN_KEY: # Linkedin app key
+  LINKEDIN_SECRET: # Linkedin app secret
   ARTSY_ID: # Artsy client id
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
-  XAPP_TOKEN: # Artsy X-APP Token
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
-  signupRedirect: '/personalize' # sets a session variable `redirectTo` that can be handled on your app after signup
-  facebookPath: '/users/auth/facebook' # Url to point your facebook button to
-  twitterPath: '/users/auth/twitter' # Url to point your twitter button to
-  loginPath: '/users/sign_in' # POST `email` and `password` to this path to login
-  signupPath: '/users/invitation/accept' # POST `email` and `password` to this path to signup
-  twitterCallbackPath: '/users/auth/twitter/callback' # After twitter auth callback url
-  facebookCallbackPath: '/users/auth/facebook/callback' # After facebook auth callback url
-  # The user data to cache in the session
-  userKeys: ['id', 'type', 'name', 'email', 'phone', 'lab_features', 'default_profile_id', 'collector_level']
-  CurrentUser: # Backbone Model class to serialize the user into e.g. `CurrentUser`
-  # Temporary generated email for twitter signup.
-  twitterSignupTempEmail: (token, secret, profile) -> 'md5hash@artsy.tmp'
-  # Path for a "One last step" UI that lets Artsy store the user's email after
-  # twitter signup.
+  
+  # Defaults you probably don't need to touch
+  # -----------------------------------------
+
+  # Social auth
+  linkedinPath: '/users/auth/linkedin'
+  linkedinCallbackPath: '/users/auth/linkedin/callback'
+  facebookPath: '/users/auth/facebook'
+  facebookCallbackPath: '/users/auth/facebook/callback'
+  twitterPath: '/users/auth/twitter'
+  twitterCallbackPath: '/users/auth/twitter/callback'
   twitterLastStepPath: '/users/auth/twitter/email'
+  twitterSignupTempEmail: (token) ->
+    hash = crypto.createHash('sha1').update(token).digest('hex')
+    "#{hash.substr 0, 12}@artsy.tmp"
+
+  # Landing pages
+  loginPagePath: '/log_in'
+  signupPagePath: '/sign_up'
+  settingsPagePath: '/user/edit'
+  afterSignupPagePath: '/personalize'
+
+  # Misc
+  logoutPath: '/users/sign_out'
+  userKeys: [
+    'id', 'type', 'name', 'email', 'phone', 'lab_features',
+    'default_profile_id', 'has_partner_access', 'collector_level'
+  ]
 ````
 
 The keys are cased so it's convenient to pass in a configuration hash. A minimal setup could look like this:
@@ -58,24 +77,26 @@ app.use artsyPassport _.extend config,
 
 ````jade
 h1 Login
-a( href='/users/auth/facebook' ) Login via Facebook
-a( href='/users/auth/twitter' ) Login via Twitter
-form( action='/users/sign_in', method='POST' )
+pre!= error
+a( href=ap.facebookPath ) Login via Facebook
+a( href=ap.twitterPath ) Login via Twitter
+form( action=ap.loginPagePath, method='POST' )
   h3 Login via Email
   input( name='name' )
   input( name='email' )
   input( name='password' )
   input( type="hidden" name="_csrf" value=csrfToken )
-  button( type='submit' ) Signup
+  button( type='submit' ) Login
 ````
 
 #### And maybe a signup form...
 
 ````jade
 h1 Signup
-a( href='/users/auth/facebook?sign_up=true' ) Signup via Facebook
-a( href='/users/auth/twitter?sign_up=true' ) Signup via Twitter
-form( action='/users/invitation/accept', method='POST' )
+pre!= error
+a( href=ap.facebookPath ) Signup via Facebook
+a( href=ap.twitterPath ) Signup via Twitter
+form( action=ap.signupPagePath, method='POST' )
   h3 Signup via Email
   input( name='name' )
   input( name='email' )
@@ -84,31 +105,49 @@ form( action='/users/invitation/accept', method='POST' )
   button( type='submit' ) Signup
 ````
 
+#### And maybe a settings page for linking accounts...
+
+````jade
+h2 Linked Accounts
+pre!= error
+- providers = user.get('authentications').map(function(a) { return a.provider })
+if providers.indexOf('facebook') > -1
+  | Connected Facebook
+else
+  a( href=ap.facebookPath ) Connect Facebook
+br
+if providers.indexOf('twitter') > -1
+  | Connected Twitter
+else
+  a( href=ap.twitterPath ) Connect Twitter
+br
+if providers.indexOf('linkedin') > -1
+  | Connected LinkedIn
+else
+  a( href=ap.linkedinPath ) Connect LinkedIn
+````
+
 #### Finally there's this weird "one last step" UI for twitter to store emails after signup.
 
 ````jade
 h1 Just one more step
-form( method='post', action='/users/auth/twitter/email' )
+pre!= error
+form( method='post', action=ap.twitterLastStepPath )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
 ````
 
-#### Handle login and signup callbacks.
+#### Render the pages
 
 ````coffeescript
-{ loginPath, signupPath, twitterCallbackPath,
-  twitterLastStepPath, facebookCallbackPath } = artsyPassport.options
+{ loginPagePath, signupPagePath, settingsPagePath,
+  afterSignupPagePath, twitterLastStepPath } = artsyPassport.options
 
-app.post loginPath, (req, res) ->
-  res.redirect '/'
-app.post signupPath, (req, res) ->
-  res.redirect '/personalize'
-app.get twitterCallbackPath, (req, res) ->
-  if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
-app.get twitterLastStepPath, (req, res) ->
-  res.render 'twitter_last_step'
-app.get facebookCallbackPath, (req, res) ->
-  if req.query.sign_up then res.redirect('/personalize') else res.redirect('/')
+app.get loginPagePath, (req, res) -> res.render 'login'
+app.get signupPagePath, (req, res) -> res.render 'signup'
+app.get settingsPagePath, (req, res) -> res.render 'settings'
+app.get afterSignupPagePath, (req, res) -> res.render 'personalize'
+app.get twitterLastStepPath, (req, res) -> res.render 'twitter_last_step'
 ````
 
 #### Access a logged in Artsy user in a variety of ways...
@@ -155,6 +194,8 @@ module.exports =
   FACEBOOK_SECRET: ''
   TWITTER_KEY: ''
   TWITTER_SECRET: ''
+  LINKEDIN_KEY: ''
+  LINKEDIN_SECRET: ''
   ARTSY_ID: ''
   ARTSY_SECRET: ''
   ARTSY_URL: 'https://api.artsy.net'
@@ -168,6 +209,6 @@ module.exports =
   FACEBOOK_PASSWORD: ''
 ````
 
-Then you can check the example by running `make example` and opening [localhost:3000](http://localhost:3000).
+Then you can check the example by running `npm run example` and opening [localhost:3000](http://localhost:3000).
 
-The tests are a combination of integration and middleware unit tests. To run the whole suite use `make test`.
+The tests are a combination of integration and middleware unit tests. To run the whole suite use `npm test`.

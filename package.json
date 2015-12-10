@@ -1,6 +1,6 @@
 {
   "name": "artsy-passport",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
@@ -24,17 +24,23 @@
     "node": ">= 0.10.x"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha --recursive",
+    "compile": "browserify -t coffeeify example/client.coffee > example/public/client.js",
+    "example": "sleep 3 && open http://local.artsy.net:3000 & npm run compile && coffee example/index.coffee"
   },
   "dependencies": {
+    "async": "^1.5.0",
     "coffee-script": "^1.9.2",
     "csurf": "^1.8.3",
     "express": "^4.12.3",
+    "mailcheck": "^1.1.1",
     "passport": "^0.2.1",
     "passport-facebook": "^2.0.0",
+    "passport-linkedin": "^1.0.0",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.3",
-    "superagent": "^1.2.0"
+    "superagent": "^1.2.0",
+    "underscore.string": "^3.2.2"
   },
   "devDependencies": {
     "body-parser": "*",
@@ -53,6 +59,6 @@
     "coffeeify": "*",
     "artsy-xapp": "*",
     "zombie": "*",
-    "rewire": "*"
+    "rewire": "2.2.0"
   }
 }
