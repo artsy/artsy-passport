@@ -209,6 +209,6 @@ module.exports =
   FACEBOOK_PASSWORD: ''
 ````
 
-Then you can check the example by running `make example` and opening [localhost:3000](http://localhost:3000).
+Then you can check the example by running `npm run example` and opening [localhost:3000](http://localhost:3000).
 
-The tests are a combination of integration and middleware unit tests. To run the whole suite use `make test`.
+The tests are a combination of integration and middleware unit tests. To run the whole suite use `npm test`.

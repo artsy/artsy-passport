@@ -1,24 +1,24 @@
 
-describe '#submitTwitterLastStep', ->
+describe 'twitter last step middleware', ->
 
-  before ->
-    opts = @artsyPassport.__get__ 'opts'
-    @submitTwitterLastStep = @artsyPassport.__get__ 'submitTwitterLastStep'
-    @request = @artsyPassport.__get__ 'request'
-    @req = { query: {}, user: { get: -> 'access-foo-token' } }
-    @res = { redirect: sinon.stub() }
-    @next = sinon.stub()
+  describe '#submit', ->
 
-  it 'creates a user', (done) ->
-    @req.body = email: 'foo@bar.com', email_confirmation: 'foo@bar.com'
-    @request.put = (url) ->
-      url.should.containEql 'api/v1/me'
-      send: (data) ->
-        data.email.should.equal 'foo@bar.com'
-        data.email_confirmation.should.equal 'foo@bar.com'
-        done()
-        end: ->
-    @req.param = -> 'foo@bar.com'
-    @submitTwitterLastStep @req, @res, @next
+    it 'creates a user'
 
-  it 'logs in the JSON from the PUT call'
+    it 'logs in a user from the JSON from the PUT call to update the user'
+
+  describe '#login', ->
+
+    it 'ensures the user is logged in from twitter'
+
+  describe '#ensureEmail', ->
+
+    it 'forces a user with a temporary email to go to the one last step'
+
+  describe '#error', ->
+
+    it 'ignores mailchimp errors bubbled up from Gravity'
+
+    it 'sends a sensible error about an account being taken'
+
+    it 'redirects to the twitter last step page with the error message'
