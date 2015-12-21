@@ -26,7 +26,7 @@
   "scripts": {
     "test": "mocha --recursive",
     "compile": "browserify -t coffeeify example/client.coffee > example/public/client.js",
-    "example": "sleep 3 && open http://local.artsy.net:3000 & npm run compile && coffee example/index.coffee"
+    "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
   },
   "dependencies": {
     "async": "^1.5.0",

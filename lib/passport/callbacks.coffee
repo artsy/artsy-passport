@@ -19,6 +19,7 @@ artsyXapp = require 'artsy-xapp'
   ).end onAccessToken(req, done)
 
 @linkedin = (req, token, tokenSecret, profile, done) ->
+  req.socialProfileEmail = profile.emails[0].value
   # Link Linkedin account
   if req.user
     request.post(
@@ -44,6 +45,8 @@ artsyXapp = require 'artsy-xapp'
     )
 
 @facebook = (req, token, refreshToken, profile, done) ->
+  req.socialProfileEmail = profile.emails[0].value
+  # req.socialProfileEmail = profile
   # Link Facebook account
   if req.user
     request.post(
