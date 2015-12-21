@@ -199,7 +199,7 @@ module.exports =
   ARTSY_ID: ''
   ARTSY_SECRET: ''
   ARTSY_URL: 'https://api.artsy.net'
-  APP_URL: 'http://local.artsy.net:3000'
+  APP_URL: 'http://local.artsy.net:4000'
   # An Artsy user that's linked to Facebook and Twitter
   ARTSY_EMAIL: 'craig@artsy.net'
   ARTSY_PASSWORD: ''
@@ -209,6 +209,6 @@ module.exports =
   FACEBOOK_PASSWORD: ''
 ````
 
-Then you can check the example by running `npm run example` and opening [localhost:3000](http://localhost:3000).
+Then you can check the example by running `npm run example` and opening [localhost:4000](http://localhost:4000).
 
 The tests are a combination of integration and middleware unit tests. To run the whole suite use `npm test`.

@@ -83,21 +83,23 @@ crypto = require 'crypto'
     return next err
   # Determine if we're linking the account and handle any Gravity errors
   # that we can do a better job explaining and redirecting for.
-  providerName = _s.capitalize provider
+  providerName = switch provider
+    when 'linkedin' then 'LinkedIn'
+    else _s.capitalize provider
   linkingAccount = req.user?
-  passport.authenticate(provider,
-    if provider is 'linkedin'
-      scope: ['r_basicprofile', 'r_emailaddress']
-    else
-      scope: 'email'
-  ) req, res, (err) ->
+  passport.authenticate(provider) req, res, (err) ->
     if err?.response?.body?.error is 'User Already Exists'
-      msg = "#{providerName} account previously linked to Artsy. " +
-            "Log in to your Artsy account and re-link " +
-            "#{providerName} in your settings instead."
+      if req.socialProfileEmail
+        msg = "A user with the email address #{req.socialProfileEmail} already " +
+              "exists. Log in to Artsy via email and password and connect " +
+              "#{providerName} in your settings instead."
+      else
+        msg = "#{providerName} account previously connected to Artsy. " +
+              "Log in to your Artsy account via email and password and connect" +
+              "#{providerName} in your settings instead."
       res.redirect opts.loginPagePath + '?error=' + msg
     else if err?.response?.body?.error is 'Another Account Already Linked'
-      msg = "#{providerName} account linked to another Artsy account. " +
+      msg = "#{providerName} account already linked to another Artsy account. " +
             "Try logging out and back in with #{providerName}. Then consider " +
             "deleting that user account and re-linking #{providerName}. "
       res.redirect opts.settingsPagePath + '?error=' + msg
@@ -118,7 +120,7 @@ crypto = require 'crypto'
 
 @onError = (err, req, res, next) ->
   if err.message is 'twitter denied'
-    res.redirect opts.loginPagePath + "?error=Canceled twitter login"
+    res.redirect opts.loginPagePath + "?error=Canceled Twitter login"
   else
     next err
 

@@ -63,7 +63,7 @@ describe 'lifecycle', ->
 
     it 'handles canceled twitter logins', ->
       lifecycle.onError new Error('twitter denied'), @req, @res, @next
-      @res.redirect.args[0][0].should.equal '/login?error=Canceled twitter login'
+      @res.redirect.args[0][0].should.equal '/login?error=Canceled Twitter login'
 
   describe '#onLocalSignup', ->
 

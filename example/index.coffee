@@ -84,6 +84,15 @@ setup = (app) ->
     reset.save { email: req.body.email },
       headers: 'X-Xapp-Token': artsyXapp.token
       error: (m, e) -> next e
+      success: (m, r) -> res.redirect '/newpassword'
+  app.get '/newpassword', (req, res, next) ->
+    res.render 'newpassword'
+  app.post '/newpassword', (req, res, next) ->
+    reset = new Backbone.Model id: 'foo'
+    reset.url = "#{config.ARTSY_URL}/api/v1/users/reset_password"
+    reset.save req.body,
+      headers: 'X-Xapp-Token': artsyXapp.token
+      error: (m, e) -> next e
       success: (m, r) -> res.redirect loginPagePath
   app.get '/nocsrf', (req, res) ->
     res.render 'nocsrf'
@@ -100,7 +109,7 @@ setup = (app) ->
     id: config.ARTSY_ID
     secret: config.ARTSY_SECRET
   , ->
-    app.listen 3000, -> console.log "Example listening on 3000"
+    app.listen 4000, -> console.log "Example listening on #{4000}"
 
 app = module.exports = express()
 setup app
