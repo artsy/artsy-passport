@@ -91,11 +91,11 @@ crypto = require 'crypto'
     if err?.response?.body?.error is 'User Already Exists'
       if req.socialProfileEmail
         msg = "A user with the email address #{req.socialProfileEmail} already " +
-              "exists. Log in to Artsy via email and password and connect " +
+              "exists. Log in to Artsy via email and password and link " +
               "#{providerName} in your settings instead."
       else
-        msg = "#{providerName} account previously connected to Artsy. " +
-              "Log in to your Artsy account via email and password and connect" +
+        msg = "#{providerName} account previously linked to Artsy. " +
+              "Log in to your Artsy account via email and password and link" +
               "#{providerName} in your settings instead."
       res.redirect opts.loginPagePath + '?error=' + msg
     else if err?.response?.body?.error is 'Another Account Already Linked'
