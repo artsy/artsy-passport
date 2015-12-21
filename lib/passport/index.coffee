@@ -20,6 +20,7 @@ module.exports = ->
   , callbacks.local
   if opts.FACEBOOK_ID and opts.FACEBOOK_SECRET
     passport.use new FacebookStrategy
+      state: true
       clientID: opts.FACEBOOK_ID
       clientSecret: opts.FACEBOOK_SECRET
       passReqToCallback: true
