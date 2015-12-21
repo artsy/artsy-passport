@@ -8,6 +8,7 @@ html(lang="en")
     title Login
   body
     h1 Just one more step
+    pre!= error
     form( method='post', action='/users/auth/twitter/email' )
       input.bordered-input( name='email' placeholder='email' )
       button( type='submit' ) Join Artsy

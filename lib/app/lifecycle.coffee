@@ -12,6 +12,7 @@ redirectBack = require './redirectback'
 request = require 'superagent'
 artsyXapp = require 'artsy-xapp'
 Mailcheck = require 'mailcheck'
+crypto = require 'crypto'
 
 @onLocalLogin = (req, res, next) ->
   passport.authenticate('local') req, res, (err) ->
@@ -58,15 +59,30 @@ Mailcheck = require 'mailcheck'
         next()
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
-  passport.authenticate(provider,
-    if provider is 'linkedin'
-      scope: ['r_basicprofile', 'r_emailaddress']
-    else
-      scope: 'email'
-  )(req, res, next)
+  options = {}
+  options.scope = switch provider
+    when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
+    else 'email'
+  # Twitter OAuth 1 doesn't support `state` param csrf out of the box.
+  # So we implement it ourselves ( -__- )
+  # https://twittercommunity.com/t/is-the-state-parameter-supported/1889
+  if provider is 'twitter' and not req.query.state
+    rand = Math.random().toString()
+    h = crypto.createHash('sha1').update(rand).digest('hex')
+    req.session.twitterState = h
+    options.callbackURL = "#{opts.APP_URL}#{opts.twitterCallbackPath}?state=#{h}"
+  passport.authenticate(provider, options)(req, res, next)
 
 @afterSocialAuth = (provider) -> (req, res, next) ->
   return next(new Error "#{provider} denied") if req.query.denied
+  # Twitter OAuth 1 doesn't support `state` param csrf out of the box.
+  # So we implement it ourselves ( -__- )
+  # https://twittercommunity.com/t/is-the-state-parameter-supported/1889
+  if provider is 'twitter' and req.query.state isnt req.session.twitterState
+    err = new Error "Must pass a valid `state` param."
+    return next err
+  # Determine if we're linking the account and handle any Gravity errors
+  # that we can do a better job explaining and redirecting for.
   providerName = _s.capitalize provider
   linkingAccount = req.user?
   passport.authenticate(provider,
@@ -99,6 +115,12 @@ Mailcheck = require 'mailcheck'
 @ensureLoggedInOnAfterSignupPage = (req, res, next) ->
   res.redirect opts.loginPagePath unless req.user?
   next()
+
+@onError = (err, req, res, next) ->
+  if err.message is 'twitter denied'
+    res.redirect opts.loginPagePath + "?error=Canceled twitter login"
+  else
+    next err
 
 errMsg = (err) ->
   err.message = (

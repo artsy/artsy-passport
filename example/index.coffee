@@ -63,8 +63,8 @@ setup = (app) ->
   app.get twitterLastStepPath, (req, res) ->
     res.render 'onelaststep'
 
-  # Potential candidates to be first class in AP. Delete and unlink account
-  # handlers
+  # Potential candidates to be first class in AP. Delete, unlink account,
+  # and reset password handlers
   app.get '/deleteaccount', (req, res, next) ->
     return next() unless req.user?
     req.user.destroy
@@ -74,7 +74,17 @@ setup = (app) ->
     req.user.unlink
       provider: req.params.provider
       error: (m, e) -> next e
-      success: (m, r) -> res.redirect settingsPagePath
+      success: (user, r) ->
+        req.login user, (err) ->
+          return next err if err
+          res.redirect settingsPagePath
+  app.post '/reset', (req, res, next) ->
+    reset = new Backbone.Model
+    reset.url = "#{config.ARTSY_URL}/api/v1/users/send_reset_password_instructions"
+    reset.save { email: req.body.email },
+      headers: 'X-Xapp-Token': artsyXapp.token
+      error: (m, e) -> next e
+      success: (m, r) -> res.redirect loginPagePath
   app.get '/nocsrf', (req, res) ->
     res.render 'nocsrf'
 

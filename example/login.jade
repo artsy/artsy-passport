@@ -41,6 +41,13 @@ html(lang="en")
         input( type="hidden" name="_csrf" value=csrfToken )
         button( type='submit' ) Signup
     hr
+    #reset
+      h1 Reset Password
+      form( action='reset' method='post' )
+        label Email
+          input( name='email' )
+        button( type='submit' ) Send me Reset Instructions
+    hr
     #trust
       h1 Trust token login
       label Access token&nbsp;

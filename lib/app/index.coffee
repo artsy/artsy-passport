@@ -13,7 +13,7 @@ app = express()
 opts = require '../options'
 twitterLastStep = require './twitter_last_step'
 { onLocalLogin, onLocalSignup, beforeSocialAuth,
-  afterSocialAuth, ensureLoggedInOnAfterSignupPage } = require './lifecycle'
+  afterSocialAuth, ensureLoggedInOnAfterSignupPage, onError } = require './lifecycle'
 { denyBadLogoutLinks, logout } = require './logout'
 { headerLogin, trustTokenLogin } = require './token_login'
 addLocals = require './locals'
@@ -49,7 +49,7 @@ module.exports = ->
   app.get opts.afterSignupPagePath, ensureLoggedInOnAfterSignupPage
 
   # Convenience middleware for token login and locals like sd.CURRENT_USER
-  app.use headerLogin, trustTokenLogin, addLocals
+  app.use headerLogin, trustTokenLogin, addLocals, onError
 
   # Return the app
   app
