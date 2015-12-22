@@ -18,7 +18,7 @@ crypto = require 'crypto'
   passport.authenticate('local') req, res, (err) ->
     if req.xhr
       if err
-        res.send 500, { success: false, error: errMsg(err) }
+        res.send 500, { success: false, error: err.message }
       else if not req.user?
         res.send 403, { success: false, error: "Invalid email or password." }
       else if req.user?
@@ -43,7 +43,7 @@ crypto = require 'crypto'
       email: req.body.email
       password: req.body.password
     ).end (err, sres) ->
-      if err and errMsg(err) is 'Email is invalid.'
+      if err and err.message is 'Email is invalid.'
         suggestion = Mailcheck.run(email: req.body.email)?.full
         msg = "Email is invalid."
         msg += " Did you mean #{suggestion}?" if suggestion
@@ -52,7 +52,7 @@ crypto = require 'crypto'
         else
           res.redirect opts.signupPagePath + "?error=#{msg}"
       else if err and req.xhr
-        res.send 500, { success: false, error: errMsg(err) }
+        res.send 500, { success: false, error: err.message }
       else if err
         next new Error err
       else
@@ -123,11 +123,3 @@ crypto = require 'crypto'
     res.redirect opts.loginPagePath + "?error=Canceled Twitter login"
   else
     next err
-
-errMsg = (err) ->
-  err.message = (
-    err.response?.body?.message or
-    err.response?.body?.error or
-    err.response?.body?.error_description or
-    err.message
-  )

@@ -31,6 +31,14 @@ describe '#serialize', ->
       done()
     @resolveSerialize()
 
+  it 'works when theres an error from Gravity', (done) ->
+    user = new Backbone.Model({ id: 'craig', foo: 'baz', bam: 'bop' })
+    serialize user, (err, data) ->
+      err.message.should.equal 'fail'
+      done()
+    @request.end.args[0][0](null, { body: { id: 'craig', foo: 'baz' } })
+    @request.end.args[1][0](new Error('fail'), null)
+
 describe '#deserialize', ->
 
   it 'wraps the user data in a model', (done) ->

@@ -18,8 +18,9 @@ module.exports.serialize = (user, done) ->
       request
         .get("#{opts.ARTSY_URL}/api/v1/me/authentications")
         .set('X-Access-Token': user.get 'accessToken').end(cb)
-  ], (err, [{ body: userData },{ body: authsData }]) ->
+  ], (err, results) ->
     return done err if err
+    [{ body: userData },{ body: authsData }] = results
     user.set(userData).set(authentications: authsData)
     keys = ['accessToken', 'authentications'].concat opts.userKeys
     done null, user.pick(keys)
