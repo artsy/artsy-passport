@@ -20,6 +20,8 @@ _Values indicate defaults._
 ````coffeescript
 app.use artsyPassport
 
+  CurrentUser: # The CurrentUser Backbone model
+
   # Pass in env vars
   # ----------------
   FACEBOOK_ID: # Facebook app ID
