@@ -10,7 +10,7 @@ opts = require '../options'
 artsyXapp = require 'artsy-xapp'
 
 @local = (req, username, password, done) ->
-  request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
+  request.post("#{opts.ARTSY_URL}/oauth2/access_token").query(
     client_id: opts.ARTSY_ID
     client_secret: opts.ARTSY_SECRET
     grant_type: 'credentials'
