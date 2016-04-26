@@ -1,4 +1,17 @@
+sinon = require 'sinon'
+locals = require '../../lib/app/locals'
+
 describe 'locals', ->
+
+  beforeEach ->
+    @req = { query: {} }
+    @res = { locals: { sd: {} } }
+    @next = sinon.stub()
+
+  it 'escapes the error message html', ->
+    @req.query.error = '<img src=alert(hello) />'
+    locals @req, @res, @next
+    @res.locals.error.should.equal '&lt;img src=alert(hello) /&gt;'
 
   it 'sets the user if logged in'
 
