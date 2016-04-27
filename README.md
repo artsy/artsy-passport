@@ -183,7 +183,7 @@ _These forms of user will be null if they're not logged in._
 If you implement a fancier auth flow that involves client-side redirecting back, you may find this helper useful in avoiding ["open redirect"](https://github.com/artsy/artsy-passport/issues/68) attacks.
 
 ````coffeescript
-{ sanitizeRedirect } = require 'artsy-passport'
+sanitizeRedirect = require 'artsy-passport/sanitize-redirect'
 
 location.href = sanitizeRedirect "http://artsy.net%0D%0Aattacker.com/"
 # Notices the url isn't pointing at artsy.net, so just redirects to /
