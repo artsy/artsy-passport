@@ -1,5 +1,5 @@
 sinon = require 'sinon'
-{ sanitizeRedirect } = require '../../'
+sanitizeRedirect = require '../../sanitize-redirect'
 
 describe 'sanitizeRedirect', ->
   it 'lets artsy.net through', ->
