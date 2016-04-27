@@ -9,6 +9,7 @@ opts = require './options'
 setupApp = require './app'
 setupPassport = require './passport'
 artsyXapp = require 'artsy-xapp'
+sanitizeRedirect = require './app/sanitize_redirect'
 
 module.exports = (options) =>
   _.extend opts, options
@@ -16,3 +17,4 @@ module.exports = (options) =>
   setupApp()
 
 module.exports.options = opts
+module.exports.sanitizeRedirect = sanitizeRedirect
