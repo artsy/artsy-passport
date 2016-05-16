@@ -13,15 +13,15 @@ request = require 'superagent'
 artsyXapp = require 'artsy-xapp'
 Mailcheck = require 'mailcheck'
 crypto = require 'crypto'
+{ parse, resolve } = require 'url'
 
 @onLocalLogin = (req, res, next) ->
+  return ssoAndRedirectBack req, res, next if req.user and not req.xhr
   passport.authenticate('local') req, res, (err) ->
     if req.xhr
       if err
         res.send 500, { success: false, error: err.message }
-      else if not req.user?
-        res.send 403, { success: false, error: "Invalid email or password." }
-      else if req.user?
+      else
         res.send { success: true, user: req.user.toJSON() }
     else
       if err?.response?.body?.error_description is 'invalid email or password'
@@ -31,7 +31,22 @@ crypto = require 'crypto'
       else if req.artsyPassportSignedUp
         res.redirect opts.afterSignupPagePath
       else
-        redirectBack req, res
+        ssoAndRedirectBack req, res, next
+
+ssoAndRedirectBack = (req, res, next) ->
+  parsed = parse redirectBack req
+  parsed = parse resolve opts.APP_URL, parsed.path unless parsed.hostname
+  domain = parsed.hostname?.split('.').slice(1).join('.')
+  return redirectBack(req, res) if domain isnt 'artsy.net'
+  request
+    .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
+    .set 'X-Access-Token': req.user.get 'accessToken'
+    .end (err, sres) ->
+      return res.redirect parsed.href if err
+      res.redirect "#{opts.ARTSY_URL}/users/sign_in" +
+        "?trust_token=#{sres.body.trust_token}" +
+        "&redirect_uri=#{parsed.href}"
+
 
 @onLocalSignup = (req, res, next) ->
   req.artsyPassportSignedUp = true

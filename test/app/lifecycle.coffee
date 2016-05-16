@@ -10,10 +10,17 @@ describe 'lifecycle', ->
     @next = sinon.stub()
     @passport = {}
     @passport.authenticate = sinon.stub()
+    @passport.authenticate.returns (req, res, next) => next()
+    @request = sinon.stub().returns @request
+    for method in ['get', 'end', 'set', 'post']
+      @request[method] = sinon.stub().returns @request
+    lifecycle.__set__ 'request', @request
     lifecycle.__set__ 'passport', @passport
-    lifecycle.__set__ 'opts',
+    lifecycle.__set__ 'opts', @opts =
       loginPagePath: '/login'
       afterSignupPagePath: '/signup'
+      APP_URL: 'https://www.artsy.net'
+      ARTSY_URL: 'https://api.artsy.net'
 
   describe '#onLocalLogin', ->
 
@@ -23,11 +30,13 @@ describe 'lifecycle', ->
         @passport.authenticate.returns (req, res, next) -> next()
 
       it 'authenticates locally and redirects home', ->
+        @opts.APP_URL = 'localhost'
         lifecycle.onLocalLogin @req, @res, @next
         @passport.authenticate.args[0][0].should.equal 'local'
         @res.redirect.args[0][0].should.equal '/'
 
       it 'authenticates locally and redirects back', ->
+        @opts.APP_URL = 'localhost'
         @req.query['redirect-to'] = '/foobar'
         lifecycle.onLocalLogin @req, @res, @next
         @res.redirect.args[0][0].should.equal '/foobar'
@@ -42,6 +51,18 @@ describe 'lifecycle', ->
         @req.artsyPassportSignedUp = true
         lifecycle.onLocalLogin @req, @res, @next
         @res.redirect.args[0][0].should.equal '/signup'
+
+      it 'single signs on to gravity', ->
+        @req.user = { get: -> 'token' }
+        @req.query['redirect-to'] = '/artwork/andy-warhol-skull'
+        lifecycle.onLocalLogin @req, @res, @next
+        @request.post.args[0][0].should.containEql 'me/trust_token'
+        @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+        @res.redirect.args[0][0].should.equal(
+          'https://api.artsy.net/users/sign_in' +
+          '?trust_token=foo-trust-token' +
+          '&redirect_uri=https://www.artsy.net/artwork/andy-warhol-skull'
+        )
 
     context 'when erroring', ->
 
