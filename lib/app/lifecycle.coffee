@@ -33,21 +33,6 @@ crypto = require 'crypto'
       else
         ssoAndRedirectBack req, res, next
 
-ssoAndRedirectBack = (req, res, next) ->
-  parsed = parse redirectBack req
-  parsed = parse resolve opts.APP_URL, parsed.path unless parsed.hostname
-  domain = parsed.hostname?.split('.').slice(1).join('.')
-  return redirectBack(req, res) if domain isnt 'artsy.net'
-  request
-    .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
-    .set 'X-Access-Token': req.user.get 'accessToken'
-    .end (err, sres) ->
-      return res.redirect parsed.href if err
-      res.redirect "#{opts.ARTSY_URL}/users/sign_in" +
-        "?trust_token=#{sres.body.trust_token}" +
-        "&redirect_uri=#{parsed.href}"
-
-
 @onLocalSignup = (req, res, next) ->
   req.artsyPassportSignedUp = true
   request
@@ -127,7 +112,7 @@ ssoAndRedirectBack = (req, res, next) ->
     else if req.artsyPassportSignedUp
       res.redirect opts.afterSignupPagePath
     else
-      redirectBack req, res
+      ssoAndRedirectBack req, res, next
 
 @ensureLoggedInOnAfterSignupPage = (req, res, next) ->
   res.redirect opts.loginPagePath unless req.user?
@@ -138,3 +123,18 @@ ssoAndRedirectBack = (req, res, next) ->
     res.redirect opts.loginPagePath + "?error=Canceled Twitter login"
   else
     next err
+
+ssoAndRedirectBack = (req, res, next) ->
+  parsed = parse redirectBack req
+  parsed = parse resolve opts.APP_URL, parsed.path unless parsed.hostname
+  domain = parsed.hostname?.split('.').slice(1).join('.')
+  return redirectBack(req, res) if domain isnt 'artsy.net'
+  request
+    .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
+    .set 'X-Access-Token': req.user.get 'accessToken'
+    .end (err, sres) ->
+      return res.redirect parsed.href if err
+      res.redirect "#{opts.ARTSY_URL}/users/sign_in" +
+        "?trust_token=#{sres.body.trust_token}" +
+        "&redirect_uri=#{parsed.href}"
+
