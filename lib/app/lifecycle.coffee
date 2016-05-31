@@ -59,6 +59,7 @@ crypto = require 'crypto'
         next()
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
+  req.session.redirectTo = req.query['redirect-to']
   options = {}
   options.scope = switch provider
     when 'linkedin' then ['r_basicprofile', 'r_emailaddress']

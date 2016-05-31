@@ -103,6 +103,13 @@ describe 'lifecycle', ->
       @passport.authenticate.args[0][1].callbackURL
         .should.containEql "state=#{@req.session.twitterState}"
 
+    it 'sets session redirect', ->
+      @req.query['redirect-to'] = '/foobar'
+      @passport.authenticate.returns (req, res, next) -> next()
+      lifecycle.beforeSocialAuth('facebook')(@req, @res, @next)
+      @req.session.redirectTo.should.equal '/foobar'
+      @passport.authenticate.args[0][1].scope.should.equal 'email'
+
     it 'asks for linked in profile info'
 
     it 'asks for email scope if not linkedin'
