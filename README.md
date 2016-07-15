@@ -135,6 +135,7 @@ else
 h1 Just one more step
 pre!= error
 form( method='post', action=ap.twitterLastStepPath )
+  input( type="hidden" name="_csrf" value=csrfToken )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
 ````
