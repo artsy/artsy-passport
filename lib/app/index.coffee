@@ -39,7 +39,7 @@ module.exports = ->
   # Twitter "one last step" UI
   app.get '/', twitterLastStep.ensureEmail
   app.get opts.twitterLastStepPath, twitterLastStep.login
-  app.post opts.twitterLastStepPath, twitterLastStep.submit, twitterLastStep.error
+  app.post opts.twitterLastStepPath, csrf(cookie: true), twitterLastStep.submit, twitterLastStep.error
 
   # Logout middleware
   app.get opts.logoutPath, denyBadLogoutLinks, logout
