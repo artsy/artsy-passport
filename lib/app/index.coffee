@@ -12,8 +12,16 @@ passport = require 'passport'
 app = express()
 opts = require '../options'
 twitterLastStep = require './twitter_last_step'
-{ onLocalLogin, onLocalSignup, beforeSocialAuth,
-  afterSocialAuth, ensureLoggedInOnAfterSignupPage, onError } = require './lifecycle'
+{
+  onLocalLogin,
+  onLocalSignup,
+  beforeSocialAuth,
+  afterSocialAuth,
+  ensureLoggedInOnAfterSignupPage,
+  onError,
+  ssoAndRedirectBack
+} = require './lifecycle'
+{ setCampaign, trackSignup } = require './analytics'
 { denyBadLogoutLinks, logout } = require './logout'
 { headerLogin, trustTokenLogin } = require './token_login'
 addLocals = require './locals'
@@ -25,21 +33,41 @@ module.exports = ->
   app.get '*', csrf(cookie: true)
 
   # Local email/password auth
-  app.post opts.loginPagePath, csrf(cookie: true), onLocalLogin
-  app.post opts.signupPagePath, onLocalSignup, onLocalLogin
+  app.post opts.loginPagePath,
+    csrf(cookie: true),
+    onLocalLogin,
+    ssoAndRedirectBack
+  app.post opts.signupPagePath,
+    setCampaign,
+    onLocalSignup,
+    onLocalLogin,
+    trackSignup('email'),
+    ssoAndRedirectBack
 
   # Twitter/Facebook OAuth
-  app.get opts.twitterPath, beforeSocialAuth('twitter')
-  app.get opts.facebookPath, beforeSocialAuth('facebook')
-  app.get opts.linkedinPath, beforeSocialAuth('linkedin')
-  app.get opts.twitterCallbackPath, afterSocialAuth('twitter')
-  app.get opts.facebookCallbackPath, afterSocialAuth('facebook')
-  app.get opts.linkedinCallbackPath, afterSocialAuth('linkedin')
+  app.get opts.twitterPath, setCampaign, beforeSocialAuth('twitter')
+  app.get opts.facebookPath, setCampaign, beforeSocialAuth('facebook')
+  app.get opts.linkedinPath, setCampaign, beforeSocialAuth('linkedin')
+  app.get opts.twitterCallbackPath,
+    afterSocialAuth('twitter'),
+    trackSignup('twitter'),
+    ssoAndRedirectBack
+  app.get opts.facebookCallbackPath,
+    afterSocialAuth('facebook'),
+    trackSignup('facebook'),
+    ssoAndRedirectBack
+  app.get opts.linkedinCallbackPath,
+    afterSocialAuth('linkedin'),
+    trackSignup('linkedin'),
+    ssoAndRedirectBack
 
   # Twitter "one last step" UI
   app.get '/', twitterLastStep.ensureEmail
   app.get opts.twitterLastStepPath, twitterLastStep.login
-  app.post opts.twitterLastStepPath, csrf(cookie: true), twitterLastStep.submit, twitterLastStep.error
+  app.post opts.twitterLastStepPath,
+    csrf(cookie: true),
+    twitterLastStep.submit,
+    twitterLastStep.error
 
   # Logout middleware
   app.get opts.logoutPath, denyBadLogoutLinks, logout

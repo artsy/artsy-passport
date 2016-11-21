@@ -29,40 +29,17 @@ describe 'lifecycle', ->
       beforeEach ->
         @passport.authenticate.returns (req, res, next) -> next()
 
-      it 'authenticates locally and redirects home', ->
+      it 'authenticates locally and passes on', ->
         @opts.APP_URL = 'localhost'
         lifecycle.onLocalLogin @req, @res, @next
         @passport.authenticate.args[0][0].should.equal 'local'
-        @res.redirect.args[0][0].should.equal '/'
+        @next.called.should.be.ok()
 
-      it 'authenticates locally and redirects back', ->
+      it 'authenticates locally and passes on', ->
         @opts.APP_URL = 'localhost'
         @req.query['redirect-to'] = '/foobar'
         lifecycle.onLocalLogin @req, @res, @next
-        @res.redirect.args[0][0].should.equal '/foobar'
-
-      it 'sends json for xhrs', ->
-        @req.xhr = true
-        @req.user = { toJSON: -> }
-        lifecycle.onLocalLogin @req, @res, @next
-        @res.send.args[0][0].success.should.equal true
-
-      it 'redirects signups to personalize', ->
-        @req.artsyPassportSignedUp = true
-        lifecycle.onLocalLogin @req, @res, @next
-        @res.redirect.args[0][0].should.equal '/signup'
-
-      it 'single signs on to gravity', ->
-        @req.user = { get: -> 'token' }
-        @req.query['redirect-to'] = '/artwork/andy-warhol-skull'
-        lifecycle.onLocalLogin @req, @res, @next
-        @request.post.args[0][0].should.containEql 'me/trust_token'
-        @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
-        @res.redirect.args[0][0].should.equal(
-          'https://api.artsy.net/users/sign_in' +
-          '?trust_token=foo-trust-token' +
-          '&redirect_uri=https://www.artsy.net/artwork/andy-warhol-skull'
-        )
+        @next.called.should.be.ok()
 
     context 'when erroring', ->
 
@@ -146,3 +123,31 @@ describe 'lifecycle', ->
   describe '#ensureLoggedInOnAfterSignupPage', ->
 
     it 'redirects to the login page without a user'
+
+  describe '#ssoAndRedirectBack', ->
+
+    it 'redirects signups to personalize', ->
+      @req.user = { get: -> 'token' }
+      @req.artsyPassportSignedUp = true
+      lifecycle.ssoAndRedirectBack @req, @res, @next
+      @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+      @res.redirect.args[0][0].should.containEql '/personalize'
+
+    it 'passes on for xhrs', ->
+      @req.xhr = true
+      @req.user = { toJSON: -> }
+      lifecycle.ssoAndRedirectBack @req, @res, @next
+      @res.send.args[0][0].success.should.equal true
+
+    it 'single signs on to gravity', ->
+      @req.user = { get: -> 'token' }
+      @req.query['redirect-to'] = '/artwork/andy-warhol-skull'
+      lifecycle.ssoAndRedirectBack @req, @res, @next
+      @request.post.args[0][0].should.containEql 'me/trust_token'
+      @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+      @res.redirect.args[0][0].should.equal(
+        'https://api.artsy.net/users/sign_in' +
+        '?trust_token=foo-trust-token' +
+        '&redirect_uri=https://www.artsy.net/artwork/andy-warhol-skull'
+      )
+
