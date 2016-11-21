@@ -36,6 +36,7 @@ app.use artsyPassport
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
+  SEGMENT_WRITE_KEY: # Segment write key to track signup
 
   # Defaults you probably don't need to touch
   # -----------------------------------------
