@@ -11,7 +11,7 @@ describe 'analytics', ->
       constructor: ->
         scope.analytics = this
       track: sinon.stub()
-    @req = { session: {}, query: {}, user: { get: -> 'foo' } }
+    @req = { session: {}, body: {}, user: { get: -> 'foo' } }
     @res = { locals: { sd: {} } }
     @next = sinon.stub()
 
@@ -19,7 +19,20 @@ describe 'analytics', ->
     analytics.trackSignup('email') @req, @res, @next
     @analytics.track.args[0][0].properties.signup_service.should.equal 'email'
 
-  it 'passes modal id along', ->
-    @req.session.modalId = 'moo'
+  it 'passes along modal_id and acquisition_initiative submitted fields', ->
+    @req.body.modal_id = 'foo'
+    @req.body.acquisition_initiative = 'bar'
+    analytics.setCampaign @req, @res, @next
     analytics.trackSignup('email') @req, @res, @next
-    @analytics.track.args[0][0].properties.modal_id.should.equal 'moo'
+    @analytics.track.args[0][0].properties
+      .modal_id.should.equal 'foo'
+    @analytics.track.args[0][0].properties
+      .acquisition_initiative.should.equal 'bar'
+
+  it 'doesnt hold on to the temporary session variable', ->
+    analytics.__set__ 'opts', {}
+    @req.body.modal_id = 'foo'
+    @req.body.acquisition_initiative = 'bar'
+    analytics.setCampaign @req, @res, @next
+    analytics.trackSignup('email') @req, @res, @next
+    Object.keys(@req.session).length.should.equal 0
