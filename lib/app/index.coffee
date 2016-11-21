@@ -57,8 +57,8 @@ module.exports = ->
     trackSignup('facebook'),
     ssoAndRedirectBack
   app.get opts.linkedinCallbackPath,
-    trackSignup('linkedin'),
     afterSocialAuth('linkedin'),
+    trackSignup('linkedin'),
     ssoAndRedirectBack
 
   # Twitter "one last step" UI
