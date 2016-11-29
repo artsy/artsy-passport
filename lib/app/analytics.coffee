@@ -3,8 +3,14 @@ Analytics = require 'analytics-node'
 
 @setCampaign = (req, res, next) ->
   return next() unless opts.SEGMENT_WRITE_KEY
-  req.session.modalId = req.body.modal_id
-  req.session.acquisitionInitiative = req.body.acquisition_initiative
+  req.session.modalId = (
+    req.body.modal_id or
+    req.query.modal_id
+  )
+  req.session.acquisitionInitiative = (
+    req.body.acquisition_initiative or
+    req.query.acquisition_initiative
+  )
   next()
 
 @trackSignup = (service) -> (req, res, next) ->
