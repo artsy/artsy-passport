@@ -11,7 +11,7 @@ describe 'analytics', ->
       constructor: ->
         scope.analytics = this
       track: sinon.stub()
-    @req = { session: {}, body: {}, user: { get: -> 'foo' } }
+    @req = { session: {}, body: {}, user: { get: -> 'foo' }, query: {} }
     @res = { locals: { sd: {} } }
     @next = sinon.stub()
 
@@ -22,6 +22,16 @@ describe 'analytics', ->
   it 'passes along modal_id and acquisition_initiative submitted fields', ->
     @req.body.modal_id = 'foo'
     @req.body.acquisition_initiative = 'bar'
+    analytics.setCampaign @req, @res, @next
+    analytics.trackSignup('email') @req, @res, @next
+    @analytics.track.args[0][0].properties
+      .modal_id.should.equal 'foo'
+    @analytics.track.args[0][0].properties
+      .acquisition_initiative.should.equal 'bar'
+
+  it 'passes along acquisition_initiative query params for OAuth links', ->
+    @req.query.modal_id = 'foo'
+    @req.query.acquisition_initiative = 'bar'
     analytics.setCampaign @req, @res, @next
     analytics.trackSignup('email') @req, @res, @next
     @analytics.track.args[0][0].properties
