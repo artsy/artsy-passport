@@ -82,6 +82,14 @@ describe 'lifecycle', ->
       @passport.authenticate.args[0][1].callbackURL
         .should.containEql "state=#{@req.session.twitterState}"
 
+    it 'can skip onboarding', ->
+      @passport.authenticate.returns (req, res, next) -> next()
+      @req.query['skip-onboarding'] = true
+      lifecycle.beforeSocialAuth('facebook')(@req, @res, @next)
+      console.log @req.session, 'moo'
+      @req.session.skipOnboarding.should.equal('true')
+      console.log @res.redirect.args
+
     it 'asks for linked in profile info'
 
     it 'asks for email scope if not linkedin'
