@@ -10,7 +10,7 @@ opts = require '../options'
 artsyXapp = require 'artsy-xapp'
 
 @local = (req, username, password, done) ->
-  request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
+  request.post("#{opts.ARTSY_URL}/oauth2/access_token").query(
     client_id: opts.ARTSY_ID
     client_secret: opts.ARTSY_SECRET
     grant_type: 'credentials'
@@ -31,7 +31,7 @@ artsyXapp = require 'artsy-xapp'
     ).end (err, res) -> done err, req.user
   # Login with Linkedin account
   else
-    request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
+    request.post("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
       client_secret: opts.ARTSY_SECRET
       grant_type: 'oauth_token'
@@ -57,7 +57,7 @@ artsyXapp = require 'artsy-xapp'
     ).end (err, res) -> done err, req.user
   # Login or signup with Facebook
   else
-    request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
+    request.post("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
       client_secret: opts.ARTSY_SECRET
       grant_type: 'oauth_token'
@@ -81,7 +81,7 @@ artsyXapp = require 'artsy-xapp'
     ).end (err, res) -> done err, req.user
   # Login or signup with Twitter
   else
-    request.get("#{opts.ARTSY_URL}/oauth2/access_token").query(
+    request.post("#{opts.ARTSY_URL}/oauth2/access_token").query(
       client_id: opts.ARTSY_ID
       client_secret: opts.ARTSY_SECRET
       grant_type: 'oauth_token'
@@ -120,7 +120,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
       .end (err) ->
         return done err if err
         request
-          .get("#{opts.ARTSY_URL}/oauth2/access_token")
+          .post("#{opts.ARTSY_URL}/oauth2/access_token")
           .query(_.extend params,
             client_id: opts.ARTSY_ID
             client_secret: opts.ARTSY_SECRET

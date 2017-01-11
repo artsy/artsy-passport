@@ -26,7 +26,7 @@ describe 'passport callbacks', ->
     cbs.local @req, 'craig', 'foo', (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
-    @request.get.args[0][0].should
+    @request.post.args[0][0].should
       .equal 'http://apiz.artsy.net/oauth2/access_token'
     res = { body: { access_token: 'access-token' }, status: 200 }
     @request.end.args[0][0](null, res)
@@ -35,7 +35,7 @@ describe 'passport callbacks', ->
     cbs.facebook @req, 'foo-token', 'refresh-token', {}, (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
-    @request.get.args[0][0].should
+    @request.post.args[0][0].should
       .equal 'http://apiz.artsy.net/oauth2/access_token'
     queryParams = @request.query.args[0][0]
     queryParams.oauth_provider.should.equal 'facebook'
@@ -47,7 +47,7 @@ describe 'passport callbacks', ->
     cbs.twitter @req, 'foo-token', 'token-secret', {}, (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
-    @request.get.args[0][0].should
+    @request.post.args[0][0].should
       .equal 'http://apiz.artsy.net/oauth2/access_token'
     queryParams = @request.query.args[0][0]
     queryParams.oauth_provider.should.equal 'twitter'
@@ -61,11 +61,11 @@ describe 'passport callbacks', ->
       user.get('accessToken').should.equal 'access-token'
       done()
     cbs.twitter @req, 'foo-token', 'token-secret', { displayName: 'Craig' }, cb
-    @request.get.args[0][0].should
+    @request.post.args[0][0].should
       .equal 'http://apiz.artsy.net/oauth2/access_token'
     res = { body: { error_description: 'no account linked' }, status: 403 }
     @request.end.args[0][0](null, res)
-    @request.post.args[0][0].should.equal 'http://apiz.artsy.net/api/v1/user'
+    @request.post.args[1][0].should.equal 'http://apiz.artsy.net/api/v1/user'
     body = @request.send.args[0][0]
     body.email.should.equal 'foo-token@artsy.tmp'
     body.name.should.equal 'Craig'

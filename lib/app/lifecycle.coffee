@@ -13,25 +13,23 @@ request = require 'superagent'
 artsyXapp = require 'artsy-xapp'
 Mailcheck = require 'mailcheck'
 crypto = require 'crypto'
+{ parse, resolve } = require 'url'
 
 @onLocalLogin = (req, res, next) ->
+  return next() if req.user and not req.xhr
   passport.authenticate('local') req, res, (err) ->
     if req.xhr
       if err
         res.send 500, { success: false, error: err.message }
-      else if not req.user?
-        res.send 403, { success: false, error: "Invalid email or password." }
-      else if req.user?
-        res.send { success: true, user: req.user.toJSON() }
+      else
+        next()
     else
       if err?.response?.body?.error_description is 'invalid email or password'
         res.redirect opts.loginPagePath + '?error=Invalid email or password.'
       else if err
         next err
-      else if req.artsyPassportSignedUp
-        res.redirect opts.afterSignupPagePath
       else
-        redirectBack req, res
+        next()
 
 @onLocalSignup = (req, res, next) ->
   req.artsyPassportSignedUp = true
@@ -52,13 +50,16 @@ crypto = require 'crypto'
         else
           res.redirect opts.signupPagePath + "?error=#{msg}"
       else if err and req.xhr
-        res.send 500, { success: false, error: err.message }
+        msg = err.response?.body?.error or err.message
+        res.send 500, { success: false, error: msg }
       else if err
         next new Error err
       else
         next()
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
+  req.session.redirectTo = req.query['redirect-to']
+  req.session.skipOnboarding = req.query['skip-onboarding']
   options = {}
   options.scope = switch provider
     when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
@@ -109,10 +110,10 @@ crypto = require 'crypto'
       res.redirect opts.settingsPagePath
     else if req.artsyPassportSignedUp and provider is 'twitter'
       res.redirect opts.twitterLastStepPath
-    else if req.artsyPassportSignedUp
+    else if req.artsyPassportSignedUp and !req.session.skipOnboarding
       res.redirect opts.afterSignupPagePath
     else
-      redirectBack req, res
+      next()
 
 @ensureLoggedInOnAfterSignupPage = (req, res, next) ->
   res.redirect opts.loginPagePath unless req.user?
@@ -123,3 +124,18 @@ crypto = require 'crypto'
     res.redirect opts.loginPagePath + "?error=Canceled Twitter login"
   else
     next err
+
+@ssoAndRedirectBack = (req, res, next) ->
+  return res.send { success: true, user: req.user.toJSON() } if req.xhr
+  parsed = parse redirectBack req
+  parsed = parse resolve opts.APP_URL, parsed.path unless parsed.hostname
+  domain = parsed.hostname?.split('.').slice(1).join('.')
+  return redirectBack(req, res) if domain isnt 'artsy.net'
+  request
+    .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
+    .set 'X-Access-Token': req.user.get 'accessToken'
+    .end (err, sres) ->
+      return res.redirect parsed.href if err
+      res.redirect "#{opts.ARTSY_URL}/users/sign_in" +
+        "?trust_token=#{sres.body.trust_token}" +
+        "&redirect_uri=#{parsed.href}"

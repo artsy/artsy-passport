@@ -1,6 +1,6 @@
 # Artsy Passport
 
-Wires up the common auth handlers for Artsy's [Ezel](http://ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
+Wires up the common auth handlers, and related security concerns, for Artsy's [Ezel](http://ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
 ## Setup
 
@@ -36,7 +36,8 @@ app.use artsyPassport
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
   APP_URL: # Url pointing back to your app e.g. http://flare.artsy.net
-  
+  SEGMENT_WRITE_KEY: # Segment write key to track signup
+
   # Defaults you probably don't need to touch
   # -----------------------------------------
 
@@ -135,6 +136,7 @@ else
 h1 Just one more step
 pre!= error
 form( method='post', action=ap.twitterLastStepPath )
+  input( type="hidden" name="_csrf" value=csrfToken )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
 ````
@@ -177,6 +179,17 @@ app.get '/', (req, res) ->
 ````
 
 _These forms of user will be null if they're not logged in._
+
+## Sanitize Redirect
+
+If you implement a fancier auth flow that involves client-side redirecting back, you may find this helper useful in avoiding ["open redirect"](https://github.com/artsy/artsy-passport/issues/68) attacks.
+
+````coffeescript
+sanitizeRedirect = require 'artsy-passport/sanitize-redirect'
+
+location.href = sanitizeRedirect "http://artsy.net%0D%0Aattacker.com/"
+# Notices the url isn't pointing at artsy.net, so just redirects to /
+````
 
 ## Contributing
 
