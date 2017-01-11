@@ -87,6 +87,12 @@ describe 'lifecycle', ->
       @req.session.redirectTo.should.equal '/foobar'
       @passport.authenticate.args[0][1].scope.should.equal 'email'
 
+    it 'sets the session to skip onboarding', ->
+      @passport.authenticate.returns (req, res, next) -> next()
+      @req.query['skip-onboarding'] = true
+      lifecycle.beforeSocialAuth('facebook')(@req, @res, @next)
+      @req.session.skipOnboarding.should.equal(true)
+
     it 'asks for linked in profile info'
 
     it 'asks for email scope if not linkedin'
@@ -99,6 +105,13 @@ describe 'lifecycle', ->
       @passport.authenticate.returns (req, res, next) -> next()
       lifecycle.afterSocialAuth('twitter')(@req, @res, @next)
       @next.args[0][0].message.should.equal 'Must pass a valid `state` param.'
+
+    it 'doesnt redirect to personalize if skip-onboarding is set', ->
+      @req.artsyPassportSignedUp = true
+      @req.session.skipOnboarding = true
+      @passport.authenticate.returns (req, res, next) -> next()
+      lifecycle.afterSocialAuth('facebook')(@req, @res, @next)
+      @res.redirect.called.should.not.be.ok()
 
     context 'with an error', ->
 
@@ -132,6 +145,15 @@ describe 'lifecycle', ->
       lifecycle.ssoAndRedirectBack @req, @res, @next
       @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
       @res.redirect.args[0][0].should.containEql '/personalize'
+
+    it 'doesnt redirect to personalize if skipping onboarding', ->
+      @req.artsyPassportSignedUp = true
+      @req.session.skipOnboarding = true
+      @req.user = { get: -> 'token' }
+      @req.artsyPassportSignedUp = true
+      lifecycle.ssoAndRedirectBack @req, @res, @next
+      @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+      @res.redirect.args[0][0].should.not.containEql '/personalize'
 
     it 'passes on for xhrs', ->
       @req.xhr = true
