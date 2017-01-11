@@ -59,6 +59,7 @@ crypto = require 'crypto'
 
 @beforeSocialAuth = (provider) -> (req, res, next) ->
   req.session.redirectTo = req.query['redirect-to']
+  req.session.skipOnboarding = req.query['skip-onboarding']
   options = {}
   options.scope = switch provider
     when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
@@ -109,7 +110,7 @@ crypto = require 'crypto'
       res.redirect opts.settingsPagePath
     else if req.artsyPassportSignedUp and provider is 'twitter'
       res.redirect opts.twitterLastStepPath
-    else if req.artsyPassportSignedUp
+    else if req.artsyPassportSignedUp and !req.session.skipOnboarding
       res.redirect opts.afterSignupPagePath
     else
       next()
