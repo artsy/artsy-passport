@@ -108,6 +108,9 @@ onAccessToken = (req, done, params) -> (err, res) ->
   # No errors—create the user from the access token.
   if not err
     done null, new opts.CurrentUser accessToken: res.body.access_token
+  else if param.provider is 'twitter' and msg.match('no account linked')?
+    err = new Error "No Twitter account found, please sign up"
+    done err
   # If there's no user linked to this account, create the user via the POST
   # /user API. Then attempt to fetch the access token again from Gravity and
   # recur back into this onAcccessToken callback.
