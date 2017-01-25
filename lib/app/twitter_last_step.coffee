@@ -48,7 +48,6 @@ opts = require '../options'
     href = "#{opts.logoutPath}?redirect-to=#{opts.loginPagePath}"
     msg = "An account with this email address already exists. If this is " +
           "your account please " +
-          "<a href=#{opts.settingsPagePath}>delete this account</a>, " +
-          "log in to Artsy via email and password, and link Twitter " +
+          "log in to Artsy with your email and password, and link your Twitter account" +
           "in your settings instead."
   res.redirect opts.twitterLastStepPath + '?error=' + msg
