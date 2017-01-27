@@ -5,14 +5,14 @@ lifecycle = rewire '../../lib/app/lifecycle'
 describe 'lifecycle', ->
 
   beforeEach ->
-    @req = { body: {}, params: {}, query: {}, session: {} }
+    @req = { body: {}, params: {}, query: {}, session: {}, get: sinon.stub() }
     @res = { redirect: sinon.stub(), send: sinon.stub() }
     @next = sinon.stub()
     @passport = {}
     @passport.authenticate = sinon.stub()
     @passport.authenticate.returns (req, res, next) => next()
     @request = sinon.stub().returns @request
-    for method in ['get', 'end', 'set', 'post']
+    for method in ['get', 'end', 'set', 'post', 'send']
       @request[method] = sinon.stub().returns @request
     lifecycle.__set__ 'request', @request
     lifecycle.__set__ 'passport', @passport
@@ -70,6 +70,11 @@ describe 'lifecycle', ->
     it 'suggests an email if its invalid and redirects back to the signup page'
 
     it 'sends 500s as json for xhr requests'
+
+    it 'passes the user agent through signup', ->
+      @req.get.returns 'foo-agent'
+      lifecycle.onLocalSignup @req, @res, @next
+      @request.set.args[0][0]['User-Agent'].should.equal 'foo-agent'
 
   describe '#beforeSocialAuth', ->
 
