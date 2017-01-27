@@ -1,5 +1,7 @@
 # Artsy Passport
 
+[![CircleCI](https://circleci.com/gh/artsy/artsy-passport.svg?style=svg)](https://circleci.com/gh/artsy/artsy-passport)
+
 Wires up the common auth handlers, and related security concerns, for Artsy's [Ezel](http://ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
 ## Setup
