@@ -14,5 +14,7 @@ module.exports = (req, res) ->
     req.session.redirectTo or
     '/'
   )
+  delete req.session.redirectTo
+  delete req.session.skipOnboarding
   res?.redirect url
   return url
