@@ -104,6 +104,9 @@ crypto = require 'crypto'
             "Try logging out and back in with #{providerName}. Then consider " +
             "deleting that user account and re-linking #{providerName}. "
       res.redirect opts.settingsPagePath + '?error=' + msg
+    else if err?.message?.match 'Unauthorized source IP address'
+      msg = "Your IP address was blocked by Facebook."
+      res.redirect opts.loginPagePath + '?error=' + msg
     else if err?
       next err
     else if linkingAccount
