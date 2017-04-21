@@ -125,6 +125,13 @@ describe 'lifecycle', ->
       @res.redirect.args[0][0]
         .should.equal '/login?error=Your IP address was blocked by Facebook.'
 
+    it 'passes random errors to be rendered on the login screen', ->
+      @passport.authenticate.returns (req, res, next) ->
+        next new Error 'Twitter did not like you'
+      lifecycle.afterSocialAuth('twitter')(@req, @res, @next)
+      @res.redirect.args[0][0]
+        .should.equal '/login?error=Twitter did not like you'
+
     context 'with an error', ->
 
       it 'redirects back to the login page and explains the account ' +

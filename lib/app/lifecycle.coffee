@@ -108,7 +108,8 @@ crypto = require 'crypto'
       msg = "Your IP address was blocked by Facebook."
       res.redirect opts.loginPagePath + '?error=' + msg
     else if err?
-      next err
+      msg = err.message or err.toString?()
+      res.redirect opts.loginPagePath + '?error=' + msg
     else if linkingAccount
       res.redirect opts.settingsPagePath
     else if req.artsyPassportSignedUp and provider is 'twitter'
