@@ -118,6 +118,13 @@ describe 'lifecycle', ->
       lifecycle.afterSocialAuth('facebook')(@req, @res, @next)
       @res.redirect.called.should.not.be.ok()
 
+    it 'surfaces blocked by facebook errors', ->
+      @passport.authenticate.returns (req, res, next) ->
+        next new Error 'Unauthorized source IP address'
+      lifecycle.afterSocialAuth('facebook')(@req, @res, @next)
+      @res.redirect.args[0][0]
+        .should.equal '/login?error=Your IP address was blocked by Facebook.'
+
     context 'with an error', ->
 
       it 'redirects back to the login page and explains the account ' +
