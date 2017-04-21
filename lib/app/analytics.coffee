@@ -29,3 +29,11 @@ Analytics = require 'analytics-node'
       signup_service: service
       user_id: req.user.get 'id'
   next()
+
+@trackLogin = (req, res, next) ->
+  return next() unless opts.SEGMENT_WRITE_KEY
+  analytics = new Analytics opts.SEGMENT_WRITE_KEY
+  analytics.track
+    event: 'Successfully logged in'
+    userId: req.user.get 'id'
+  next()

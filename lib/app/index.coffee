@@ -21,7 +21,7 @@ twitterLastStep = require './twitter_last_step'
   onError,
   ssoAndRedirectBack
 } = require './lifecycle'
-{ setCampaign, trackSignup } = require './analytics'
+{ setCampaign, trackSignup, trackLogin } = require './analytics'
 { denyBadLogoutLinks, logout } = require './logout'
 { headerLogin, trustTokenLogin } = require './token_login'
 addLocals = require './locals'
@@ -36,6 +36,7 @@ module.exports = ->
   app.post opts.loginPagePath,
     csrf(cookie: true),
     onLocalLogin,
+    trackLogin,
     ssoAndRedirectBack
   app.post opts.signupPagePath,
     setCampaign,

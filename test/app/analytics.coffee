@@ -19,6 +19,11 @@ describe 'analytics', ->
     analytics.trackSignup('email') @req, @res, @next
     @analytics.track.args[0][0].properties.signup_service.should.equal 'email'
 
+  it 'tracks login', ->
+    analytics.trackLogin @req, @res, @next
+    @analytics.track.args[0][0].event.should.equal 'Successfully logged in'
+    @analytics.track.args[0][0].userId.should.equal 'foo'
+
   it 'passes along modal_id and acquisition_initiative submitted fields', ->
     @req.body.modal_id = 'foo'
     @req.body.acquisition_initiative = 'bar'
