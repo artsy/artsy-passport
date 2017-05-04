@@ -11,7 +11,6 @@ csrf = require 'csurf'
 passport = require 'passport'
 app = express()
 opts = require '../options'
-twitterLastStep = require './twitter_last_step'
 {
   onLocalLogin,
   onLocalSignup,
@@ -64,11 +63,6 @@ module.exports = ->
 
   # Twitter "one last step" UI
   app.get '/', twitterLastStep.ensureEmail
-  app.get opts.twitterLastStepPath, twitterLastStep.login
-  app.post opts.twitterLastStepPath,
-    csrf(cookie: true),
-    twitterLastStep.submit,
-    twitterLastStep.error
 
   # Logout middleware
   app.get opts.logoutPath, denyBadLogoutLinks, logout
