@@ -18,7 +18,7 @@ describe 'lifecycle', ->
     lifecycle.__set__ 'passport', @passport
     lifecycle.__set__ 'opts', @opts =
       loginPagePath: '/login'
-      afterSignupPagePath: '/signup'
+      afterSignupPagePath: '/personalize'
       APP_URL: 'https://www.artsy.net'
       ARTSY_URL: 'https://api.artsy.net'
 
@@ -154,7 +154,9 @@ describe 'lifecycle', ->
 
   describe '#ensureLoggedInOnAfterSignupPage', ->
 
-    it 'redirects to the login page without a user'
+    it 'redirects to the login page, and back, without a user', ->
+      lifecycle.ensureLoggedInOnAfterSignupPage @req, @res, @next
+      @res.redirect.args[0][0].should.equal '/login?redirect-to=/personalize'
 
   describe '#ssoAndRedirectBack', ->
 

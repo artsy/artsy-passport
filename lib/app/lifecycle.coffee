@@ -120,7 +120,8 @@ crypto = require 'crypto'
       next()
 
 @ensureLoggedInOnAfterSignupPage = (req, res, next) ->
-  res.redirect opts.loginPagePath unless req.user?
+  toLogin = "#{opts.loginPagePath}?redirect-to=#{opts.afterSignupPagePath}"
+  res.redirect toLogin unless req.user?
   next()
 
 @onError = (err, req, res, next) ->
