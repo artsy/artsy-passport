@@ -68,3 +68,10 @@ describe 'passport callbacks', ->
     @req.get.returns 'chrome-foo'
     cbs.local @req, 'craig', 'foo'
     @request.set.args[0][0].should.containEql 'User-Agent': 'chrome-foo'
+
+  it 'passes the user agent through facebook signup', ->
+    @req.get.returns 'foo-bar-baz-ua'
+    cbs.facebook @req, 'foo-token', 'token-secret', { displayName: 'Craig' }
+    res = { body: { error_description: 'no account linked' }, status: 403 }
+    @request.end.args[0][0](null, res)
+    @request.set.args[1][0]['User-Agent'].should.equal 'foo-bar-baz-ua'
