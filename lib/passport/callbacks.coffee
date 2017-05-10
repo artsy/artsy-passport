@@ -134,6 +134,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
     request
       .post(opts.ARTSY_URL + '/api/v1/user')
       .send(params)
+      .set('User-Agent': req.get 'user-agent')
       .set('X-Xapp-Token': artsyXapp.token)
       .end (err) ->
         return done err if err
