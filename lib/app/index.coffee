@@ -10,13 +10,13 @@ express = require 'express'
 csrf = require 'csurf'
 passport = require 'passport'
 app = express()
-opts = require '../options'
-twitterLastStep = require './twitter_last_step'
+opts = require '../options.coffee'
+twitterLastStep = require './twitter_last_step.coffee'
 { onLocalLogin, onLocalSignup, beforeSocialAuth,
-  afterSocialAuth, ensureLoggedInOnAfterSignupPage, onError } = require './lifecycle'
-{ denyBadLogoutLinks, logout } = require './logout'
-{ headerLogin, trustTokenLogin } = require './token_login'
-addLocals = require './locals'
+  afterSocialAuth, ensureLoggedInOnAfterSignupPage, onError } = require './lifecycle.coffee'
+{ denyBadLogoutLinks, logout } = require './logout.coffee'
+{ headerLogin, trustTokenLogin } = require './token_login.coffee'
+addLocals = require './locals.coffee'
 
 module.exports = ->
 

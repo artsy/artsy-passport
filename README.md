@@ -2,22 +2,26 @@
 
 Wires up the common auth handlers, and related security concerns, for Artsy's [Ezel](http://ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
+## Breaking changes in 2.0
+
+* The app is now shipped as a single JS file.
+
 ## Setup
 
 #### Make sure you first mount session, body parser, and start [artsy-xapp](https://github.com/artsy/artsy-xapp).
 
-````coffeescript
+```coffee
 app.use express.bodyParser()
 app.use express.cookieParser('foobar')
 app.use express.cookieSession()
 artsyXapp.init -> app.listen()
-````
+```
 
 #### Then mount Artsy Passport passing a big configuration hash.
 
 _Values indicate defaults._
 
-````coffeescript
+```coffee
 app.use artsyPassport
 
   CurrentUser: # The CurrentUser Backbone model
@@ -64,20 +68,20 @@ app.use artsyPassport
     'id', 'type', 'name', 'email', 'phone', 'lab_features',
     'default_profile_id', 'has_partner_access', 'collector_level'
   ]
-````
+```
 
 The keys are cased so it's convenient to pass in a configuration hash. A minimal setup could look like this:
 
-````coffeescript
+```coffee
 app.use artsyPassport _.extend config,
   CurrentUser: CurrentUser
-````
+```
 
 **Note:** CurrentUser must be a Backbone model with typical `get` and `toJSON` methods.
 
 #### Create a login form pointing to your paths.
 
-````jade
+```jade
 h1 Login
 pre!= error
 a( href=ap.facebookPath ) Login via Facebook
@@ -89,11 +93,11 @@ form( action=ap.loginPagePath, method='POST' )
   input( name='password' )
   input( type="hidden" name="_csrf" value=csrfToken )
   button( type='submit' ) Login
-````
+```
 
 #### And maybe a signup form...
 
-````jade
+```jade
 h1 Signup
 pre!= error
 a( href=ap.facebookPath ) Signup via Facebook
@@ -105,11 +109,11 @@ form( action=ap.signupPagePath, method='POST' )
   input( name='password' )
   input( type="hidden" name="_csrf" value=csrfToken )
   button( type='submit' ) Signup
-````
+```
 
 #### And maybe a settings page for linking accounts...
 
-````jade
+```jade
 h2 Linked Accounts
 pre!= error
 - providers = user.get('authentications').map(function(a) { return a.provider })
@@ -127,22 +131,22 @@ if providers.indexOf('linkedin') > -1
   | Connected LinkedIn
 else
   a( href=ap.linkedinPath ) Connect LinkedIn
-````
+```
 
 #### Finally there's this weird "one last step" UI for twitter to store emails after signup.
 
-````jade
+```jade
 h1 Just one more step
 pre!= error
 form( method='post', action=ap.twitterLastStepPath )
   input( type="hidden" name="_csrf" value=csrfToken )
   input.bordered-input( name='email' )
   button( type='submit' ) Join Artsy
-````
+```
 
 #### Render the pages
 
-````coffeescript
+```coffee
 { loginPagePath, signupPagePath, settingsPagePath,
   afterSignupPagePath, twitterLastStepPath } = artsyPassport.options
 
@@ -151,31 +155,31 @@ app.get signupPagePath, (req, res) -> res.render 'signup'
 app.get settingsPagePath, (req, res) -> res.render 'settings'
 app.get afterSignupPagePath, (req, res) -> res.render 'personalize'
 app.get twitterLastStepPath, (req, res) -> res.render 'twitter_last_step'
-````
+```
 
 #### Access a logged in Artsy user in a variety of ways...
 
 In your server-side templates
 
-````jade
+```jade
 h1 Hello #{user.get('name')}
-````
+```
 
 In your client-side code
 
-````coffeescript
+```coffee
 CurrentUser = require '../models/current_user.coffee'
 sd = require('sharify').data
 
 user = new CurrentUser(sd.CURRENT_USER)
-````
+```
 
 In your routers
 
-````coffeescript
+```coffee
 app.get '/', (req, res) ->
   res.send 'Hello ' + req.user.get('name')
-````
+```
 
 _These forms of user will be null if they're not logged in._
 
@@ -183,26 +187,26 @@ _These forms of user will be null if they're not logged in._
 
 If you implement a fancier auth flow that involves client-side redirecting back, you may find this helper useful in avoiding ["open redirect"](https://github.com/artsy/artsy-passport/issues/68) attacks.
 
-````coffeescript
+```coffee
 sanitizeRedirect = require 'artsy-passport/sanitize-redirect'
 
 location.href = sanitizeRedirect "http://artsy.net%0D%0Aattacker.com/"
 # Notices the url isn't pointing at artsy.net, so just redirects to /
-````
+```
 
 ## Contributing
 
 Add a `local.artsy.net` entry into your /etc/hosts
 
-````
+```
 127.0.0.1 localhost
 #...
 127.0.0.1 local.artsy.net
-````
+```
 
 Install node modules `npm install` then write a ./config.coffee that looks something like this:
 
-````coffeescript
+```coffee
 module.exports =
   FACEBOOK_ID: ''
   FACEBOOK_SECRET: ''
@@ -221,7 +225,7 @@ module.exports =
   TWITTER_PASSWORD: ''
   FACEBOOK_EMAIL: 'craigspaeth@gmail.com'
   FACEBOOK_PASSWORD: ''
-````
+```
 
 Then you can check the example by running `npm run example` and opening [localhost:4000](http://localhost:4000).
 

@@ -3,9 +3,9 @@
 #
 
 request = require 'superagent'
-opts = require '../options'
+opts = require '../options.coffee'
 { parse } = require 'url'
-redirectBack = require './redirectback'
+redirectBack = require './redirectback.coffee'
 
 @denyBadLogoutLinks = (req, res, next) ->
   if parse(req.get 'Referrer').hostname.match 'artsy.net'

@@ -5,10 +5,10 @@
 
 _ = require 'underscore'
 _s = require 'underscore.string'
-opts = require '../options'
+opts = require '../options.coffee'
 passport = require 'passport'
 qs = require 'querystring'
-redirectBack = require './redirectback'
+redirectBack = require './redirectback.coffee'
 request = require 'superagent'
 artsyXapp = require 'artsy-xapp'
 Mailcheck = require 'mailcheck'

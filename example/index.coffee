@@ -11,7 +11,7 @@ path = require "path"
 logger = require 'morgan'
 artsyXapp = require 'artsy-xapp'
 artsyPassport = require '../'
-config = require '../config.coffee'
+config = require '../config'
 
 # CurrentUser class
 class CurrentUser extends Backbone.Model

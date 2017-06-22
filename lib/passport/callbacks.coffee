@@ -6,7 +6,7 @@
 
 _ = require 'underscore'
 request = require 'superagent'
-opts = require '../options'
+opts = require '../options.coffee'
 artsyXapp = require 'artsy-xapp'
 
 @local = (req, username, password, done) ->
