@@ -1,6 +1,6 @@
 {
   "name": "artsy-passport",
-  "version": "1.7.4",
+  "version": "2.0.0",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](ezeljs.com)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
@@ -23,15 +23,16 @@
   "engines": {
     "node": ">= 0.10.x"
   },
+  "main": "dist/index.js",
   "scripts": {
     "test": "mocha test/app && mocha test/passport",
-    "compile": "browserify -t coffeeify example/client.coffee > example/public/client.js",
+    "compile": "browserify -t coffeeify lib/index.coffee > dist/index.js",
+    "compile-example": "browserify -t coffeeify example/client.coffee > example/public/client.js",
     "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
   },
   "dependencies": {
     "analytics-node": "^2.1.0",
     "async": "^1.5.0",
-    "coffee-script": "^1.9.2",
     "csurf": "^1.8.3",
     "dotenv": "^4.0.0",
     "express": "^4.12.3",
@@ -45,22 +46,24 @@
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
+    "artsy-xapp": "*",
+    "backbone": "*",
+    "backbone-super-sync": "*",
     "body-parser": "*",
+    "brfs": "^1.4.3",
+    "browserify": "*",
+    "coffee-script": "^1.9.2",
+    "coffeeify": "^2.1.0",
     "cookie-parser": "*",
     "cookie-session": "*",
-    "morgan": "*",
+    "jade": "*",
     "mocha": "*",
+    "morgan": "*",
+    "rewire": "2.2.0",
+    "sharify": "*",
     "should": "*",
     "sinon": "*",
-    "jade": "*",
     "underscore": "*",
-    "backbone": "*",
-    "sharify": "*",
-    "backbone-super-sync": "*",
-    "browserify": "*",
-    "coffeeify": "*",
-    "artsy-xapp": "*",
-    "zombie": "*",
-    "rewire": "2.2.0"
+    "zombie": "*"
   }
 }

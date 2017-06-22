@@ -3,7 +3,7 @@
 # trust_token in the query params.
 #
 
-opts = require '../options'
+opts = require '../options.coffee'
 qs = require 'querystring'
 request = require 'superagent'
 _  = require 'underscore'

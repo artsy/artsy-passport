@@ -2,7 +2,7 @@
 # Redirects back based on query params, session, or w/e else.
 # Code stolen from Force, thanks @dzucconi!
 #
-opts = require '../options'
+opts = require '../options.coffee'
 sanitizeRedirect = require './sanitize_redirect'
 
 module.exports = (req, res) ->

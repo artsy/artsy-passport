@@ -13,3 +13,4 @@ logs
 results
 npm-debug.log
 config.coffee
+dist/index.js

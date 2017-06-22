@@ -1,6 +1,6 @@
 _ = require 'underscore'
 _s = require 'underscore.string'
-opts = require '../options'
+opts = require '../options.coffee'
 
 module.exports = (req, res, next) ->
   if req.user

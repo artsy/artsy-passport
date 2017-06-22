@@ -1,4 +1,4 @@
-opts = require '../options'
+opts = require '../options.coffee'
 Analytics = require 'analytics-node'
 
 @setCampaign = (req, res, next) ->
