@@ -25,14 +25,16 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha --recursive test",
+    "test": "mocha test/app && mocha test/passport",
     "compile": "browserify -t coffeeify lib/index.coffee > dist/index.js",
     "compile-example": "browserify -t coffeeify example/client.coffee > example/public/client.js",
-    "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile-example && coffee example/index.coffee"
+    "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
   },
   "dependencies": {
+    "analytics-node": "^2.1.0",
     "async": "^1.5.0",
     "csurf": "^1.8.3",
+    "dotenv": "^4.0.0",
     "express": "^4.12.3",
     "mailcheck": "^1.1.1",
     "passport": "^0.2.1",
@@ -48,6 +50,7 @@
     "backbone": "*",
     "backbone-super-sync": "*",
     "body-parser": "*",
+    "brfs": "^1.4.3",
     "browserify": "*",
     "coffee-script": "^1.9.2",
     "coffeeify": "^2.1.0",

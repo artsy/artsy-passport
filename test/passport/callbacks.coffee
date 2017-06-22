@@ -6,7 +6,7 @@ cbs = rewire '../../lib/passport/callbacks'
 describe 'passport callbacks', ->
 
   beforeEach ->
-    @req = {}
+    @req = get: sinon.stub()
     @request = {}
     @request.get = sinon.stub().returns @request
     @request.query = sinon.stub().returns @request
@@ -56,19 +56,22 @@ describe 'passport callbacks', ->
     res = { body: { access_token: 'access-token' }, status: 200 }
     @request.end.args[0][0](null, res)
 
-  it 'signs up a user via twitter', (done) ->
+  it 'denies twitter signup', (done) ->
     cb = (err, user) ->
-      user.get('accessToken').should.equal 'access-token'
+      err.message.should.containEql 'please sign up'
       done()
     cbs.twitter @req, 'foo-token', 'token-secret', { displayName: 'Craig' }, cb
-    @request.post.args[0][0].should
-      .equal 'http://apiz.artsy.net/oauth2/access_token'
     res = { body: { error_description: 'no account linked' }, status: 403 }
     @request.end.args[0][0](null, res)
-    @request.post.args[1][0].should.equal 'http://apiz.artsy.net/api/v1/user'
-    body = @request.send.args[0][0]
-    body.email.should.equal 'foo-token@artsy.tmp'
-    body.name.should.equal 'Craig'
-    @request.end.args[1][0]()
-    res = { body: { access_token: 'access-token' }, status: 200 }
+
+  it 'passes the user agent through login', ->
+    @req.get.returns 'chrome-foo'
+    cbs.local @req, 'craig', 'foo'
+    @request.set.args[0][0].should.containEql 'User-Agent': 'chrome-foo'
+
+  it 'passes the user agent through facebook signup', ->
+    @req.get.returns 'foo-bar-baz-ua'
+    cbs.facebook @req, 'foo-token', 'token-secret', { displayName: 'Craig' }
+    res = { body: { error_description: 'no account linked' }, status: 403 }
     @request.end.args[0][0](null, res)
+    @request.set.args[1][0]['User-Agent'].should.equal 'foo-bar-baz-ua'
