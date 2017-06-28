@@ -7,9 +7,9 @@ FacebookStrategy = require('passport-facebook').Strategy
 TwitterStrategy = require('passport-twitter').Strategy
 LocalStrategy = require('passport-local').Strategy
 LinkedInStrategy = require('passport-linkedin').Strategy
-callbacks = require './callbacks.coffee'
-{ serialize, deserialize } = require './serializers.coffee'
-opts = require '../options.coffee'
+callbacks = require './callbacks'
+{ serialize, deserialize } = require './serializers'
+opts = require '../options'
 
 module.exports = ->
   passport.serializeUser serialize

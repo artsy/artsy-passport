@@ -5,9 +5,9 @@
 #
 
 _ = require 'underscore'
-opts = require './options.coffee'
-setupApp = require './app/index.coffee'
-setupPassport = require './passport/index.coffee'
+opts = require './options'
+setupApp = require './app/index'
+setupPassport = require './passport/index'
 artsyXapp = require 'artsy-xapp'
 
 module.exports = (options) =>
