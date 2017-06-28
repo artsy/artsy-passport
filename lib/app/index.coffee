@@ -10,8 +10,8 @@ express = require 'express'
 csrf = require 'csurf'
 passport = require 'passport'
 app = express()
-opts = require '../options.coffee'
-twitterLastStep = require './twitter_last_step.coffee'
+opts = require '../options'
+twitterLastStep = require './twitter_last_step'
 {
   onLocalLogin,
   onLocalSignup,
@@ -20,11 +20,11 @@ twitterLastStep = require './twitter_last_step.coffee'
   ensureLoggedInOnAfterSignupPage,
   onError,
   ssoAndRedirectBack
-} = require './lifecycle.coffee'
-{ setCampaign, trackSignup, trackLogin } = require './analytics.coffee'
-{ denyBadLogoutLinks, logout } = require './logout.coffee'
-{ headerLogin, trustTokenLogin } = require './token_login.coffee'
-addLocals = require './locals.coffee'
+} = require './lifecycle'
+{ setCampaign, trackSignup, trackLogin } = require './analytics'
+{ denyBadLogoutLinks, logout } = require './logout'
+{ headerLogin, trustTokenLogin } = require './token_login'
+addLocals = require './locals'
 
 module.exports = ->
 

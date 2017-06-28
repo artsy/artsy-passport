@@ -4,7 +4,7 @@
 #
 
 _ = require 'underscore'
-opts = require '../options.coffee'
+opts = require '../options'
 request = require 'superagent'
 async = require 'async'
 

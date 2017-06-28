@@ -6,7 +6,7 @@
 _ = require 'underscore'
 passport = require 'passport'
 request = require 'superagent'
-opts = require '../options.coffee'
+opts = require '../options'
 
 @ensureEmail = (req, res, next) ->
   return next() unless req.user?
