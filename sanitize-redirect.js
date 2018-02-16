@@ -1,1 +1,1 @@
-module.exports = require("./lib/app/sanitize_redirect");
+module.exports = require("./dist/app/sanitize_redirect");
