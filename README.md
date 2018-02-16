@@ -4,9 +4,9 @@
 
 Wires up the common auth handlers, and related security concerns, for Artsy's [Ezel](http://ezeljs.com)-based apps using [passport](http://passportjs.org/). Used internally at Artsy to DRY up authentication code.
 
-## Breaking changes in 2.0
+## Breaking changes
 
-* The app is now shipped as a single JS file.
+We mave migrated this app from the module "artsy-passport" to "@artsy/passport", and called that v1.
 
 ## Setup
 
