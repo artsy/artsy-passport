@@ -35,7 +35,7 @@ crypto = require 'crypto'
   req.artsyPassportSignedUp = true
   request
     .post(opts.ARTSY_URL + '/api/v1/user')
-    .set('X-Xapp-Token': artsyXapp.token, 'User-Agent': req.get 'user-agent')
+    .set('X-Xapp-Token': artsyXapp.token, 'User-Agent': req.get 'user-agent', 'Referer': req.get 'referer')
     .send(
       name: req.body.name
       email: req.body.email
