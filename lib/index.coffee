@@ -16,3 +16,4 @@ module.exports = (options) =>
   setupApp()
 
 module.exports.options = opts
+module.exports.sanitizeRedirect = require './app/sanitize_redirect.js'
