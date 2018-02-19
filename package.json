@@ -25,7 +25,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "test": "mocha test/app && mocha test/passport",
+    "test": "mkdir -p dist/app && cp lib/app/sanitize_redirect.js dist/app && mocha test/app && mocha test/passport",
     "compile": "coffee -c -o dist lib; cp lib/app/sanitize_redirect.js dist/app",
     "compile-example": "browserify -t coffeeify example/client.coffee > example/public/client.js",
     "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
