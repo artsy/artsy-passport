@@ -136,6 +136,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
       .send(params)
       .set('User-Agent': req.get 'user-agent')
       .set('X-Xapp-Token': artsyXapp.token)
+      .set('Referer': req.get 'referer')
       .end (err) ->
         return done err if err
         request
