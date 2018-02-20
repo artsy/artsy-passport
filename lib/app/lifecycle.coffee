@@ -40,6 +40,7 @@ crypto = require 'crypto'
       name: req.body.name
       email: req.body.email
       password: req.body.password
+      sign_up_intent: req.body.signupIntent
     ).end (err, sres) ->
       if err and err.message is 'Email is invalid.'
         suggestion = Mailcheck.run(email: req.body.email)?.full
@@ -60,6 +61,7 @@ crypto = require 'crypto'
 @beforeSocialAuth = (provider) -> (req, res, next) ->
   req.session.redirectTo = req.query['redirect-to']
   req.session.skipOnboarding = req.query['skip-onboarding']
+  req.session.signupIntent = req.query['signup-intent'] if req.query['signup-intent']
   options = {}
   options.scope = switch provider
     when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
