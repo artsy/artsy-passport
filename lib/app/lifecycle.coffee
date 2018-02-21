@@ -116,8 +116,6 @@ crypto = require 'crypto'
       res.redirect opts.settingsPagePath
     else if req.artsyPassportSignedUp and provider is 'twitter'
       res.redirect opts.twitterLastStepPath
-    else if req.artsyPassportSignedUp and !req.session.skipOnboarding
-      res.redirect opts.afterSignupPagePath
     else
       next()
 

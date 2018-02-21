@@ -7,11 +7,11 @@ sanitizeRedirect = require './sanitize_redirect'
 
 module.exports = (req, res) ->
   url = sanitizeRedirect(
+    req.session.redirectTo or
     (opts.afterSignupPagePath if req.artsyPassportSignedUp and !req.session.skipOnboarding) or
     req.body['redirect-to'] or
     req.query['redirect-to'] or
     req.params.redirect_uri or
-    req.session.redirectTo or
     '/'
   )
   delete req.session.redirectTo
