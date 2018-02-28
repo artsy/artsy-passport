@@ -2,7 +2,7 @@ opts = require '../options'
 Analytics = require 'analytics-node'
 
 @setCampaign = (req, res, next) ->
-  return next() unless opts.SEGMENT_WRITE_KEY
+  return next() unless opts.SEGMENT_WRITE_KEY_SERVER
   req.session.modalId = (
     req.body.modal_id or
     req.query.modal_id
@@ -18,8 +18,8 @@ Analytics = require 'analytics-node'
   acquisitionInitiative = req.session.acquisitionInitiative
   delete req.session.acquisitionInitiative
   delete req.session.modalId
-  return next() unless opts.SEGMENT_WRITE_KEY
-  analytics = new Analytics opts.SEGMENT_WRITE_KEY
+  return next() unless opts.SEGMENT_WRITE_KEY_SERVER
+  analytics = new Analytics opts.SEGMENT_WRITE_KEY_SERVER
   analytics.track
     event: 'Created account'
     userId: req.user.get 'id'
@@ -31,8 +31,8 @@ Analytics = require 'analytics-node'
   next()
 
 @trackLogin = (req, res, next) ->
-  return next() unless opts.SEGMENT_WRITE_KEY
-  analytics = new Analytics opts.SEGMENT_WRITE_KEY
+  return next() unless opts.SEGMENT_WRITE_KEY_SERVER
+  analytics = new Analytics opts.SEGMENT_WRITE_KEY_SERVER
   analytics.track
     event: 'Successfully logged in'
     userId: req.user.get 'id'
