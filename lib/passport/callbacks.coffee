@@ -130,7 +130,10 @@ onAccessToken = (req, done, params) -> (err, res) ->
   # /user API. Then attempt to fetch the access token again from Gravity and
   # recur back into this onAcccessToken callback.
   else if msg.match('no account linked')?
-    if (req?.session?.signupIntent && params?) then params.sign_up_intent = req.session.signupIntent
+    if (req?.session? && params?)
+      { sign_up_intent, receive_emails, accepted_terms_of_service } = req.session
+      Object.assign(params, { sign_up_intent, receive_emails, accepted_terms_of_service } )
+
     req.artsyPassportSignedUp = true
     request
       .post(opts.ARTSY_URL + '/api/v1/user')
