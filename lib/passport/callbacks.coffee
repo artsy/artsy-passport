@@ -132,7 +132,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
   else if msg.match('no account linked')?
     if (req?.session? && params?)
       { sign_up_intent, receive_emails, accepted_terms_of_service } = req.session
-      params = { ...params, ...{ sign_up_intent, receive_emails, accepted_terms_of_service } }
+      _.extend(params, { sign_up_intent, receive_emails, accepted_terms_of_service })
 
     req.artsyPassportSignedUp = true
     request
