@@ -64,8 +64,9 @@ crypto = require 'crypto'
   req.session.redirectTo = req.query['redirect-to']
   req.session.skipOnboarding = req.query['skip-onboarding']
   req.session.sign_up_intent = req.query['signup-intent']
-  req.session.accepted_terms_of_service = req.query['accepted-terms-of-service']
-  req.session.receive_emails = req.query['receive-emails']
+  # accepted_terms_of_service and receive_emails use underscores
+  req.session.accepted_terms_of_service = req.query['accepted_terms_of_service']
+  req.session.receive_emails = req.query['receive_emails']
   options = {}
   options.scope = switch provider
     when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
