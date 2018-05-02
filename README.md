@@ -237,6 +237,6 @@ The tests are a combination of integration and middleware unit tests. To run the
 ## Publishing to npm
 
 ```
-npm run compile
-npm publish
+yarn compile
+yarn publish
 ```
