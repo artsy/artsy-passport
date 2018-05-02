@@ -233,3 +233,10 @@ module.exports =
 Then you can check the example by running `npm run example` and opening [localhost:4000](http://localhost:4000).
 
 The tests are a combination of integration and middleware unit tests. To run the whole suite use `npm test`.
+
+## Publishing to npm
+
+```
+yarn compile
+yarn publish
+```
