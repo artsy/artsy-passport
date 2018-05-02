@@ -53,7 +53,6 @@ artsyXapp = require 'artsy-xapp'
 
 @facebook = (req, token, refreshToken, profile, done) ->
   req.socialProfileEmail = profile?.emails?[0]?.value
-  # req.socialProfileEmail = profile
   # Link Facebook account
   if req.user
     request
@@ -131,8 +130,8 @@ onAccessToken = (req, done, params) -> (err, res) ->
   # recur back into this onAcccessToken callback.
   else if msg.match('no account linked')?
     if (req?.session? && params?)
-      { sign_up_intent, receive_emails, accepted_terms_of_service } = req.session
-      _.extend(params, { sign_up_intent, receive_emails, accepted_terms_of_service })
+      { sign_up_intent, sign_up_referer, receive_emails, accepted_terms_of_service } = req.session
+      _.extend(params, { sign_up_intent, sign_up_referer, receive_emails, accepted_terms_of_service })
 
     req.artsyPassportSignedUp = true
     request
