@@ -43,7 +43,7 @@ crypto = require 'crypto'
       sign_up_intent: req.body.signupIntent
       sign_up_referer: req.body.signupReferer
       accepted_terms_of_service: req.body.accepted_terms_of_service,
-      receive_emails: req.body.receive_emails,
+      agreed_to_receive_emails: req.body.agreed_to_receive_emails,
     ).end (err, sres) ->
       if err and err.message is 'Email is invalid.'
         suggestion = Mailcheck.run(email: req.body.email)?.full
@@ -66,9 +66,9 @@ crypto = require 'crypto'
   req.session.skipOnboarding = req.query['skip-onboarding']
   req.session.sign_up_intent = req.query['signup-intent']
   req.session.sign_up_referer = req.query['signup-referer']
-  # accepted_terms_of_service and receive_emails use underscores
+  # accepted_terms_of_service and agreed_to_receive_emails use underscores
   req.session.accepted_terms_of_service = req.query['accepted_terms_of_service']
-  req.session.receive_emails = req.query['receive_emails']
+  req.session.agreed_to_receive_emails = req.query['agreed_to_receive_emails']
   options = {}
   options.scope = switch provider
     when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
