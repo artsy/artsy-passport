@@ -13,7 +13,7 @@ artsyXapp = require 'artsy-xapp'
   request
     .post("#{opts.ARTSY_URL}/oauth2/access_token")
     .set('User-Agent': req.get 'user-agent')
-    .query(
+    .send(
       client_id: opts.ARTSY_ID
       client_secret: opts.ARTSY_SECRET
       grant_type: 'credentials'
