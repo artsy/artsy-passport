@@ -24,5 +24,6 @@ module.exports =
   logoutPath: '/users/sign_out'
   userKeys: [
     'id', 'type', 'name', 'email', 'phone', 'lab_features',
-    'default_profile_id', 'has_partner_access', 'collector_level'
+    'default_profile_id', 'has_partner_access', 'collector_level',
+    'recaptcha_token'
   ]
