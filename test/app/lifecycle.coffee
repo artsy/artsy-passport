@@ -71,6 +71,11 @@ describe 'lifecycle', ->
 
     it 'sends 500s as json for xhr requests'
 
+    it 'passes the recaptcha_token through signup', ->
+      @req.body.recaptcha_token = 'recaptcha_token'
+      lifecycle.onLocalSignup @req, @res, @next
+      @request.send.args[0][0].recaptcha_token.should.equal 'recaptcha_token'
+
     it 'passes the user agent through signup', ->
       @req.get.returns 'foo-agent'
       lifecycle.onLocalSignup @req, @res, @next
