@@ -44,6 +44,7 @@ crypto = require 'crypto'
       sign_up_referer: req.body.signupReferer
       accepted_terms_of_service: req.body.accepted_terms_of_service,
       agreed_to_receive_emails: req.body.agreed_to_receive_emails,
+      recaptcha_token: req.body.recaptcha_token
     ).end (err, sres) ->
       if err and err.message is 'Email is invalid.'
         suggestion = Mailcheck.run(email: req.body.email)?.full
