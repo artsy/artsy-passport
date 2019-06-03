@@ -32,10 +32,6 @@ app.use artsyPassport
   # ----------------
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
-  TWITTER_KEY: # Twitter consumer key
-  TWITTER_SECRET: # Twitter consumer secret
-  TWITTER_KEY: # Twitter consumer key
-  TWITTER_SECRET: # Twitter consumer secret
   LINKEDIN_KEY: # Linkedin app key
   LINKEDIN_SECRET: # Linkedin app secret
   ARTSY_ID: # Artsy client id
@@ -52,12 +48,6 @@ app.use artsyPassport
   linkedinCallbackPath: '/users/auth/linkedin/callback'
   facebookPath: '/users/auth/facebook'
   facebookCallbackPath: '/users/auth/facebook/callback'
-  twitterPath: '/users/auth/twitter'
-  twitterCallbackPath: '/users/auth/twitter/callback'
-  twitterLastStepPath: '/users/auth/twitter/email'
-  twitterSignupTempEmail: (token) ->
-    hash = crypto.createHash('sha1').update(token).digest('hex')
-    "#{hash.substr 0, 12}@artsy.tmp"
 
   # Landing pages
   loginPagePath: '/log_in'
@@ -88,7 +78,6 @@ app.use artsyPassport _.extend config,
 h1 Login
 pre!= error
 a( href=ap.facebookPath ) Login via Facebook
-a( href=ap.twitterPath ) Login via Twitter
 form( action=ap.loginPagePath, method='POST' )
   h3 Login via Email
   input( name='name' )
@@ -104,7 +93,6 @@ form( action=ap.loginPagePath, method='POST' )
 h1 Signup
 pre!= error
 a( href=ap.facebookPath ) Signup via Facebook
-a( href=ap.twitterPath ) Signup via Twitter
 form( action=ap.signupPagePath, method='POST' )
   h3 Signup via Email
   input( name='name' )
@@ -125,39 +113,21 @@ if providers.indexOf('facebook') > -1
 else
   a( href=ap.facebookPath ) Connect Facebook
 br
-if providers.indexOf('twitter') > -1
-  | Connected Twitter
-else
-  a( href=ap.twitterPath ) Connect Twitter
-br
 if providers.indexOf('linkedin') > -1
   | Connected LinkedIn
 else
   a( href=ap.linkedinPath ) Connect LinkedIn
 ```
 
-#### Finally there's this weird "one last step" UI for twitter to store emails after signup.
-
-```jade
-h1 Just one more step
-pre!= error
-form( method='post', action=ap.twitterLastStepPath )
-  input( type="hidden" name="_csrf" value=csrfToken )
-  input.bordered-input( name='email' )
-  button( type='submit' ) Join Artsy
-```
-
 #### Render the pages
 
 ```coffee
-{ loginPagePath, signupPagePath, settingsPagePath,
-  afterSignupPagePath, twitterLastStepPath } = artsyPassport.options
+{ loginPagePath, signupPagePath, settingsPagePath, afterSignupPagePath } = artsyPassport.options
 
 app.get loginPagePath, (req, res) -> res.render 'login'
 app.get signupPagePath, (req, res) -> res.render 'signup'
 app.get settingsPagePath, (req, res) -> res.render 'settings'
 app.get afterSignupPagePath, (req, res) -> res.render 'personalize'
-app.get twitterLastStepPath, (req, res) -> res.render 'twitter_last_step'
 ```
 
 #### Access a logged in Artsy user in a variety of ways...
@@ -213,19 +183,15 @@ Install node modules `npm install` then write a ./config.coffee that looks somet
 module.exports =
   FACEBOOK_ID: ''
   FACEBOOK_SECRET: ''
-  TWITTER_KEY: ''
-  TWITTER_SECRET: ''
   LINKEDIN_KEY: ''
   LINKEDIN_SECRET: ''
   ARTSY_ID: ''
   ARTSY_SECRET: ''
   ARTSY_URL: 'https://api.artsy.net'
   APP_URL: 'http://local.artsy.net:4000'
-  # An Artsy user that's linked to Facebook and Twitter
+  # An Artsy user that's linked to Facebook
   ARTSY_EMAIL: 'craig@artsy.net'
   ARTSY_PASSWORD: ''
-  TWITTER_EMAIL: 'craigspaeth@gmail.com'
-  TWITTER_PASSWORD: ''
   FACEBOOK_EMAIL: 'craigspaeth@gmail.com'
   FACEBOOK_PASSWORD: ''
 ```
