@@ -40,7 +40,6 @@
     "mailcheck": "^1.1.1",
     "passport": "^0.3.0",
     "passport-facebook": "^2.0.0",
-    "passport-linkedin": "^1.0.0",
     "passport-local": "^1.0.0",
     "superagent": "^1.2.0",
     "underscore.string": "^3.2.2"

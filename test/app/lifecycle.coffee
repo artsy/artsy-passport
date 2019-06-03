@@ -60,9 +60,9 @@ describe 'lifecycle', ->
 
   describe '#onError', ->
 
-    xit 'Nexts on error', ->
-      lifecycle.onError new Error('twitter denied'), @req, @res, @next
-      @res.redirect.args[0][0].should.equal '/login?error=Canceled Twitter login'
+    it 'Nexts on error', ->
+      lifecycle.onError new Error('access denied'), @req, @res, @next
+      @next.should.be.called
 
   describe '#onLocalSignup', ->
 
