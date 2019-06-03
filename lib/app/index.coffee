@@ -44,14 +44,9 @@ module.exports = ->
 
   # Facebook OAuth
   app.get opts.facebookPath, setCampaign, beforeSocialAuth('facebook')
-  app.get opts.linkedinPath, setCampaign, beforeSocialAuth('linkedin')
   app.get opts.facebookCallbackPath,
     afterSocialAuth('facebook'),
     trackSignup('facebook'),
-    ssoAndRedirectBack
-  app.get opts.linkedinCallbackPath,
-    afterSocialAuth('linkedin'),
-    trackSignup('linkedin'),
     ssoAndRedirectBack
 
   # Logout middleware

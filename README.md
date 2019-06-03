@@ -32,8 +32,6 @@ app.use artsyPassport
   # ----------------
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
-  LINKEDIN_KEY: # Linkedin app key
-  LINKEDIN_SECRET: # Linkedin app secret
   ARTSY_ID: # Artsy client id
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
@@ -44,8 +42,6 @@ app.use artsyPassport
   # -----------------------------------------
 
   # Social auth
-  linkedinPath: '/users/auth/linkedin'
-  linkedinCallbackPath: '/users/auth/linkedin/callback'
   facebookPath: '/users/auth/facebook'
   facebookCallbackPath: '/users/auth/facebook/callback'
 
@@ -112,11 +108,6 @@ if providers.indexOf('facebook') > -1
   | Connected Facebook
 else
   a( href=ap.facebookPath ) Connect Facebook
-br
-if providers.indexOf('linkedin') > -1
-  | Connected LinkedIn
-else
-  a( href=ap.linkedinPath ) Connect LinkedIn
 ```
 
 #### Render the pages
@@ -183,8 +174,6 @@ Install node modules `npm install` then write a ./config.coffee that looks somet
 module.exports =
   FACEBOOK_ID: ''
   FACEBOOK_SECRET: ''
-  LINKEDIN_KEY: ''
-  LINKEDIN_SECRET: ''
   ARTSY_ID: ''
   ARTSY_SECRET: ''
   ARTSY_URL: 'https://api.artsy.net'

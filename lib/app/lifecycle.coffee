@@ -35,8 +35,12 @@ crypto = require 'crypto'
   req.artsyPassportSignedUp = true
   request
     .post(opts.ARTSY_URL + '/api/v1/user')
-    .set('X-Xapp-Token': artsyXapp.token, 'User-Agent': req.get('user-agent'), 'Referer': req.get('referer'))
-    .send(
+    .set({
+      'X-Xapp-Token': artsyXapp.token,
+      'User-Agent': req.get('user-agent'),
+      'Referer': req.get('referer')
+    })
+    .send({
       name: req.body.name
       email: req.body.email
       password: req.body.password
@@ -45,9 +49,9 @@ crypto = require 'crypto'
       accepted_terms_of_service: req.body.accepted_terms_of_service,
       agreed_to_receive_emails: req.body.agreed_to_receive_emails,
       recaptcha_token: req.body.recaptcha_token
-    ).end (err, sres) ->
+    }).end (err, sres) ->
       if err and err.message is 'Email is invalid.'
-        suggestion = Mailcheck.run(email: req.body.email)?.full
+        suggestion = Mailcheck.run({ email: req.body.email })?.full
         msg = "Email is invalid."
         msg += " Did you mean #{suggestion}?" if suggestion
         if req.xhr
@@ -70,19 +74,14 @@ crypto = require 'crypto'
   # accepted_terms_of_service and agreed_to_receive_emails use underscores
   req.session.accepted_terms_of_service = req.query['accepted_terms_of_service']
   req.session.agreed_to_receive_emails = req.query['agreed_to_receive_emails']
-  options = {}
-  options.scope = switch provider
-    when 'linkedin' then ['r_basicprofile', 'r_emailaddress']
-    else 'email'
+  options = { scope: 'email' }
   passport.authenticate(provider, options)(req, res, next)
 
 @afterSocialAuth = (provider) -> (req, res, next) ->
   return next(new Error "#{provider} denied") if req.query.denied
   # Determine if we're linking the account and handle any Gravity errors
   # that we can do a better job explaining and redirecting for.
-  providerName = switch provider
-    when 'linkedin' then 'LinkedIn'
-    else _s.capitalize provider
+  providerName = _s.capitalize provider
   linkingAccount = req.user?
   passport.authenticate(provider) req, res, (err) ->
     if err?.response?.body?.error is 'User Already Exists'

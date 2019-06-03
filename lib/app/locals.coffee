@@ -8,9 +8,14 @@ module.exports = (req, res, next) ->
     res.locals.sd?.CURRENT_USER = req.user.toJSON()
   res.locals.sd?.CSRF_TOKEN = res.locals.csrfToken = req.csrfToken?()
   res.locals.sd?.ERROR = res.locals.error = _s.escapeHTML req.query.error
-  res.locals.sd?.AP = res.locals.ap = _.pick opts, 'linkedinPath',
-    'linkedinCallbackPath','facebookPath','facebookCallbackPath','twitterPath',
-    'twitterCallbackPath','twitterLastStepPath','twitterSignupTempEmail',
-    'loginPagePath','signupPagePath','settingsPagePath','afterSignupPagePath',
+  res.locals.sd?.AP = res.locals.ap = _.pick(
+    opts,
+    'facebookPath',
+    'facebookCallbackPath',
+    'loginPagePath',
+    'signupPagePath',
+    'settingsPagePath',
+    'afterSignupPagePath',
     'logoutPath'
+  )
   next()

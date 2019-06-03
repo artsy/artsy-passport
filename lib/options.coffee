@@ -1,10 +1,7 @@
 crypto = require 'crypto'
 
-module.exports =
-
+module.exports = {
   # Social auth
-  linkedinPath: '/users/auth/linkedin'
-  linkedinCallbackPath: '/users/auth/linkedin/callback'
   facebookPath: '/users/auth/facebook'
   facebookCallbackPath: '/users/auth/facebook/callback'
 
@@ -21,3 +18,4 @@ module.exports =
     'default_profile_id', 'has_partner_access', 'collector_level',
     'recaptcha_token'
   ]
+}

@@ -21,36 +21,6 @@ artsyXapp = require 'artsy-xapp'
       password: password
     }).end onAccessToken(req, done)
 
-@linkedin = (req, token, tokenSecret, profile, done) ->
-  req.socialProfileEmail = profile?.emails?[0]?.value
-  # Link Linkedin account
-  if req.user
-    request
-      .post("#{opts.ARTSY_URL}/api/v1/me/authentications/linkedin")
-      .set('User-Agent': req.get 'user-agent')
-      .send(
-        oauth_token: token
-        oauth_token_secret: tokenSecret
-        access_token: req.user.get 'accessToken'
-      ).end (err, res) -> done err, req.user
-  # Login with Linkedin account
-  else
-    request
-      .post("#{opts.ARTSY_URL}/oauth2/access_token")
-      .set('User-Agent': req.get 'user-agent')
-      .query(
-        client_id: opts.ARTSY_ID
-        client_secret: opts.ARTSY_SECRET
-        grant_type: 'oauth_token'
-        oauth_token: token
-        oauth_token_secret: tokenSecret
-        oauth_provider: 'linkedin'
-      ).end onAccessToken(req, done,
-        oauth_token: token
-        oauth_token_secret: tokenSecret
-        provider: 'linkedin'
-      )
-
 @facebook = (req, token, refreshToken, profile, done) ->
   req.socialProfileEmail = profile?.emails?[0]?.value
   # Link Facebook account

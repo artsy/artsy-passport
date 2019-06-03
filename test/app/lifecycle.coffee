@@ -96,10 +96,6 @@ describe 'lifecycle', ->
       lifecycle.beforeSocialAuth('facebook')(@req, @res, @next)
       @req.session.skipOnboarding.should.equal(true)
 
-    it 'asks for linked in profile info'
-
-    it 'asks for email scope if not linkedin'
-
   describe '#afterSocialAuth', ->
     it 'doesnt redirect to personalize if skip-onboarding is set', ->
       @req.artsyPassportSignedUp = true
