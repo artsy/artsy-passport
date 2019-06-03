@@ -42,7 +42,6 @@
     "passport-facebook": "^2.0.0",
     "passport-linkedin": "^1.0.0",
     "passport-local": "^1.0.0",
-    "passport-twitter": "^1.0.3",
     "superagent": "^1.2.0",
     "underscore.string": "^3.2.2"
   },
