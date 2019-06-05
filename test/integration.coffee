@@ -2,18 +2,17 @@ _ = require 'underscore'
 Browser = require 'zombie'
 app = require '../example'
 artsyXapp = require 'artsy-xapp'
-{ ARTSY_EMAIL, ARTSY_PASSWORD, TWITTER_EMAIL, TWITTER_PASSWORD,
-  FACEBOOK_EMAIL, FACEBOOK_PASSWORD, ARTSY_URL, ARTSY_ID,
-  ARTSY_SECRET } = require '../config'
+{ ARTSY_EMAIL, ARTSY_PASSWORD, FACEBOOK_EMAIL, FACEBOOK_PASSWORD,
+  ARTSY_URL, ARTSY_ID, ARTSY_SECRET } = require '../config'
 
 describe 'Artsy Passport', ->
 
   before (done) ->
-    artsyXapp.on('error', done).init
+    artsyXapp.on('error', done).init {
       url: ARTSY_URL
       id: ARTSY_ID
       secret: ARTSY_SECRET
-    , -> app.listen 5000, done
+    }, -> app.listen 5000, done
 
   it 'can sign up with email and password', (done) ->
     Browser.visit 'http://localhost:5000', (e, browser) ->
@@ -56,16 +55,5 @@ describe 'Artsy Passport', ->
           .fill('email', FACEBOOK_EMAIL)
           .fill('pass', FACEBOOK_PASSWORD)
           .pressButton 'Log In', ->
-            console.log browser.html()
-            done()
-
-  it 'can log in with twitter', (done) ->
-    Browser.visit 'http://localhost:5000', (e, browser) ->
-      browser.clickLink "Login via Twitter", ->
-        browser.location.href.should.containEql 'twitter.com'
-        browser
-          .fill('session[username_or_email]', TWITTER_EMAIL)
-          .fill('session[password]', TWITTER_PASSWORD)
-          .pressButton 'Authorize app', ->
             console.log browser.html()
             done()

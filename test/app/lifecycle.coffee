@@ -10,17 +10,18 @@ describe 'lifecycle', ->
     @next = sinon.stub()
     @passport = {}
     @passport.authenticate = sinon.stub()
-    @passport.authenticate.returns (req, res, next) => next()
+    @passport.authenticate.returns (req, res, next) -> next()
     @request = sinon.stub().returns @request
     for method in ['get', 'end', 'set', 'post', 'send']
       @request[method] = sinon.stub().returns @request
     lifecycle.__set__ 'request', @request
     lifecycle.__set__ 'passport', @passport
-    lifecycle.__set__ 'opts', @opts =
+    lifecycle.__set__ 'opts', @opts = {
       loginPagePath: '/login'
       afterSignupPagePath: '/personalize'
       APP_URL: 'https://www.artsy.net'
       ARTSY_URL: 'https://api.artsy.net'
+    }
 
   describe '#onLocalLogin', ->
 
@@ -47,7 +48,7 @@ describe 'lifecycle', ->
         @passport.authenticate.returns (req, res, next) => next @err
 
       it 'redirects invalid passwords to login', ->
-        @err = response: body: error_description: 'invalid email or password'
+        @err = { response: { body: { error_description: 'invalid email or password' } } }
         lifecycle.onLocalLogin @req, @res, @next
         @res.redirect.args[0][0]
           .should.equal '/login?error=Invalid email or password.'
@@ -59,9 +60,9 @@ describe 'lifecycle', ->
 
   describe '#onError', ->
 
-    it 'handles canceled twitter logins', ->
-      lifecycle.onError new Error('twitter denied'), @req, @res, @next
-      @res.redirect.args[0][0].should.equal '/login?error=Canceled Twitter login'
+    it 'Nexts on error', ->
+      lifecycle.onError new Error('access denied'), @req, @res, @next
+      @next.should.be.called
 
   describe '#onLocalSignup', ->
 
@@ -82,14 +83,6 @@ describe 'lifecycle', ->
       @request.set.args[0][0]['User-Agent'].should.equal 'foo-agent'
 
   describe '#beforeSocialAuth', ->
-
-    it 'creates a state param for twitter', ->
-      @passport.authenticate.returns (req, res, next) -> next()
-      lifecycle.beforeSocialAuth('twitter')(@req, @res, @next)
-      @req.session.twitterState.length.should.be.above 5
-      @passport.authenticate.args[0][1].callbackURL
-        .should.containEql "state=#{@req.session.twitterState}"
-
     it 'sets session redirect', ->
       @req.query['redirect-to'] = '/foobar'
       @passport.authenticate.returns (req, res, next) -> next()
@@ -103,19 +96,7 @@ describe 'lifecycle', ->
       lifecycle.beforeSocialAuth('facebook')(@req, @res, @next)
       @req.session.skipOnboarding.should.equal(true)
 
-    it 'asks for linked in profile info'
-
-    it 'asks for email scope if not linkedin'
-
   describe '#afterSocialAuth', ->
-
-    it 'ensures a state param for twitter', ->
-      @req.query.state = 'foo'
-      @req.session.twitterState = 'bar'
-      @passport.authenticate.returns (req, res, next) -> next()
-      lifecycle.afterSocialAuth('twitter')(@req, @res, @next)
-      @next.args[0][0].message.should.equal 'Must pass a valid `state` param.'
-
     it 'doesnt redirect to personalize if skip-onboarding is set', ->
       @req.artsyPassportSignedUp = true
       @req.session.skipOnboarding = true
@@ -132,10 +113,10 @@ describe 'lifecycle', ->
 
     it 'passes random errors to be rendered on the login screen', ->
       @passport.authenticate.returns (req, res, next) ->
-        next new Error 'Twitter did not like you'
-      lifecycle.afterSocialAuth('twitter')(@req, @res, @next)
+        next new Error 'Facebook authorization failed'
+      lifecycle.afterSocialAuth('facebook')(@req, @res, @next)
       @res.redirect.args[0][0]
-        .should.equal '/login?error=Twitter did not like you'
+        .should.equal '/login?error=Facebook authorization failed'
 
     context 'with an error', ->
 
@@ -151,9 +132,7 @@ describe 'lifecycle', ->
 
       it 'redirects to settings if linking'
 
-      it 'redirects to the twitter last step if signing up with twitter'
-
-      it 'redirects to the personalize page if signing up without twitter'
+      it 'redirects to the personalize page if signing up'
 
       it 'reidrects back if logging in'
 
@@ -169,7 +148,7 @@ describe 'lifecycle', ->
       @req.user = { get: -> 'token' }
       @req.artsyPassportSignedUp = true
       lifecycle.ssoAndRedirectBack @req, @res, @next
-      @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
       @res.redirect.args[0][0].should.containEql '/personalize'
 
     it 'doesnt redirect to personalize if skipping onboarding', ->
@@ -178,7 +157,7 @@ describe 'lifecycle', ->
       @req.user = { get: -> 'token' }
       @req.artsyPassportSignedUp = true
       lifecycle.ssoAndRedirectBack @req, @res, @next
-      @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
       @res.redirect.args[0][0].should.not.containEql '/personalize'
 
     it 'passes on for xhrs', ->
@@ -192,7 +171,7 @@ describe 'lifecycle', ->
       @req.query['redirect-to'] = '/artwork/andy-warhol-skull'
       lifecycle.ssoAndRedirectBack @req, @res, @next
       @request.post.args[0][0].should.containEql 'me/trust_token'
-      @request.end.args[0][0] null, body: trust_token: 'foo-trust-token'
+      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
       @res.redirect.args[0][0].should.equal(
         'https://api.artsy.net/users/sign_in' +
         '?trust_token=foo-trust-token' +

@@ -1,7 +1,6 @@
 #
 # Uses [passport.js](http://passportjs.org/) to setup authentication with
-# various providers like direct login with Artsy, or oauth signin with Facebook
-# or Twitter.
+# various providers like direct login with Artsy, or oauth signin with Facebook.
 #
 
 _ = require 'underscore'
@@ -10,7 +9,7 @@ setupApp = require './app/index'
 setupPassport = require './passport/index'
 artsyXapp = require 'artsy-xapp'
 
-module.exports = (options) =>
+module.exports = (options) ->
   _.extend opts, options
   setupPassport()
   setupApp()
