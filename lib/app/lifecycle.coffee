@@ -20,7 +20,7 @@ crypto = require 'crypto'
   passport.authenticate('local') req, res, (err) ->
     if req.xhr
       if err
-        res.send 500, { success: false, error: err.message }
+        res.status(500).send({ success: false, error: err.message })
       else
         next()
     else
@@ -55,12 +55,12 @@ crypto = require 'crypto'
         msg = "Email is invalid."
         msg += " Did you mean #{suggestion}?" if suggestion
         if req.xhr
-          res.send 403, { success: false, error: msg }
+          res.status(403).send({ success: false, error: msg })
         else
           res.redirect opts.signupPagePath + "?error=#{msg}"
       else if err and req.xhr
         msg = err.response?.body?.error or err.message
-        res.send 500, { success: false, error: msg }
+        res.status(500).send({ success: false, error: msg })
       else if err
         next new Error err
       else
