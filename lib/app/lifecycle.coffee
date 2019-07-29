@@ -123,7 +123,7 @@ crypto = require 'crypto'
   parsed = parse redirectBack req
   parsed = parse resolve opts.APP_URL, parsed.path unless parsed.hostname
   domain = parsed.hostname?.split('.').slice(1).join('.')
-  return redirectBack(req, res) if domain isnt 'artsy.net'
+  # return redirectBack(req, res) if domain isnt 'artsy.net'
   request
     .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
     .set { 'X-Access-Token': req.user.get 'accessToken' }
