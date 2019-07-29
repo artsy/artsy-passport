@@ -19,8 +19,8 @@ describe 'lifecycle', ->
     lifecycle.__set__ 'opts', @opts = {
       loginPagePath: '/login'
       afterSignupPagePath: '/personalize'
-      APP_URL: 'https://www.artsy.net'
-      ARTSY_URL: 'https://api.artsy.net'
+      APP_URL: 'https://staging.artsy.net'
+      ARTSY_URL: 'https://stagingapi.artsy.net'
     }
 
   describe '#onLocalLogin', ->
@@ -162,8 +162,14 @@ describe 'lifecycle', ->
 
     it 'passes on for xhrs', ->
       @req.xhr = true
-      @req.user = { toJSON: -> }
-      lifecycle.ssoAndRedirectBack @req, @res, @next
+      @req.user = {
+        get: -> 'token'
+        toJSON: -> {}
+      }
+
+      lifecycle.ssoAndRedirectBack(@req, @res, @next)
+      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+
       @res.send.args[0][0].success.should.equal true
 
     it 'single signs on to gravity', ->
@@ -173,8 +179,9 @@ describe 'lifecycle', ->
       @request.post.args[0][0].should.containEql 'me/trust_token'
       @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
       @res.redirect.args[0][0].should.equal(
-        'https://api.artsy.net/users/sign_in' +
+        'https://stagingapi.artsy.net/users/sign_in' +
         '?trust_token=foo-trust-token' +
-        '&redirect_uri=https://www.artsy.net/artwork/andy-warhol-skull'
+        '&redirect_uri=https://staging.artsy.net/artwork/andy-warhol-skull'
       )
 
+  

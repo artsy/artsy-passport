@@ -119,16 +119,21 @@ crypto = require 'crypto'
   next err
 
 @ssoAndRedirectBack = (req, res, next) ->
-  return res.send { success: true, user: req.user.toJSON() } if req.xhr
-  parsed = parse redirectBack req
-  parsed = parse resolve opts.APP_URL, parsed.path unless parsed.hostname
-  domain = parsed.hostname?.split('.').slice(1).join('.')
+  urlToRedirectTo = parse redirectBack req
+  urlToRedirectTo = parse resolve "https://staging.artsy.net", urlToRedirectTo.path unless urlToRedirectTo.hostname
+  domain = urlToRedirectTo.hostname?.split('.').slice(1).join('.')
   # return redirectBack(req, res) if domain isnt 'artsy.net'
   request
     .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
     .set { 'X-Access-Token': req.user.get 'accessToken' }
     .end (err, sres) ->
-      return res.redirect parsed.href if err
-      res.redirect "#{opts.ARTSY_URL}/users/sign_in" +
+      return res.redirect urlToRedirectTo.href if err
+
+      apiAuthWithRedirectUrl = "#{opts.ARTSY_URL}/users/sign_in" +
         "?trust_token=#{sres.body.trust_token}" +
-        "&redirect_uri=#{parsed.href}"
+        "&redirect_uri=#{urlToRedirectTo.href}"
+
+      if req.xhr?
+        res.send { success: true, redirect_uri: apiAuthWithRedirectUrl, user: req.user.toJSON() }
+      else
+        res.redirect apiAuthWithRedirectUrl
