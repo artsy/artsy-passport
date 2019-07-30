@@ -204,7 +204,13 @@ describe 'lifecycle', ->
             get: -> 'token'
             toJSON: -> {}
           }
-          @req.referrer = "https://service.artsy.net/auctions"
+          # TODO: this is an incredibly brittle stub – maybe we should be using
+          # something like https://www.npmjs.com/package/sinon-express-mock
+          # instead.
+          @req.get =
+            (key) ->
+              if key == 'Referer'
+                'https://service.artsy.net/auctions'
 
           lifecycle.ssoAndRedirectBack(@req, @res, @next)
           @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
