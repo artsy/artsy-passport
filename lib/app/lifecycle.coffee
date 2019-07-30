@@ -120,7 +120,7 @@ crypto = require 'crypto'
 
 @ssoAndRedirectBack = (req, res, next) ->
   urlToRedirectTo = parse redirectBack req
-  urlToRedirectTo = parse resolve "https://staging.artsy.net", urlToRedirectTo.path unless urlToRedirectTo.hostname
+  urlToRedirectTo = parse resolve opts.APP_URL, urlToRedirectTo.path unless urlToRedirectTo.hostname
   domain = urlToRedirectTo.hostname?.split('.').slice(1).join('.')
   # return redirectBack(req, res) if domain isnt 'artsy.net'
   request
@@ -134,6 +134,6 @@ crypto = require 'crypto'
         "&redirect_uri=#{urlToRedirectTo.href}"
 
       if req.xhr?
-        res.send { success: true, redirect_uri: apiAuthWithRedirectUrl, user: req.user.toJSON() }
+        res.send { success: true, api_sign_in_with_redirect: apiAuthWithRedirectUrl, user: req.user.toJSON() }
       else
         res.redirect apiAuthWithRedirectUrl

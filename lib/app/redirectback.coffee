@@ -12,6 +12,7 @@ module.exports = (req, res) ->
     req.body['redirect-to'] or
     req.query['redirect-to'] or
     req.params.redirect_uri or
+    req.referrer or
     '/'
   )
   delete req.session.redirectTo

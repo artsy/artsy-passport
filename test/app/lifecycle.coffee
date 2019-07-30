@@ -143,45 +143,70 @@ describe 'lifecycle', ->
       @res.redirect.args[0][0].should.equal '/login?redirect-to=/personalize'
 
   describe '#ssoAndRedirectBack', ->
+    context 'when the incoming request is server-side (not XHR)', ->
+      it 'redirects signups to personalize', ->
+        @req.user = { get: -> 'token' }
+        @req.artsyPassportSignedUp = true
+        lifecycle.ssoAndRedirectBack @req, @res, @next
+        @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+        @res.redirect.args[0][0].should.containEql '/personalize'
 
-    it 'redirects signups to personalize', ->
-      @req.user = { get: -> 'token' }
-      @req.artsyPassportSignedUp = true
-      lifecycle.ssoAndRedirectBack @req, @res, @next
-      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
-      @res.redirect.args[0][0].should.containEql '/personalize'
+      it 'doesnt redirect to personalize if skipping onboarding', ->
+        @req.artsyPassportSignedUp = true
+        @req.session.skipOnboarding = true
+        @req.user = { get: -> 'token' }
+        @req.artsyPassportSignedUp = true
+        lifecycle.ssoAndRedirectBack @req, @res, @next
+        @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+        @res.redirect.args[0][0].should.not.containEql '/personalize'
 
-    it 'doesnt redirect to personalize if skipping onboarding', ->
-      @req.artsyPassportSignedUp = true
-      @req.session.skipOnboarding = true
-      @req.user = { get: -> 'token' }
-      @req.artsyPassportSignedUp = true
-      lifecycle.ssoAndRedirectBack @req, @res, @next
-      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
-      @res.redirect.args[0][0].should.not.containEql '/personalize'
+      it 'single signs on to gravity', ->
+        @req.user = { get: -> 'token' }
+        @req.query['redirect-to'] = '/artwork/andy-warhol-skull'
+        lifecycle.ssoAndRedirectBack @req, @res, @next
+        @request.post.args[0][0].should.containEql 'me/trust_token'
+        @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+        @res.redirect.args[0][0].should.equal(
+          'https://stagingapi.artsy.net/users/sign_in' +
+          '?trust_token=foo-trust-token' +
+          '&redirect_uri=https://staging.artsy.net/artwork/andy-warhol-skull'
+        )
 
-    it 'passes on for xhrs', ->
-      @req.xhr = true
-      @req.user = {
-        get: -> 'token'
-        toJSON: -> {}
-      }
+    context 'when the incoming request is an XHR', ->
+      it 'returns JSON with success: true', ->
+        @req.xhr = true
+        @req.user = {
+          get: -> 'token'
+          toJSON: -> {}
+        }
 
-      lifecycle.ssoAndRedirectBack(@req, @res, @next)
-      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+        lifecycle.ssoAndRedirectBack(@req, @res, @next)
+        @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
 
-      @res.send.args[0][0].success.should.equal true
+        @res.send.args[0][0].success.should.equal true
 
-    it 'single signs on to gravity', ->
-      @req.user = { get: -> 'token' }
-      @req.query['redirect-to'] = '/artwork/andy-warhol-skull'
-      lifecycle.ssoAndRedirectBack @req, @res, @next
-      @request.post.args[0][0].should.containEql 'me/trust_token'
-      @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
-      @res.redirect.args[0][0].should.equal(
-        'https://stagingapi.artsy.net/users/sign_in' +
-        '?trust_token=foo-trust-token' +
-        '&redirect_uri=https://staging.artsy.net/artwork/andy-warhol-skull'
-      )
+      describe 'the api_sign_in_with_redirect json value url', ->
+        it 'includes the trust token returned from the api', ->
+          @req.xhr = true
+          @req.user = {
+            get: -> 'token'
+            toJSON: -> {}
+          }
 
-  
+          lifecycle.ssoAndRedirectBack(@req, @res, @next)
+          @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+
+          @res.send.args[0][0]['api_sign_in_with_redirect'].should.match(/\?trust_token=foo-trust-token/)
+
+        it 'includes a redirect_uri equal to the request referrer', ->
+          @req.xhr = true
+          @req.user = {
+            get: -> 'token'
+            toJSON: -> {}
+          }
+          @req.referrer = "https://service.artsy.net/auctions"
+
+          lifecycle.ssoAndRedirectBack(@req, @res, @next)
+          @request.end.args[0][0] null, { body: { trust_token: 'foo-trust-token' } }
+
+          @res.send.args[0][0]['api_sign_in_with_redirect'].should.match(/redirect_uri=https:\/\/service.artsy.net\/auctions/)
