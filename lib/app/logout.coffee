@@ -16,6 +16,7 @@ redirectBack = require './redirectback'
 @logout = (req, res, next) ->
   accessToken = req.user?.get('accessToken')
   req.logout()
+  req.session = null
   request
     .del("#{opts.ARTSY_URL}/api/v1/access_token")
     .set('X-Access-Token': accessToken)
