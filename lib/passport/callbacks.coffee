@@ -8,9 +8,22 @@ _ = require 'underscore'
 request = require 'superagent'
 opts = require '../options'
 artsyXapp = require 'artsy-xapp'
+ip = require 'ip'
+
+resolveIPv4 = (ipAddress) ->
+  if ip.isV6Format(ipAddress)? and ipAddress.indexOf('::ffff') >= 0
+    return ipAddress.split('::ffff:')[1]
+  return ipAddress
+
+resolveProxies = (req) ->
+  ipAddress = resolveIPv4(req.connection.remoteAddress)
+  if req?.headers?["x-forwarded-for"]?
+    return req.headers["x-forwarded-for"] + ", " + ipAddress
+  else
+    return ipAddress
 
 @local = (req, username, password, done) ->
-  request
+  post = request
     .post("#{opts.ARTSY_URL}/oauth2/access_token")
     .set({ 'User-Agent': req.get 'user-agent' })
     .send({
@@ -19,7 +32,12 @@ artsyXapp = require 'artsy-xapp'
       grant_type: 'credentials'
       email: username
       password: password
-    }).end onAccessToken(req, done)
+    })
+
+  if req?.connection?.remoteAddress?
+    post.set 'X-Forwarded-For', resolveProxies req
+
+  post.end onAccessToken(req, done)
 
 @facebook = (req, token, refreshToken, profile, done) ->
   req.socialProfileEmail = profile?.emails?[0]?.value
@@ -34,7 +52,7 @@ artsyXapp = require 'artsy-xapp'
       }).end (err, res) -> done err, req.user
   # Login or signup with Facebook
   else
-    request
+    post = request
       .post("#{opts.ARTSY_URL}/oauth2/access_token")
       .set({ 'User-Agent': req.get 'user-agent' })
       .query({
@@ -43,11 +61,16 @@ artsyXapp = require 'artsy-xapp'
         grant_type: 'oauth_token'
         oauth_token: token
         oauth_provider: 'facebook'
-      }).end onAccessToken(req, done, {
-        oauth_token: token
-        provider: 'facebook'
-        name: profile?.displayName
       })
+
+    if req?.connection?.remoteAddress?
+      post.set 'X-Forwarded-For', resolveProxies req
+
+    post.end onAccessToken(req, done, {
+      oauth_token: token
+      provider: 'facebook'
+      name: profile?.displayName
+    })
 
 onAccessToken = (req, done, params) -> (err, res) ->
   # Treat bad responses from Gravity as errors and get the most relavent
@@ -86,7 +109,7 @@ onAccessToken = (req, done, params) -> (err, res) ->
       .set({ 'Referer': req.get 'referer' })
       .end (err) ->
         return done err if err
-        request
+        post = request
           .post("#{opts.ARTSY_URL}/oauth2/access_token")
           .set({ 'User-Agent': req.get 'user-agent' })
           .query(_.extend params, {
@@ -94,7 +117,12 @@ onAccessToken = (req, done, params) -> (err, res) ->
             client_secret: opts.ARTSY_SECRET
             grant_type: 'oauth_token'
             oauth_provider: params.provider
-          }).end onAccessToken(req, done, params)
+          })
+
+        if req?.connection?.remoteAddress?
+          post.set 'X-Forwarded-For', resolveProxies req
+
+        post.end onAccessToken(req, done, params)
   # Uncaught Exception.
   else
     console.warn "Error requesting an access token from Artsy '#{msg}'"
