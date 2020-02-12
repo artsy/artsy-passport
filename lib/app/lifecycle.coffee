@@ -59,7 +59,7 @@ crypto = require 'crypto'
         else
           res.redirect opts.signupPagePath + "?error=#{msg}"
       else if err and req.xhr
-        msg = err.response?.body?.error or err.message
+        msg = err.response?.body?.error or err.response?.body?.message or err.message
         res.status(500).send({ success: false, error: msg })
       else if err
         next new Error err
