@@ -6,13 +6,19 @@ describe 'lifecycle', ->
 
   beforeEach ->
     @req = { body: {}, params: {}, query: {}, session: {}, get: sinon.stub() }
-    @res = { redirect: sinon.stub(), send: sinon.stub() }
+    @res = {
+      redirect: sinon.stub(),
+      send: sinon.stub(),
+      status: sinon.stub().returns({
+        send: @send = sinon.stub()
+      })
+    }
     @next = sinon.stub()
     @passport = {}
     @passport.authenticate = sinon.stub()
     @passport.authenticate.returns (req, res, next) -> next()
     @request = sinon.stub().returns @request
-    for method in ['get', 'end', 'set', 'post', 'send']
+    for method in ['get', 'end', 'set', 'post', 'send', 'status']
       @request[method] = sinon.stub().returns @request
     lifecycle.__set__ 'request', @request
     lifecycle.__set__ 'passport', @passport
@@ -70,7 +76,12 @@ describe 'lifecycle', ->
 
     it 'suggests an email if its invalid and redirects back to the signup page'
 
-    it 'sends 500s as json for xhr requests'
+    it.only 'sends 500s as json for xhr requests', ->
+      @req.xhr = true
+      @err = { response: { body: { message: 'Password must include at least one lowercase letter, one uppercase letter, and one digit.' } } }
+      lifecycle.onLocalSignup @req, @res, @next
+      @request.end.args[0][0](@err)
+      @send.args[0][0].error.should.equal 'Password must include at least one lowercase letter, one uppercase letter, and one digit.'
 
     it 'passes the recaptcha_token through signup', ->
       @req.body.recaptcha_token = 'recaptcha_token'
