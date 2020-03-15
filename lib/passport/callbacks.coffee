@@ -72,6 +72,43 @@ resolveProxies = (req) ->
       name: profile?.displayName
     })
 
+@apple = (req, token, refreshToken, idToken, profile, done) ->
+  # Link Apple account
+  if req.user
+    request
+      .post("#{opts.ARTSY_URL}/api/v1/me/authentications/apple")
+      .set({ 'User-Agent': req.get 'user-agent' })
+      .send({
+        oauth_token: token
+        access_token: req.user.get 'accessToken'
+      }).end (err, res) -> done err, req.user
+  # Login or signup with Apple
+  else
+    post = request
+      .post("#{opts.ARTSY_URL}/oauth2/access_token")
+      .set({ 'User-Agent': req.get 'user-agent' })
+      .query({
+        client_id: opts.ARTSY_ID
+        client_secret: opts.ARTSY_SECRET
+        grant_type: 'oauth_token'
+        oauth_token: token
+        somekey: 'tester'
+        refreshToken: refreshToken
+        idToken: idToken
+        profile: profile
+        oauth_provider: 'apple'
+      })
+
+    if req?.connection?.remoteAddress?
+      post.set 'X-Forwarded-For', resolveProxies req
+
+    post.end onAccessToken(req, done, {
+      oauth_token: token
+      provider: 'apple'
+      profile: profile,
+      name: profile?.displayName
+    })
+
 onAccessToken = (req, done, params) -> (err, res) ->
   # Treat bad responses from Gravity as errors and get the most relavent
   # error message.

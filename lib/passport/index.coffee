@@ -4,6 +4,7 @@
 
 passport = require 'passport'
 FacebookStrategy = require('passport-facebook').Strategy
+AppleStrategy = require('passport-apple')
 LocalStrategy = require('passport-local').Strategy
 callbacks = require './callbacks'
 { serialize, deserialize } = require './serializers'
@@ -30,3 +31,17 @@ module.exports = ->
       },
       callbacks.facebook
     )
+
+  if opts.APPLE_CLIENT_ID and opts.APPLE_TEAM_ID and opts.APPLE_KEY_ID and opts.APPLE_REDIRECT_URI and opts.APPLE_PRIVATE_KEY
+     passport.use new AppleStrategy(
+       {
+          clientID: opts.APPLE_CLIENT_ID
+          teamID: opts.APPLE_TEAM_ID
+          callbackURL: opts.APPLE_REDIRECT_URI
+          keyID: opts.APPLE_KEY_ID
+          passReqToCallback: true
+          privateKeyString: opts.APPLE_PRIVATE_KEY
+       },
+       callbacks.apple
+     )
+
