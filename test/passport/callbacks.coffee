@@ -22,7 +22,7 @@ describe 'passport callbacks', ->
       CurrentUser: Backbone.Model
     }
 
-  it 'get a user with an access token email/password', (done) ->
+  it 'gets a user with an access token email/password', (done) ->
     cbs.local @req, 'craig', 'foo', (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
@@ -31,7 +31,7 @@ describe 'passport callbacks', ->
     res = { body: { access_token: 'access-token' }, status: 200 }
     @request.end.args[0][0](null, res)
 
-  it 'get a user with an access token facebook', (done) ->
+  it 'gets a user with an access token facebook', (done) ->
     cbs.facebook @req, 'foo-token', 'refresh-token', {}, (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
@@ -40,6 +40,19 @@ describe 'passport callbacks', ->
     queryParams = @request.query.args[0][0]
     queryParams.oauth_provider.should.equal 'facebook'
     queryParams.oauth_token.should.equal 'foo-token'
+    res = { body: { access_token: 'access-token' }, status: 200 }
+    @request.end.args[0][0](null, res)
+
+  it 'gets a user with an access token apple', (done) ->
+    cbs.apple @req, 'foo-token', 'refresh-token', 'id-token', {}, (err, user) ->
+      user.get('accessToken').should.equal 'access-token'
+      done()
+    @request.post.args[0][0].should
+      .equal 'http://apiz.artsy.net/oauth2/access_token'
+    queryParams = @request.query.args[0][0]
+    queryParams.oauth_provider.should.equal 'apple'
+    queryParams.oauth_token.should.equal 'foo-token'
+    queryParams.id_token.should.equal 'id-token'
     res = { body: { access_token: 'access-token' }, status: 200 }
     @request.end.args[0][0](null, res)
 

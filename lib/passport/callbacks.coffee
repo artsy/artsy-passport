@@ -92,9 +92,7 @@ resolveProxies = (req) ->
         client_secret: opts.ARTSY_SECRET
         grant_type: 'oauth_token'
         oauth_token: token
-        somekey: 'tester'
-        refreshToken: refreshToken
-        idToken: idToken
+        id_token: idToken
         profile: profile
         oauth_provider: 'apple'
       })
