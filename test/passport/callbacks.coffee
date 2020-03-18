@@ -67,3 +67,11 @@ describe 'passport callbacks', ->
     res = { body: { error_description: 'no account linked' }, status: 403 }
     @request.end.args[0][0](null, res)
     @request.set.args[1][0]['User-Agent'].should.equal 'foo-bar-baz-ua'
+
+  it 'passes the user agent through apple signup', ->
+    @req.get.returns 'foo-bar-baz-ua'
+    cbs.apple @req, 'foo-token', 'refresh-token', 'id-token', {}
+    res = { body: { error_description: 'no account linked' }, status: 403 }
+    @request.end.args[0][0](null, res)
+    @request.set.args[1][0]['User-Agent'].should.equal 'foo-bar-baz-ua'
+ 
