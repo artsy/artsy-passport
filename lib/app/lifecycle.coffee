@@ -76,10 +76,7 @@ crypto = require 'crypto'
   req.session.agreed_to_receive_emails = req.query['agreed_to_receive_emails']
 
   if provider == 'apple'
-    options = {
-      scope: 'email name'
-      response_mode: 'form_post'
-    }
+    options = {}
   else
     options = { scope: 'email' }
   passport.authenticate(provider, options)(req, res, next)

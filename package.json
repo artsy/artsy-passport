@@ -32,6 +32,7 @@
     "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
   },
   "dependencies": {
+    "@nicokaiser/passport-apple": "^0.2.1",
     "analytics-node": "^2.1.0",
     "async": "^1.5.0",
     "csurf": "^1.8.3",
@@ -40,7 +41,6 @@
     "ip": "^1.1.5",
     "mailcheck": "^1.1.1",
     "passport": "^0.3.0",
-    "passport-apple": "https://github.com/relivecc/passport-apple#cbe68f547c1e49fd07999a105651de690f18feec",
     "passport-facebook": "^2.0.0",
     "passport-local": "^1.0.0",
     "superagent": "^1.2.0",
