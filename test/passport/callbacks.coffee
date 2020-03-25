@@ -44,14 +44,14 @@ describe 'passport callbacks', ->
     @request.end.args[0][0](null, res)
 
   it 'gets a user with an access token apple', (done) ->
-    cbs.apple @req, 'foo-token', 'refresh-token', 'id-token', {}, (err, user) ->
+    cbs.apple @req, 'foo-token', 'refresh-token', { id: 'id-token' }, (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
     @request.post.args[0][0].should
       .equal 'http://apiz.artsy.net/oauth2/access_token'
     queryParams = @request.query.args[0][0]
     queryParams.oauth_provider.should.equal 'apple'
-    queryParams.oauth_token.should.equal 'foo-token'
+    queryParams.oauth_token.should.equal 'id-token'
     queryParams.id_token.should.equal 'id-token'
     res = { body: { access_token: 'access-token' }, status: 200 }
     @request.end.args[0][0](null, res)
