@@ -33,8 +33,7 @@ module.exports = ->
     )
 
   if opts.APPLE_CLIENT_ID and opts.APPLE_TEAM_ID and
-     opts.APPLE_KEY_ID and opts.APPLE_REDIRECT_URI and
-     opts.APPLE_PRIVATE_KEY
+     opts.APPLE_KEY_ID and opts.APPLE_PRIVATE_KEY
     passport.use 'apple', new AppleStrategy(
       {
         clientID: opts.APPLE_CLIENT_ID
@@ -42,7 +41,7 @@ module.exports = ->
         keyID: opts.APPLE_KEY_ID
         key: opts.APPLE_PRIVATE_KEY
         passReqToCallback: true
-        callbackURL: opts.APPLE_REDIRECT_URI
+        callbackURL: "#{opts.APP_URL}#{opts.appleCallbackPath}"
         scope: ['name', 'email']
       },
       callbacks.apple

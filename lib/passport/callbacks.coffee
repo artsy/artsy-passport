@@ -83,7 +83,6 @@ resolveProxies = (req) ->
         id_token: profile.id
         access_token: accessToken
       }).end (err, res) -> done err, req.user
-  # Login or signup with Apple
   else
     post = request
       .post("#{opts.ARTSY_URL}/oauth2/access_token")
@@ -91,22 +90,18 @@ resolveProxies = (req) ->
       .query({
         client_id: opts.ARTSY_ID
         client_secret: opts.ARTSY_SECRET
-        grant_type: 'oauth_token'
-        oauth_token: profile.id
-        id_token: profile.id
-        profile: profile
-        oauth_provider: 'apple'
+        grant_type: 'apple_uid'
+        name: profile.name
+        email: profile.email
+        apple_uid: profile.id
       })
 
     if req?.connection?.remoteAddress?
       post.set 'X-Forwarded-For', resolveProxies req
 
     post.end onAccessToken(req, done, {
-      oauth_token: profile.id
-      id_token: profile.id
       provider: 'apple'
-      profile: profile,
-      name: profile.name?
+      name: profile.name
     })
 
 onAccessToken = (req, done, params) -> (err, res) ->
