@@ -79,9 +79,11 @@ resolveProxies = (req) ->
       .post("#{opts.ARTSY_URL}/api/v1/me/authentications/apple")
       .set({ 'User-Agent': req.get 'user-agent' })
       .send({
-        oauth_token: profile.id
-        id_token: profile.id
-        access_token: accessToken
+        name: profile.name,
+        email: profile.email,
+        apple_uid: profile.id,
+        oauth_token: accessToken
+        access_token: req.user.get 'accessToken'
       }).end (err, res) -> done err, req.user
   else
     post = request

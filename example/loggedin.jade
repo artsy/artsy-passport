@@ -20,3 +20,8 @@ html(lang="en")
       else
         a( href=ap.facebookPath ) Connect Facebook
       br
+      if providers.indexOf('apple') > -1
+        a( href='/unlink/apple' ) Disconnect Apple
+      else
+        a( href=ap.applePath ) Connect Apple
+      br
