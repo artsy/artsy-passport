@@ -101,7 +101,9 @@ resolveProxies = (req) ->
 
     post.end onAccessToken(req, done, {
       provider: 'apple'
+      apple_uid: profile.id
       name: profile.name
+      email: profile.email
     })
 
 onAccessToken = (req, done, params) -> (err, res) ->
@@ -141,14 +143,24 @@ onAccessToken = (req, done, params) -> (err, res) ->
       .set({ 'Referer': req.get 'referer' })
       .end (err) ->
         return done err if err
+
+        auth_params = {}
+        if params.provider == 'apple'
+          auth_params = _.extend params, {
+            grant_type: 'apple_uid'
+          }
+        else
+          auth_params = _.extend params, {
+            grant_type: 'oauth_token'
+            oauth_provider: params.provider
+          }
+
         post = request
           .post("#{opts.ARTSY_URL}/oauth2/access_token")
           .set({ 'User-Agent': req.get 'user-agent' })
-          .query(_.extend params, {
+          .query(_.extend auth_params, {
             client_id: opts.ARTSY_ID
             client_secret: opts.ARTSY_SECRET
-            grant_type: 'oauth_token'
-            oauth_provider: params.provider
           })
 
         if req?.connection?.remoteAddress?
