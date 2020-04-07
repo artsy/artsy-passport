@@ -2,6 +2,8 @@ crypto = require 'crypto'
 
 module.exports = {
   # Social auth
+  applePath: '/users/auth/apple'
+  appleCallbackPath: '/users/auth/apple/callback'
   facebookPath: '/users/auth/facebook'
   facebookCallbackPath: '/users/auth/facebook/callback'
 

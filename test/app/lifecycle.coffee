@@ -145,7 +145,7 @@ describe 'lifecycle', ->
 
       it 'redirects to the personalize page if signing up'
 
-      it 'reidrects back if logging in'
+      it 'redirects back if logging in'
 
   describe '#ensureLoggedInOnAfterSignupPage', ->
 

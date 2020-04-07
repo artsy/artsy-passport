@@ -74,7 +74,11 @@ crypto = require 'crypto'
   # accepted_terms_of_service and agreed_to_receive_emails use underscores
   req.session.accepted_terms_of_service = req.query['accepted_terms_of_service']
   req.session.agreed_to_receive_emails = req.query['agreed_to_receive_emails']
-  options = { scope: 'email' }
+
+  if provider == 'apple'
+    options = {}
+  else
+    options = { scope: 'email' }
   passport.authenticate(provider, options)(req, res, next)
 
 @afterSocialAuth = (provider) -> (req, res, next) ->
@@ -91,7 +95,7 @@ crypto = require 'crypto'
               "#{providerName} in your settings instead."
       else
         msg = "#{providerName} account previously linked to Artsy. " +
-              "Log in to your Artsy account via email and password and link" +
+              "Log in to your Artsy account via email and password and link " +
               "#{providerName} in your settings instead."
       res.redirect opts.loginPagePath + '?error=' + msg
     else if err?.response?.body?.error is 'Another Account Already Linked'
@@ -100,7 +104,7 @@ crypto = require 'crypto'
             "deleting that user account and re-linking #{providerName}. "
       res.redirect opts.settingsPagePath + '?error=' + msg
     else if err?.message?.match 'Unauthorized source IP address'
-      msg = "Your IP address was blocked by Facebook."
+      msg = "Your IP address was blocked by #{providerName}."
       res.redirect opts.loginPagePath + '?error=' + msg
     else if err?
       msg = err.message or err.toString?()

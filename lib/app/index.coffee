@@ -42,6 +42,13 @@ module.exports = ->
     trackSignup('email'),
     ssoAndRedirectBack
 
+  # Apple OAuth
+  app.get opts.applePath, setCampaign, beforeSocialAuth('apple')
+  app.post opts.appleCallbackPath,
+    afterSocialAuth('apple'),
+    trackSignup('apple'),
+    ssoAndRedirectBack
+
   # Facebook OAuth
   app.get opts.facebookPath, setCampaign, beforeSocialAuth('facebook')
   app.get opts.facebookCallbackPath,

@@ -72,6 +72,42 @@ resolveProxies = (req) ->
       name: profile?.displayName
     })
 
+@apple = (req, accessToken, refreshToken, profile, done) ->
+  # Link Apple account
+  if req.user
+    request
+      .post("#{opts.ARTSY_URL}/api/v1/me/authentications/apple")
+      .set({ 'User-Agent': req.get 'user-agent' })
+      .send({
+        name: profile.name,
+        email: profile.email,
+        apple_uid: profile.id,
+        oauth_token: accessToken
+        access_token: req.user.get 'accessToken'
+      }).end (err, res) -> done err, req.user
+  else
+    post = request
+      .post("#{opts.ARTSY_URL}/oauth2/access_token")
+      .set({ 'User-Agent': req.get 'user-agent' })
+      .query({
+        client_id: opts.ARTSY_ID
+        client_secret: opts.ARTSY_SECRET
+        grant_type: 'apple_uid'
+        name: profile.name
+        email: profile.email
+        apple_uid: profile.id
+      })
+
+    if req?.connection?.remoteAddress?
+      post.set 'X-Forwarded-For', resolveProxies req
+
+    post.end onAccessToken(req, done, {
+      provider: 'apple'
+      apple_uid: profile.id
+      name: profile.name
+      email: profile.email
+    })
+
 onAccessToken = (req, done, params) -> (err, res) ->
   # Treat bad responses from Gravity as errors and get the most relavent
   # error message.
@@ -109,14 +145,24 @@ onAccessToken = (req, done, params) -> (err, res) ->
       .set({ 'Referer': req.get 'referer' })
       .end (err) ->
         return done err if err
+
+        auth_params = {}
+        if params.provider == 'apple'
+          auth_params = _.extend params, {
+            grant_type: 'apple_uid'
+          }
+        else
+          auth_params = _.extend params, {
+            grant_type: 'oauth_token'
+            oauth_provider: params.provider
+          }
+
         post = request
           .post("#{opts.ARTSY_URL}/oauth2/access_token")
           .set({ 'User-Agent': req.get 'user-agent' })
-          .query(_.extend params, {
+          .query(_.extend auth_params, {
             client_id: opts.ARTSY_ID
             client_secret: opts.ARTSY_SECRET
-            grant_type: 'oauth_token'
-            oauth_provider: params.provider
           })
 
         if req?.connection?.remoteAddress?

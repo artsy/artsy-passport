@@ -10,6 +10,8 @@ module.exports = (req, res, next) ->
   res.locals.sd?.ERROR = res.locals.error = _s.escapeHTML req.query.error
   res.locals.sd?.AP = res.locals.ap = _.pick(
     opts,
+    'applePath',
+    'appleCallbackPath',
     'facebookPath',
     'facebookCallbackPath',
     'loginPagePath',
