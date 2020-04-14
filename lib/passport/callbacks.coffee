@@ -73,13 +73,18 @@ resolveProxies = (req) ->
     })
 
 @apple = (req, accessToken, refreshToken, profile, done) ->
+
+  displayName = null
+  if profile.name
+    displayName = profile.name.firstName + " " + profile.name.lastName
+
   # Link Apple account
   if req.user
     request
       .post("#{opts.ARTSY_URL}/api/v1/me/authentications/apple")
       .set({ 'User-Agent': req.get 'user-agent' })
       .send({
-        name: profile.name,
+        name: displayName,
         email: profile.email,
         apple_uid: profile.id,
         oauth_token: accessToken
@@ -93,7 +98,7 @@ resolveProxies = (req) ->
         client_id: opts.ARTSY_ID
         client_secret: opts.ARTSY_SECRET
         grant_type: 'apple_uid'
-        name: profile.name
+        name: displayName,
         email: profile.email
         apple_uid: profile.id
       })
@@ -104,7 +109,7 @@ resolveProxies = (req) ->
     post.end onAccessToken(req, done, {
       provider: 'apple'
       apple_uid: profile.id
-      name: profile.name
+      name: displayName,
       email: profile.email
     })
 
