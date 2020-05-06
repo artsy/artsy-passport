@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@artsy/passport-local-with-otp@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@artsy/passport-local-with-otp/-/passport-local-with-otp-0.3.0.tgz#c27bf342ad0cff13378ace9caae7395bec3c46fd"
+  integrity sha512-gzN4InPgDdtNLxmziTk9ZmrMAf41zCGxG0CP8Fm5Q5RxWZxBJt6FkCqfQeBhpihU2L74lvseDxi5LYI8mkdOdQ==
+  dependencies:
+    passport-strategy "1.x.x"
+
 "@nicokaiser/passport-apple@^0.2.1":
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/@nicokaiser/passport-apple/-/passport-apple-0.2.1.tgz#e224f0b12d7326082c50e376078ec25caabcb12a"
@@ -2041,13 +2048,6 @@ passport-facebook@^2.0.0:
   integrity sha1-w50LUq5NWRYyRaTiGnubYyEwMxE=
   dependencies:
     passport-oauth2 "1.x.x"
-
-passport-local@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/passport-local/-/passport-local-1.0.0.tgz#1fe63268c92e75606626437e3b906662c15ba6ee"
-  integrity sha1-H+YyaMkudWBmJkN+O5BmYsFbpu4=
-  dependencies:
-    passport-strategy "1.x.x"
 
 passport-oauth2@1.x.x:
   version "1.3.0"

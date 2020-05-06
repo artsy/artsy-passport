@@ -22,8 +22,17 @@ describe 'passport callbacks', ->
       CurrentUser: Backbone.Model
     }
 
-  it 'gets a user with an access token email/password', (done) ->
-    cbs.local @req, 'craig', 'foo', (err, user) ->
+  it 'gets a user with an access token email/password/otp', (done) ->
+    cbs.local @req, 'craig', 'foo', '123456', (err, user) ->
+      user.get('accessToken').should.equal 'access-token'
+      done()
+    @request.post.args[0][0].should
+      .equal 'http://apiz.artsy.net/oauth2/access_token'
+    res = { body: { access_token: 'access-token' }, status: 200 }
+    @request.end.args[0][0](null, res)
+
+  it 'gets a user with an access token email/password without otp', (done) ->
+    cbs.local @req, 'craig', 'foo', null, (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
     @request.post.args[0][0].should
@@ -73,4 +82,3 @@ describe 'passport callbacks', ->
     res = { body: { error_description: 'no account linked' }, status: 403 }
     @request.end.args[0][0](null, res)
     @request.set.args[1][0]['User-Agent'].should.equal 'foo-bar-baz-ua'
- 
