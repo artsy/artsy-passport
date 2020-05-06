@@ -1,6 +1,6 @@
 {
   "name": "@artsy/passport",
-  "version": "1.1.13",
+  "version": "1.2.0-rc1",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](https://github.com/artsy/ezel)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
@@ -32,6 +32,7 @@
     "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
   },
   "dependencies": {
+    "@artsy/passport-local-with-otp": "^0.3.0",
     "@nicokaiser/passport-apple": "^0.2.1",
     "analytics-node": "^2.1.0",
     "async": "^1.5.0",
@@ -42,7 +43,6 @@
     "mailcheck": "^1.1.1",
     "passport": "^0.3.0",
     "passport-facebook": "^2.0.0",
-    "passport-local": "^1.0.0",
     "superagent": "^1.2.0",
     "underscore.string": "^3.2.2"
   },

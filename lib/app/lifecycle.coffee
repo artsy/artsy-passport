@@ -17,7 +17,7 @@ crypto = require 'crypto'
 
 @onLocalLogin = (req, res, next) ->
   return next() if req.user and not req.xhr
-  passport.authenticate('local') req, res, (err) ->
+  passport.authenticate('local-with-otp') req, res, (err) ->
     if req.xhr
       if err
         res.status(500).send({ success: false, error: err.message })

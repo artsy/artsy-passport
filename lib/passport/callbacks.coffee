@@ -22,7 +22,7 @@ resolveProxies = (req) ->
   else
     return ipAddress
 
-@local = (req, username, password, done) ->
+@local = (req, username, password, otp, done) ->
   post = request
     .post("#{opts.ARTSY_URL}/oauth2/access_token")
     .set({ 'User-Agent': req.get 'user-agent' })
@@ -32,6 +32,7 @@ resolveProxies = (req) ->
       grant_type: 'credentials'
       email: username
       password: password
+      otp_attempt: otp
     })
 
   if req?.connection?.remoteAddress?
