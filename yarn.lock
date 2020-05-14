@@ -3,9 +3,9 @@
 
 
 "@artsy/passport-local-with-otp@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@artsy/passport-local-with-otp/-/passport-local-with-otp-0.3.0.tgz#c27bf342ad0cff13378ace9caae7395bec3c46fd"
-  integrity sha512-gzN4InPgDdtNLxmziTk9ZmrMAf41zCGxG0CP8Fm5Q5RxWZxBJt6FkCqfQeBhpihU2L74lvseDxi5LYI8mkdOdQ==
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@artsy/passport-local-with-otp/-/passport-local-with-otp-0.3.1.tgz#db3844f54599d40c5c2b1215d0edd82c15845440"
+  integrity sha512-xokjH9xoedoSk76lDgKjzjlsXNqU7cOZZyJg3Ds+253AIEN4LkoMlI5+qrwznzfbpG7tHZi3R0ddQSCF2omROg==
   dependencies:
     passport-strategy "1.x.x"
 
