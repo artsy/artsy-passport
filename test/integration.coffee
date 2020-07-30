@@ -1,7 +1,7 @@
 _ = require 'underscore'
 Browser = require 'zombie'
 app = require '../example'
-artsyXapp = require 'artsy-xapp'
+artsyXapp = require '@artsy/xapp'
 { ARTSY_EMAIL, ARTSY_PASSWORD, FACEBOOK_EMAIL, FACEBOOK_PASSWORD,
   ARTSY_URL, ARTSY_ID, ARTSY_SECRET } = require '../config'
 

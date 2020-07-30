@@ -9,7 +9,7 @@ cookieParser = require 'cookie-parser'
 session = require 'cookie-session'
 path = require "path"
 logger = require 'morgan'
-artsyXapp = require 'artsy-xapp'
+artsyXapp = require '@artsy/xapp'
 artsyPassport = require '../'
 config = require '../config'
 
