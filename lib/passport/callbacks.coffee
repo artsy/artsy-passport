@@ -7,7 +7,7 @@
 _ = require 'underscore'
 request = require 'superagent'
 opts = require '../options'
-artsyXapp = require 'artsy-xapp'
+artsyXapp = require '@artsy/xapp'
 ip = require 'ip'
 
 resolveIPv4 = (ipAddress) ->

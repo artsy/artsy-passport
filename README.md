@@ -10,7 +10,7 @@ We mave migrated this app from the module "artsy-passport" to "@artsy/passport",
 
 ## Setup
 
-#### Make sure you first mount session, body parser, and start [artsy-xapp](https://github.com/artsy/artsy-xapp).
+#### Make sure you first mount session, body parser, and start [@artsy/xapp](https://github.com/artsy/artsy-xapp).
 
 ```coffee
 app.use express.bodyParser()
