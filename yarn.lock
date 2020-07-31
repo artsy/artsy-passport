@@ -9,7 +9,7 @@
   dependencies:
     passport-strategy "1.x.x"
 
-"@artsy/xapp@1.0.6":
+"@artsy/xapp@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@artsy/xapp/-/xapp-1.0.6.tgz#7aa62f2fdb3defd2634b3ce24a2932159daa2442"
   integrity sha512-HvVHokBkSg73p9CspnPnNLlZwINgNA/tJ1I5wfmMGXi4hdb9K+35CNLT+rByz4dWXmtA3RJcfzCFQknejEObGg==
