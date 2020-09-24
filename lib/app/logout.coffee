@@ -6,6 +6,7 @@ request = require 'superagent'
 opts = require '../options'
 { parse } = require 'url'
 redirectBack = require './redirectback'
+forwardedFor = require './forwarded_for'
 
 @denyBadLogoutLinks = (req, res, next) ->
   if parse(req.get 'Referrer').hostname.match 'artsy.net'
@@ -19,7 +20,7 @@ redirectBack = require './redirectback'
   req.session = null
   request
     .del("#{opts.ARTSY_URL}/api/v1/access_token")
-    .set('X-Access-Token': accessToken)
+    .set('X-Access-Token': accessToken, 'X-Forwarded-For': forwardedFor(req))
     .end (error, response) ->
       if req.xhr
         res.status(200).send msg: 'success'
