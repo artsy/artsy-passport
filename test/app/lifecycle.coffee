@@ -5,7 +5,7 @@ lifecycle = rewire '../../lib/app/lifecycle'
 describe 'lifecycle', ->
 
   beforeEach ->
-    @req = { body: {}, params: {}, query: {}, session: {}, get: sinon.stub() }
+    @req = { body: {}, params: {}, query: {}, session: {}, get: sinon.stub(), connection: { remoteAddress: '99.99.99.99' } }
     @res = {
       redirect: sinon.stub(),
       send: sinon.stub(),

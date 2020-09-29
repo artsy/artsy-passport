@@ -8,7 +8,12 @@
   integrity sha512-xokjH9xoedoSk76lDgKjzjlsXNqU7cOZZyJg3Ds+253AIEN4LkoMlI5+qrwznzfbpG7tHZi3R0ddQSCF2omROg==
   dependencies:
     passport-strategy "1.x.x"
-
+"@artsy/xapp@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@artsy/xapp/-/xapp-1.0.6.tgz#7aa62f2fdb3defd2634b3ce24a2932159daa2442"
+  integrity sha512-HvVHokBkSg73p9CspnPnNLlZwINgNA/tJ1I5wfmMGXi4hdb9K+35CNLT+rByz4dWXmtA3RJcfzCFQknejEObGg==
+  dependencies:
+    superagent "^1.2.0"
 "@segment/loosely-validate-event@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@segment/loosely-validate-event/-/loosely-validate-event-1.1.2.tgz#d77840999e3f7e43e74b3b0d43391c1526f793b8"
@@ -118,13 +123,6 @@ array-reduce@~0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/array-reduce/-/array-reduce-0.0.0.tgz#173899d3ffd1c7d9383e4479525dbe278cab5f2b"
   integrity sha1-FziZ0//Rx9k4PkR5Ul2+J4yrXys=
-
-artsy-xapp@*:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/artsy-xapp/-/artsy-xapp-1.0.4.tgz#13cc772122d1f8b8aeef6ad6555a792dffa9c3aa"
-  integrity sha1-E8x3ISLR+Liu72rWVVp5Lf+pw6o=
-  dependencies:
-    superagent "^1.2.0"
 
 asap@~1.0.0:
   version "1.0.0"

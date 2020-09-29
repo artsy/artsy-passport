@@ -5,12 +5,13 @@
 
 _ = require 'underscore'
 _s = require 'underscore.string'
+forwardedFor = require './forwarded_for'
 opts = require '../options'
 passport = require 'passport'
 qs = require 'querystring'
 redirectBack = require './redirectback'
 request = require 'superagent'
-artsyXapp = require 'artsy-xapp'
+artsyXapp = require '@artsy/xapp'
 Mailcheck = require 'mailcheck'
 crypto = require 'crypto'
 { parse, resolve } = require 'url'
@@ -37,6 +38,7 @@ crypto = require 'crypto'
     .post(opts.ARTSY_URL + '/api/v1/user')
     .set({
       'X-Xapp-Token': artsyXapp.token,
+      'X-Forwarded-For': forwardedFor(req),
       'User-Agent': req.get('user-agent'),
       'Referer': req.get('referer')
     })
@@ -130,8 +132,10 @@ crypto = require 'crypto'
   return redirectBack(req, res) if domain isnt 'artsy.net'
   request
     .post "#{opts.ARTSY_URL}/api/v1/me/trust_token"
-    .set { 'X-Access-Token': req.user.get 'accessToken' }
-    .end (err, sres) ->
+    .set({
+      'X-Access-Token': req.user.get 'accessToken',
+      'X-Forwarded-For': forwardedFor(req)
+    }).end (err, sres) ->
       return res.redirect parsed.href if err
       res.redirect "#{opts.ARTSY_URL}/users/sign_in" +
         "?trust_token=#{sres.body.trust_token}" +

@@ -3,6 +3,7 @@
 # trust_token in the query params.
 #
 
+forwardedFor = require './forwarded_for'
 opts = require '../options'
 qs = require 'querystring'
 request = require 'superagent'
@@ -24,6 +25,7 @@ _  = require 'underscore'
     code: token
   request
     .post "#{opts.ARTSY_URL}/oauth2/access_token"
+    .set('X-Forwarded-For': forwardedFor(req))
     .send settings
     .end (err, response) ->
       return next() if err? or not response.ok
