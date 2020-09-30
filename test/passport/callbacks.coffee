@@ -53,7 +53,8 @@ describe 'passport callbacks', ->
     @request.end.args[0][0](null, res)
 
   it 'gets a user with an access token apple', (done) ->
-    cbs.apple @req, 'foo-token', 'refresh-token', { id: 'some-apple-uid' }, (err, user) ->
+    decodedIdToken = { email: 'some-email@some.com', sub: 'some-apple-uid' }
+    cbs.apple @req, 'id-token', decodedIdToken, 'access_token', 'refresh-token', (err, user) ->
       user.get('accessToken').should.equal 'access-token'
       done()
     @request.post.args[0][0].should

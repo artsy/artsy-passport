@@ -34,7 +34,6 @@
   "dependencies": {
     "@artsy/passport-local-with-otp": "^0.3.0",
     "@artsy/xapp": "^1.0.6",
-    "@nicokaiser/passport-apple": "^0.2.1",
     "analytics-node": "^2.1.0",
     "async": "^1.5.0",
     "csurf": "^1.8.3",
@@ -43,6 +42,7 @@
     "ip": "^1.1.5",
     "mailcheck": "^1.1.1",
     "passport": "^0.3.0",
+    "passport-apple": "https://github.com/artsy/passport-apple",
     "passport-facebook": "^2.0.0",
     "superagent": "^1.2.0",
     "underscore.string": "^3.2.2"
