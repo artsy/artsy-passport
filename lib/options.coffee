@@ -18,6 +18,7 @@ module.exports = {
   userKeys: [
     'id', 'type', 'name', 'email', 'phone', 'lab_features',
     'default_profile_id', 'has_partner_access', 'collector_level',
-    'recaptcha_token'
+    'recaptcha_token',
+    'roles'
   ]
 }
