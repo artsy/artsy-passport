@@ -24,12 +24,22 @@
     "node": ">=10.0.0",
     "yarn": "1.x.x"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artsy/artsy-passport.git"
+  },
   "main": "dist/index.js",
   "scripts": {
     "test": "mkdir -p dist/app && cp lib/app/sanitize_redirect.js dist/app && mocha test/app && mocha test/passport",
+    "clean": "rm -rf dist",
     "compile": "coffee -c -o dist lib; cp lib/app/sanitize_redirect.js dist/app",
     "compile-example": "browserify -t coffeeify example/client.coffee > example/public/client.js",
-    "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee"
+    "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee",
+    "pre-publish": "yarn clean && yarn compile"
   },
   "dependencies": {
     "@artsy/passport-local-with-otp": "^0.3.0",
@@ -48,6 +58,7 @@
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
+    "@artsy/auto-config": "1.0.2",
     "backbone": "*",
     "backbone-super-sync": "*",
     "body-parser": "*",
