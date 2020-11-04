@@ -1,3 +1,15 @@
+# v1.6.0 (Wed Nov 04 2020)
+
+#### 🚀  Enhancement
+
+- Pin dependencies [#156](https://github.com/artsy/artsy-passport/pull/156) ([@renovate-bot](https://github.com/renovate-bot))
+
+#### Authors: 1
+
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v1.5.2 (Wed Nov 04 2020)
 
 #### 🐛  Bug Fix
