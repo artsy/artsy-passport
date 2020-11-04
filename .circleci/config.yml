@@ -1,13 +1,47 @@
 version: 2.1
 
 orbs:
-  yarn: artsy/yarn@0.1.8
+  yarn: artsy/yarn@5.1.3
+  auto: artsy/auto@1.3.2
+
+deploy: &deploy
+  context: npm-deploy
+  pre-steps:
+    - yarn/run-script:
+        script: pre-publish
+
+not_master: &not_master
+  filters:
+    branches:
+      ignore: master
+
+only_master: &only_master
+  filters:
+    branches:
+      only: master
 
 workflows:
   build_and_verify:
     jobs:
       - yarn/workflow-queue
+      - yarn/update-cache:
+          requires:
+            - yarn/workflow-queue
       - yarn/test:
           args: -c
           requires:
             - yarn/workflow-queue
+      # Pr builds
+      - auto/publish-canary:
+          <<: *not_master
+          <<: *deploy
+          requires:
+            - yarn/test
+            - yarn/update-cache
+      # Releases
+      - auto/publish:
+          <<: *only_master
+          <<: *deploy
+          requires:
+            - yarn/test
+            - yarn/update-cache
