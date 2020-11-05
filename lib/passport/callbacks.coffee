@@ -114,6 +114,7 @@ resolveProxies = (req) ->
       provider: 'apple'
       apple_uid: decodedIdToken.sub
       name: displayName,
+      id_token: idToken,
       email: decodedIdToken.email
     })
 

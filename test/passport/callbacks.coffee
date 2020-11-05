@@ -62,6 +62,7 @@ describe 'passport callbacks', ->
     queryParams = @request.query.args[0][0]
     queryParams.grant_type.should.equal 'apple_uid'
     queryParams.apple_uid.should.equal 'some-apple-uid'
+    queryParams.id_token.should.equal 'id-token'
     res = { body: { access_token: 'access-token' }, status: 200 }
     @request.end.args[0][0](null, res)
 
