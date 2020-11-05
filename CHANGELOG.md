@@ -1,3 +1,15 @@
+# v1.7.0 (Thu Nov 05 2020)
+
+#### 🚀  Enhancement
+
+- fix: pass down idToken to create user callbacks #trivial [#158](https://github.com/artsy/artsy-passport/pull/158) ([@brainbicycle](https://github.com/brainbicycle))
+
+#### Authors: 1
+
+- Brian Beckerle ([@brainbicycle](https://github.com/brainbicycle))
+
+---
+
 # v1.6.0 (Wed Nov 04 2020)
 
 #### 🚀  Enhancement
