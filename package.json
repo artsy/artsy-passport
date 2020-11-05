@@ -1,6 +1,6 @@
 {
   "name": "@artsy/passport",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](https://github.com/artsy/ezel)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
