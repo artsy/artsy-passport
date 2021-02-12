@@ -14,7 +14,6 @@ opts = require '../options'
   onLocalSignup,
   beforeSocialAuth,
   afterSocialAuth,
-  ensureLoggedInOnAfterSignupPage,
   onError,
   ssoAndRedirectBack
 } = require './lifecycle'
@@ -59,9 +58,6 @@ module.exports = ->
   # Logout middleware
   app.get opts.logoutPath, denyBadLogoutLinks, logout
   app.delete opts.logoutPath, logout
-
-  # Ensure the user is logged in before personalize
-  app.get opts.afterSignupPagePath, ensureLoggedInOnAfterSignupPage
 
   # Convenience middleware for token login and locals like sd.CURRENT_USER
   app.use headerLogin, trustTokenLogin, addLocals, onError
