@@ -1,3 +1,15 @@
+# v1.8.0 (Fri Feb 12 2021)
+
+#### 🚀  Enhancement
+
+- feat: Remove personalize routing line [#159](https://github.com/artsy/artsy-passport/pull/159) ([@jonallured](https://github.com/jonallured))
+
+#### Authors: 1
+
+- Jon Allured ([@jonallured](https://github.com/jonallured))
+
+---
+
 # v1.7.0 (Thu Nov 05 2020)
 
 #### 🚀  Enhancement
