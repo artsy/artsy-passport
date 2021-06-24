@@ -1,3 +1,15 @@
+# v1.9.0 (Thu Jun 24 2021)
+
+#### 🚀  Enhancement
+
+- Set Cameron as renovate assignee [#162](https://github.com/artsy/artsy-passport/pull/162) ([@zephraph](https://github.com/zephraph))
+
+#### Authors: 1
+
+- Justin Bennett ([@zephraph](https://github.com/zephraph))
+
+---
+
 # v1.8.0 (Fri Feb 12 2021)
 
 #### 🚀  Enhancement
