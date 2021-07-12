@@ -1,10 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS103: Rewrite code to no longer use __guard__, or convert again using --optional-chaining
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const _ = require('underscore');
 const express = require('express');
 const Backbone = require('backbone');
@@ -17,8 +10,6 @@ const logger = require('morgan');
 const artsyXapp = require('@artsy/xapp');
 const artsyPassport = require('../');
 const config = require('../config');
-
-debugger
 
 // CurrentUser class
 class CurrentUser extends Backbone.Model {
@@ -72,8 +63,12 @@ const setup = function(app) {
 
   // Setup Artsy Passport
   app.use(artsyPassport(_.extend(config, { CurrentUser })));
-  const { loginPagePath, signupPagePath, settingsPagePath,
-    afterSignupPagePath, logoutPath } = artsyPassport.options;
+  const {
+    afterSignupPagePath,
+    loginPagePath,
+    logoutPath,
+    settingsPagePath,
+  } = artsyPassport.options;
 
   // App specific routes that render a login/signup form and logged in view
   app.get('(/|/log_in|/sign_up|/user/edit)', function(req, res) {
@@ -116,10 +111,14 @@ const setup = function(app) {
   app.post('/newpassword', function(req, res, next) {
     const reset = new Backbone.Model({ id: 'foo' });
     reset.url = `${config.ARTSY_URL}/api/v1/users/reset_password`;
-    return reset.save(req.body, {
+    reset.save(req.body, {
       headers: { 'X-Xapp-Token': artsyXapp.token },
-      error(m, e) { return next(e); },
-      success(m, r) { return res.redirect(loginPagePath); }
+      error(m, e) {
+        next(e);
+      },
+      success() {
+        res.redirect(loginPagePath);
+      }
     });
   });
 
@@ -128,7 +127,16 @@ const setup = function(app) {
   // Error handler
   app.use(function(err, req, res, next) {
     console.warn(err.stack);
-    return res.render('error', { err: __guard__(__guard__(err != null ? err.response : undefined, x1 => x1.body), x => x.error) || err.stack });});
+
+    let error;
+    if (err && err.response && err.response.body && err.response.body.error) {
+      error = err.response.body.error
+    } else if (err && err.stack) {
+      error = err.stack
+    }
+
+    res.render('error', { err: error });
+  });
 
   // Start server
   if (module !== require.main) {
@@ -149,7 +157,3 @@ const setup = function(app) {
 
 const app = (module.exports = express());
 setup(app);
-
-function __guard__(value, transform) {
-  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
-}

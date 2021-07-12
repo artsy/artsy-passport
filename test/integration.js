@@ -1,9 +1,21 @@
-const _ = require('underscore');
 const Browser = require('zombie');
 const app = require('../example');
 const artsyXapp = require('@artsy/xapp');
-const { ARTSY_EMAIL, ARTSY_PASSWORD, FACEBOOK_EMAIL, FACEBOOK_PASSWORD,
-  ARTSY_URL, ARTSY_ID, ARTSY_SECRET } = require('../config');
+const {
+  ARTSY_EMAIL,
+  ARTSY_PASSWORD,
+  FACEBOOK_EMAIL,
+  FACEBOOK_PASSWORD,
+  ARTSY_URL,
+  ARTSY_ID,
+  ARTSY_SECRET,
+} = require('../config');
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
 
 describe('Artsy Passport', function() {
   before(function(done) {
@@ -21,7 +33,7 @@ describe('Artsy Passport', function() {
   it('can sign up with email and password', function(done) {
     Browser.visit('http://localhost:5000', (e, browser) => browser
       .fill('#signup [name="name"]', 'Foobar')
-      .fill('#signup [name="email"]', `ap+${_.random(0, 1000)}@artsypassport.com`)
+      .fill('#signup [name="email"]', `ap+${getRandomInt(0, 1000)}@artsypassport.com`)
       .fill('#signup [name="password"]', 'moofooboo')
       .pressButton("Signup", function() {
         browser.html().should.containEql('Personalize!');

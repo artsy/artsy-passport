@@ -2273,11 +2273,6 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-mailcheck@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/mailcheck/-/mailcheck-1.1.1.tgz#d87cf6ba0b64ba512199dbf93f1489f479591e34"
-  integrity sha1-2Hz2ugtkulEhmdv5PxSJ9HlZHjQ=
-
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
