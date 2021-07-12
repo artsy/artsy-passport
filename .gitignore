@@ -13,4 +13,5 @@ logs
 results
 npm-debug.log
 config.coffee
+config.js
 dist/

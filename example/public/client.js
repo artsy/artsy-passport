@@ -1,51 +1,41 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var sd;
-
-sd = require('sharify').data;
+const sd = require('sharify').data;
 
 $(function() {
   if (sd.CURRENT_USER) {
     $('body').append("<br><br>your email from the client-side!<br> " + sd.CURRENT_USER.email);
     $('[href*=sign_out]').click(function(e) {
       e.preventDefault();
-      return $.ajax({
+      $.ajax({
         url: '/users/sign_out',
         type: 'DELETE',
-        success: function() {
+        success() {
           return window.location = '/';
         },
-        error: function(xhr, status, error) {
+        error(xhr, status, error) {
           return alert(error);
         }
       });
     });
-    return $('[href*=delete]').click(function(e) {
-      if (!confirm("Are you sure?")) {
-        return e.preventDefault();
-      }
+    $('[href*=delete]').click(function(e) {
+      if (!confirm("Are you sure?")) { return e.preventDefault(); }
     });
   } else {
-    return $('#trust button').click(function() {
-      return $.ajax({
-        type: 'POST',
-        url: sd.ARTSY_URL + "/api/v1/me/trust_token",
-        headers: {
-          'x-access-token': $('#trust input').val().trim()
-        },
-        error: function(e) {
-          alert('Error!');
-          return console.warn(e);
-        },
-        success: function(arg) {
-          var trust_token;
-          trust_token = arg.trust_token;
-          return window.location = "http://" + location.host + "?trust_token=" + trust_token;
-        }
-      });
-    });
+    $('#trust button').click(() => $.ajax({
+      type: 'POST',
+      url: `${sd.ARTSY_URL}/api/v1/me/trust_token`,
+      headers: { 'x-access-token': $('#trust input').val().trim()
+    },
+      error(e) {
+        alert('Error!');
+        return console.warn(e);
+      },
+      success({ trust_token }) {
+        return window.location = `http://${location.host}?trust_token=${trust_token}`;
+      }
+    }));
   }
 });
-
 
 },{"sharify":2}],2:[function(require,module,exports){
 // Middleware that injects the shared data and sharify script

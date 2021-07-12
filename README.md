@@ -168,21 +168,22 @@ Add a `local.artsy.net` entry into your /etc/hosts
 127.0.0.1 local.artsy.net
 ```
 
-Install node modules `npm install` then write a ./config.coffee that looks something like this:
+Install node modules `yarn` then write a ./config.js that looks something like this:
 
-```coffee
-module.exports =
-  FACEBOOK_ID: ''
-  FACEBOOK_SECRET: ''
-  ARTSY_ID: ''
-  ARTSY_SECRET: ''
-  ARTSY_URL: 'https://api.artsy.net'
-  APP_URL: 'http://local.artsy.net:4000'
-  # An Artsy user that's linked to Facebook
-  ARTSY_EMAIL: 'craig@artsy.net'
-  ARTSY_PASSWORD: ''
-  FACEBOOK_EMAIL: 'craigspaeth@gmail.com'
-  FACEBOOK_PASSWORD: ''
+```js
+module.exports = {
+  FACEBOOK_ID: '',
+  FACEBOOK_SECRET: '',
+  ARTSY_ID: '',
+  ARTSY_SECRET: '',
+  ARTSY_URL: 'https://api.artsy.net',
+  APP_URL: 'http://local.artsy.net:4000',
+  // An Artsy user that's linked to Facebook
+  ARTSY_EMAIL: 'craig@artsy.net',
+  ARTSY_PASSWORD: '',
+  FACEBOOK_EMAIL: 'craigspaeth@gmail.com',
+  FACEBOOK_PASSWORD: '',
+}
 ```
 
 Then you can check the example by running `npm run example` and opening [localhost:4000](http://localhost:4000).
