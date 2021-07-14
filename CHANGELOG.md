@@ -1,3 +1,21 @@
+# v2.0.0 (Wed Jul 14 2021)
+
+#### 💥  Breaking Change
+
+- feature: Decaffeinate [#163](https://github.com/artsy/artsy-passport/pull/163) ([@icirellik](https://github.com/icirellik))
+
+#### 🏠  Internal
+
+- Bump elliptic from 6.3.2 to 6.5.4 [#160](https://github.com/artsy/artsy-passport/pull/160) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump underscore from 1.8.3 to 1.12.1 [#161](https://github.com/artsy/artsy-passport/pull/161) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 2
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- Cameron Rollheiser ([@icirellik](https://github.com/icirellik))
+
+---
+
 # v1.9.0 (Thu Jun 24 2021)
 
 #### 🚀  Enhancement
