@@ -1,3 +1,15 @@
+# v3.0.1 (Wed Jul 14 2021)
+
+#### 🐛  Bug Fix
+
+- Bump is-my-json-valid from 2.15.0 to 2.20.5 [#150](https://github.com/artsy/artsy-passport/pull/150) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v2.0.0 (Wed Jul 14 2021)
 
 #### 💥  Breaking Change
