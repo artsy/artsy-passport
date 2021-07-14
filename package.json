@@ -1,6 +1,6 @@
 {
   "name": "@artsy/passport",
-  "version": "1.9.0",
+  "version": "2.0.0",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](https://github.com/artsy/ezel)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
@@ -32,14 +32,12 @@
     "type": "git",
     "url": "git+https://github.com/artsy/artsy-passport.git"
   },
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
-    "test": "mkdir -p dist/app && cp lib/app/sanitize_redirect.js dist/app && mocha test/app && mocha test/passport",
-    "clean": "rm -rf dist",
-    "compile": "coffee -c -o dist lib; cp lib/app/sanitize_redirect.js dist/app",
-    "compile-example": "browserify -t coffeeify example/client.coffee > example/public/client.js",
-    "example": "sleep 3 && open http://local.artsy.net:4000 & npm run compile && coffee example/index.coffee",
-    "pre-publish": "yarn clean && yarn compile"
+    "compile-example": "browserify example/client.js > example/public/client.js",
+    "example": "sleep 3 && open http://local.artsy.net:4000 && NODE_ENV=test node example/index.js",
+    "test:integration": "NODE_ENV=test mocha test/integration.js",
+    "test": "mocha test/app && mocha test/passport"
   },
   "dependencies": {
     "@artsy/passport-local-with-otp": "0.3.1",
@@ -47,14 +45,13 @@
     "analytics-node": "2.4.1",
     "async": "1.5.2",
     "csurf": "1.9.0",
-    "dotenv": "4.0.0",
     "express": "4.14.0",
     "ip": "1.1.5",
-    "mailcheck": "1.1.1",
     "passport": "0.3.2",
     "passport-apple": "https://github.com/artsy/passport-apple#f41adb7822c8344b72bc36a7d68312f6592cb14f",
     "passport-facebook": "2.1.1",
     "superagent": "1.8.4",
+    "underscore": "^1.12.1",
     "underscore.string": "3.3.4"
   },
   "devDependencies": {
@@ -64,10 +61,11 @@
     "body-parser": "*",
     "brfs": "1.4.3",
     "browserify": "*",
-    "coffee-script": "1.11.1",
     "coffeeify": "2.1.0",
     "cookie-parser": "*",
     "cookie-session": "*",
+    "eslint": "^7.30.0",
+    "eslint-plugin-mocha": "^8.0.0",
     "jade": "*",
     "mocha": "*",
     "morgan": "*",
@@ -75,7 +73,6 @@
     "sharify": "*",
     "should": "*",
     "sinon": "*",
-    "underscore": "*",
     "zombie": "*"
   }
 }
