@@ -1,3 +1,15 @@
+# v3.1.0 (Mon Jul 26 2021)
+
+#### 🚀  Enhancement
+
+- Update auto orb from 1.3.2 to v1.4.0 [#164](https://github.com/artsy/artsy-passport/pull/164) ([@renovate-bot](https://github.com/renovate-bot))
+
+#### Authors: 1
+
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v3.0.1 (Wed Jul 14 2021)
 
 #### 🐛  Bug Fix
