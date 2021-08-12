@@ -50,7 +50,7 @@
     "passport": "0.3.2",
     "passport-apple": "https://github.com/artsy/passport-apple#f41adb7822c8344b72bc36a7d68312f6592cb14f",
     "passport-facebook": "2.1.1",
-    "superagent": "1.8.4",
+    "superagent": "1.8.5",
     "underscore": "^1.12.1",
     "underscore.string": "3.3.4"
   },
