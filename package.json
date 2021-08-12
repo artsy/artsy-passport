@@ -44,7 +44,7 @@
     "@artsy/xapp": "1.0.6",
     "analytics-node": "2.4.1",
     "async": "1.5.2",
-    "csurf": "1.9.0",
+    "csurf": "1.11.0",
     "express": "4.14.0",
     "ip": "1.1.5",
     "passport": "0.3.2",
