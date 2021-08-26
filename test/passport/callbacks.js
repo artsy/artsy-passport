@@ -27,23 +27,27 @@ describe('passport callbacks', function() {
   });
 
   it('gets a user with an access token email/password/otp', function(done) {
+    req.body = { otpRequired: true }
     cbs.local(req, 'craig', 'foo', '123456', function(err, user) {
       user.get('accessToken').should.equal('access-token');
       done();
     });
     request.post.args[0][0].should
       .equal('http://apiz.artsy.net/oauth2/access_token');
+    request.send.args[0][0].should.have.property('otp_attempt')
     const res = { body: { access_token: 'access-token' }, status: 200 };
     request.end.args[0][0](null, res);
   });
 
   it('gets a user with an access token email/password without otp', function(done) {
+    req.body = { otpRequired: false }
     cbs.local(req, 'craig', 'foo', null, function(err, user) {
       user.get('accessToken').should.equal('access-token');
       done();
     });
     request.post.args[0][0].should
       .equal('http://apiz.artsy.net/oauth2/access_token');
+    request.send.args[0][0].should.not.have.property('otp_attempt')
     const res = { body: { access_token: 'access-token' }, status: 200 };
     request.end.args[0][0](null, res);
   });
@@ -79,6 +83,7 @@ describe('passport callbacks', function() {
   });
 
   it('passes the user agent through login', function() {
+    req.body = { otpRequired: false }
     req.get.returns('chrome-foo');
     cbs.local(req, 'craig', 'foo');
     request.set.args[0][0].should.containEql({ 'User-Agent': 'chrome-foo' });
