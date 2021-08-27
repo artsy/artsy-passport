@@ -1,3 +1,15 @@
+# v3.2.0 (Fri Aug 27 2021)
+
+#### 🚀  Enhancement
+
+- feat: ondemand otp support [#171](https://github.com/artsy/artsy-passport/pull/171) ([@mc-jones](https://github.com/mc-jones))
+
+#### Authors: 1
+
+- Matt Jones ([@mc-jones](https://github.com/mc-jones))
+
+---
+
 # v3.1.0 (Mon Jul 26 2021)
 
 #### 🚀  Enhancement
