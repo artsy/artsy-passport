@@ -1,3 +1,16 @@
+# v3.3.0 (Fri Oct 08 2021)
+
+#### 🚀  Enhancement
+
+- chore(deps): update dep @artsy/auto-config from 1.0.2 to v1.1.0 [#172](https://github.com/artsy/artsy-passport/pull/172) ([@renovate-bot](https://github.com/renovate-bot) [@renovate[bot]](https://github.com/renovate[bot]))
+
+#### Authors: 2
+
+- [@renovate[bot]](https://github.com/renovate[bot])
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v3.2.0 (Fri Aug 27 2021)
 
 #### 🚀  Enhancement
