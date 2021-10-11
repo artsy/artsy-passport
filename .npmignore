@@ -1,6 +1,9 @@
-test
-node_modules
-example
+.circleci/
+.github/
+example/
+node_modules/
+test/
 
-yarn.lock
-.circleci
+.autorc
+.eslintrc.js
+renovate.json
