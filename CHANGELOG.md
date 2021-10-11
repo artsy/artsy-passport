@@ -1,3 +1,25 @@
+# v3.4.0 (Mon Oct 11 2021)
+
+#### 🚀  Enhancement
+
+- chore(deps): update auto orb from 1.4.0 to v2 [#173](https://github.com/artsy/artsy-passport/pull/173) ([@renovate-bot](https://github.com/renovate-bot) [@renovate[bot]](https://github.com/renovate[bot]))
+
+#### 🏠  Internal
+
+- Bump underscore.string from 3.3.4 to 3.3.5 [#178](https://github.com/artsy/artsy-passport/pull/178) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump brace-expansion from 1.1.6 to 1.1.11 [#180](https://github.com/artsy/artsy-passport/pull/180) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump forwarded from 0.1.0 to 0.1.2 [#176](https://github.com/artsy/artsy-passport/pull/176) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump tough-cookie from 2.3.2 to 2.3.4 [#177](https://github.com/artsy/artsy-passport/pull/177) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+- Bump stringstream from 0.0.5 to 0.0.6 [#179](https://github.com/artsy/artsy-passport/pull/179) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 3
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@renovate[bot]](https://github.com/renovate[bot])
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v3.3.0 (Fri Oct 08 2021)
 
 #### 🚀  Enhancement
