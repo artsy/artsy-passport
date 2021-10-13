@@ -1,3 +1,25 @@
+# v3.5.0 (Wed Oct 13 2021)
+
+#### 🚀  Enhancement
+
+- refactor: remove integration test [#186](https://github.com/artsy/artsy-passport/pull/186) ([@mc-jones](https://github.com/mc-jones))
+
+#### 🏠  Internal
+
+- chore: Unpin Dependencies [#183](https://github.com/artsy/artsy-passport/pull/183) ([@icirellik](https://github.com/icirellik))
+- feature: Dependabot [#184](https://github.com/artsy/artsy-passport/pull/184) ([@icirellik](https://github.com/icirellik))
+- chore: Update devDependencies [#181](https://github.com/artsy/artsy-passport/pull/181) ([@icirellik](https://github.com/icirellik))
+- chore(deps): update yarn orb from 5.1.3 to v6 [#165](https://github.com/artsy/artsy-passport/pull/165) ([@renovate-bot](https://github.com/renovate-bot) [@renovate[bot]](https://github.com/renovate[bot]))
+
+#### Authors: 4
+
+- [@renovate[bot]](https://github.com/renovate[bot])
+- Cameron Rollheiser ([@icirellik](https://github.com/icirellik))
+- Matt Jones ([@mc-jones](https://github.com/mc-jones))
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v3.4.0 (Mon Oct 11 2021)
 
 #### 🚀  Enhancement
