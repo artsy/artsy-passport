@@ -1,3 +1,19 @@
+# v3.5.1 (Tue Nov 02 2021)
+
+#### 🐛  Bug Fix
+
+- Bump superagent from 1.8.4 to 6.1.0 [#185](https://github.com/artsy/artsy-passport/pull/185) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### 🏠  Internal
+
+- Bump passport-oauth2 from 1.3.0 to 1.6.1 [#174](https://github.com/artsy/artsy-passport/pull/174) ([@dependabot[bot]](https://github.com/dependabot[bot]))
+
+#### Authors: 1
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+
+---
+
 # v3.5.0 (Wed Oct 13 2021)
 
 #### 🚀  Enhancement
