@@ -1,3 +1,15 @@
+# v3.5.2 (Wed Nov 03 2021)
+
+#### 🐛  Bug Fix
+
+- Revert "Bump superagent from 1.8.4 to 6.1.0" [#187](https://github.com/artsy/artsy-passport/pull/187) ([@gkartalis](https://github.com/gkartalis))
+
+#### Authors: 1
+
+- George Kartalis ([@gkartalis](https://github.com/gkartalis))
+
+---
+
 # v3.5.1 (Tue Nov 02 2021)
 
 #### 🐛  Bug Fix
