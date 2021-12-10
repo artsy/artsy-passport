@@ -7,15 +7,15 @@ orbs:
 deploy: &deploy
   context: npm-deploy
 
-not_master: &not_master
+not_main: &not_main
   filters:
     branches:
-      ignore: master
+      ignore: main
 
-only_master: &only_master
+only_main: &only_main
   filters:
     branches:
-      only: master
+      only: main
 
 workflows:
   build_and_verify:
@@ -30,14 +30,14 @@ workflows:
             - yarn/workflow-queue
       # Pr builds
       - auto/publish-canary:
-          <<: *not_master
+          <<: *not_main
           <<: *deploy
           requires:
             - yarn/test
             - yarn/update-cache
       # Releases
       - auto/publish:
-          <<: *only_master
+          <<: *only_main
           <<: *deploy
           requires:
             - yarn/test
