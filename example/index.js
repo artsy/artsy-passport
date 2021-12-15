@@ -1,4 +1,4 @@
-const _ = require('underscore');
+const extend = require('lodash/extend');
 const express = require('express');
 const Backbone = require('backbone');
 const sharify = require('sharify');
@@ -62,7 +62,7 @@ const setup = function(app) {
   app.use(express.static(__dirname + '/public'));
 
   // Setup Artsy Passport
-  app.use(artsyPassport(_.extend(config, { CurrentUser })));
+  app.use(artsyPassport(extend(config, { CurrentUser })));
   const {
     afterSignupPagePath,
     loginPagePath,
