@@ -1,3 +1,22 @@
+# v3.5.3 (Wed Dec 15 2021)
+
+#### 🐛  Bug Fix
+
+- chore(inclusive-language): Rename master -> main [#190](https://github.com/artsy/artsy-passport/pull/190) ([@damassi](https://github.com/damassi))
+- chore(deps): update yarn orb from 6.0.0 to v6.1.0 [#191](https://github.com/artsy/artsy-passport/pull/191) ([@renovate-bot](https://github.com/renovate-bot))
+
+#### 🏠  Internal
+
+- chore: Adopt inclusive language in sanitize_redirect.js [#189](https://github.com/artsy/artsy-passport/pull/189) ([@gkartalis](https://github.com/gkartalis))
+
+#### Authors: 3
+
+- Christopher Pappas ([@damassi](https://github.com/damassi))
+- George Kartalis ([@gkartalis](https://github.com/gkartalis))
+- WhiteSource Renovate ([@renovate-bot](https://github.com/renovate-bot))
+
+---
+
 # v3.5.2 (Wed Nov 03 2021)
 
 #### 🐛  Bug Fix
