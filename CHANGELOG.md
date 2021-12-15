@@ -1,3 +1,15 @@
+# v3.6.0 (Wed Dec 15 2021)
+
+#### 🚀  Enhancement
+
+- feature: Remove Underscore [#192](https://github.com/artsy/artsy-passport/pull/192) ([@icirellik](https://github.com/icirellik))
+
+#### Authors: 1
+
+- Cameron Rollheiser ([@icirellik](https://github.com/icirellik))
+
+---
+
 # v3.5.3 (Wed Dec 15 2021)
 
 #### 🐛  Bug Fix
