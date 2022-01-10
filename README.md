@@ -32,6 +32,8 @@ app.use artsyPassport
   # ----------------
   FACEBOOK_ID: # Facebook app ID
   FACEBOOK_SECRET: # Facebook app secret
+  GOOGLE_ID: # Google app ID
+  GOOGLE_SECRET: Google client secret
   ARTSY_ID: # Artsy client id
   ARTSY_SECRET: # Artsy client secret
   ARTSY_URL: # SSL Artsy url e.g. https://artsy.net
@@ -42,8 +44,12 @@ app.use artsyPassport
   # -----------------------------------------
 
   # Social auth
-  facebookPath: '/users/auth/facebook'
-  facebookCallbackPath: '/users/auth/facebook/callback'
+  applePath: '/users/auth/apple',
+  appleCallbackPath: '/users/auth/apple/callback',
+  facebookPath: '/users/auth/facebook',
+  facebookCallbackPath: '/users/auth/facebook/callback',
+  googlePath: '/users/auth/google',
+  googleCallbackPath: '/users/auth/google/callback',
 
   # Landing pages
   loginPagePath: '/log_in'

@@ -66,6 +66,20 @@ describe('passport callbacks', function() {
     request.end.args[0][0](null, res);
   });
 
+  it('gets a user with an access token google', function(done) {
+    cbs.google(req, 'foo-token', 'refresh-token', {}, function(err, user) {
+      user.get('accessToken').should.equal('access-token');
+      done();
+    });
+    request.post.args[0][0].should
+      .equal('http://apiz.artsy.net/oauth2/access_token');
+    const queryParams = request.query.args[0][0];
+    queryParams.oauth_provider.should.equal('google');
+    queryParams.oauth_token.should.equal('foo-token');
+    const res = { body: { access_token: 'access-token' }, status: 200 };
+    request.end.args[0][0](null, res);
+  });
+
   it('gets a user with an access token apple', function(done) {
     const decodedIdToken = { email: 'some-email@some.com', sub: 'some-apple-uid' };
     cbs.apple(req, 'id-token', decodedIdToken, 'access_token', 'refresh-token', function(err, user) {
