@@ -1,6 +1,6 @@
 {
   "name": "@artsy/passport",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "description": "Wires up the common auth handlers for Artsy's [Ezel](https://github.com/artsy/ezel)-based apps using [passport](http://passportjs.org/).",
   "keywords": [
     "artsy",
@@ -51,7 +51,7 @@
     "passport": "0.3.2",
     "passport-apple": "https://github.com/artsy/passport-apple#f41adb7822c8344b72bc36a7d68312f6592cb14f",
     "passport-facebook": "2.1.1",
-    "superagent": "^1.8.4",
+    "superagent": "^7.1.1",
     "underscore.string": "^3.3.5"
   },
   "devDependencies": {
