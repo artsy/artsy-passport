@@ -1,3 +1,15 @@
+# v3.7.0 (Tue Jan 25 2022)
+
+#### 🚀  Enhancement
+
+- docs(deprecate): Add notice to README.md [#194](https://github.com/artsy/artsy-passport/pull/194) ([@damassi](https://github.com/damassi))
+
+#### Authors: 1
+
+- Christopher Pappas ([@damassi](https://github.com/damassi))
+
+---
+
 # v3.6.0 (Wed Dec 15 2021)
 
 #### 🚀  Enhancement
