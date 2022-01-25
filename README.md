@@ -1,3 +1,8 @@
+# ⚠️ This repo has been deprecated and code relocated! See [Force](https://github.com/artsy/force/blob/master/src/lib/passport) for new location. 
+
+
+
+
 # Artsy Passport
 
 [![CircleCI](https://circleci.com/gh/artsy/artsy-passport.svg?style=svg)](https://circleci.com/gh/artsy/artsy-passport)
